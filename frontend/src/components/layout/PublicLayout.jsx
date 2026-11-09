@@ -2,16 +2,10 @@ import { Link } from "react-router-dom";
 import Navbar from "../Navbar.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 
-// Placeholders - the admin asked for these to stay generic for now and be
-// filled in with real details later.
-const ORGANIZER_NAME = "EventMedia Team";
-const ORGANIZER_LOCATION = "Mogadishu, Somalia";
-
 function FooterLink({ to, children }) {
   return (
-    <li className="flex items-center gap-2">
-      <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" aria-hidden="true" />
-      <Link to={to} className="text-brand-300 hover:text-brand-200 transition-colors">
+    <li>
+      <Link to={to} className="text-slate-400 hover:text-white transition-colors text-xs font-medium">
         {children}
       </Link>
     </li>
@@ -20,7 +14,7 @@ function FooterLink({ to, children }) {
 
 function FooterHeading({ children }) {
   return (
-    <h3 className="text-white font-bold text-sm tracking-wide mb-4 pb-3 border-b border-white/10">
+    <h3 className="text-white font-bold text-xs uppercase tracking-wider mb-4 pb-2 border-b border-white/10">
       {children}
     </h3>
   );
@@ -30,92 +24,90 @@ export default function PublicLayout({ children }) {
   const { isAuthed } = useAuth();
 
   return (
-    <div className="app-shell">
+    <div className="app-shell min-h-screen flex flex-col bg-slate-50 dark:bg-[#070c18] transition-colors">
       <Navbar />
       <main className="flex-1">{children}</main>
 
-      {/* Footer is intentionally always-dark, independent of the site theme
-          toggle, and only ever links to attendee-facing pages - the admin
-          and photographer consoles live at their own unlisted addresses and
-          have nothing here. */}
-      <footer className="bg-slate-950 text-slate-400">
-        <div className="shell-wrap py-14 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <FooterHeading>About EventMedia</FooterHeading>
-            <p className="text-sm leading-relaxed m-0">
-              EventMedia keeps your event photos and videos private — visible only to guests who
-              registered and checked in. No public dumps, no strangers browsing your memories.
+      <footer className="bg-slate-950 text-slate-400 border-t border-slate-900 mt-20">
+        <div className="shell-wrap py-14 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-white/20">
+                K
+              </div>
+              <span className="font-extrabold tracking-tight text-lg text-white">
+                Kulan<span className="text-brand-400">Events</span>
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed max-w-sm m-0">
+              The premier platform connecting students, developers, founders, and scholars with academic conferences, hands-on coding workshops, AI hackathons, and Islamic knowledge symposiums.
             </p>
+            <div className="mt-5 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] text-slate-400 font-medium">
+                Verified Door Check-in &amp; Private Keynote Archives
+              </span>
+            </div>
           </div>
 
           <div>
-            <FooterHeading>Quick Links</FooterHeading>
-            <ul className="stack gap-2.5 text-sm list-none p-0 m-0">
-              <FooterLink to="/">Home</FooterLink>
-              <FooterLink to="/how-it-works">How it works</FooterLink>
-              <FooterLink to="/events">Events</FooterLink>
-              <FooterLink to="/register">Register</FooterLink>
+            <FooterHeading>Disciplines &amp; Tracks</FooterHeading>
+            <ul className="space-y-2.5 list-none p-0 m-0">
+              <FooterLink to="/events?category=Artificial+Intelligence">Artificial Intelligence</FooterLink>
+              <FooterLink to="/events?category=Technology">Technology &amp; Cloud</FooterLink>
+              <FooterLink to="/events?category=Workshops">Technical Workshops</FooterLink>
+              <FooterLink to="/events?category=Hackathons">Hackathons &amp; Demos</FooterLink>
+              <FooterLink to="/events?category=Islamic+Studies">Islamic Studies</FooterLink>
+              <FooterLink to="/events?category=Business">Business &amp; Startups</FooterLink>
             </ul>
           </div>
 
           <div>
-            <FooterHeading>Participant Services</FooterHeading>
-            <ul className="stack gap-2.5 text-sm list-none p-0 m-0">
+            <FooterHeading>Platform Navigation</FooterHeading>
+            <ul className="space-y-2.5 list-none p-0 m-0">
+              <FooterLink to="/">Home Overview</FooterLink>
+              <FooterLink to="/events">All Programs</FooterLink>
+              <FooterLink to="/how-it-works">How It Works</FooterLink>
+              <FooterLink to="/contact">Support &amp; Inquiries</FooterLink>
               {isAuthed ? (
                 <>
-                  <FooterLink to="/dashboard">Dashboard</FooterLink>
-                  <FooterLink to="/dashboard/events">Your events</FooterLink>
-                  <FooterLink to="/dashboard/profile">Profile</FooterLink>
+                  <FooterLink to="/dashboard">My Registrations</FooterLink>
+                  <FooterLink to="/dashboard/profile">Attendee Profile</FooterLink>
                 </>
               ) : (
                 <>
-                  <FooterLink to="/register">Register as participant</FooterLink>
-                  <FooterLink to="/login">Sign in</FooterLink>
+                  <FooterLink to="/register">Student &amp; Pro Signup</FooterLink>
+                  <FooterLink to="/login">Sign In</FooterLink>
                 </>
               )}
-              <FooterLink to="/contact">Contact support</FooterLink>
             </ul>
           </div>
 
           <div>
-            <FooterHeading>Organizer Contact</FooterHeading>
-            <ul className="stack gap-3 text-sm list-none p-0 m-0">
-              <li className="flex items-start gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0 text-slate-500" aria-hidden="true">
-                  <path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span><strong className="text-white font-semibold">Organizer:</strong> {ORGANIZER_NAME}</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0 text-slate-500" aria-hidden="true">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <span><strong className="text-white font-semibold">Location:</strong> {ORGANIZER_LOCATION}</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0 text-slate-500" aria-hidden="true">
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="m3 7 9 6 9-6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {/* No mailto: the address here is still a placeholder, and a
-                    link that goes nowhere is worse than pointing at the form
-                    that actually reaches someone. */}
-                <span>
-                  <strong className="text-white font-semibold">Questions:</strong>{" "}
-                  <Link to="/contact" className="text-brand-300 hover:text-brand-200 transition-colors">
-                    use the contact form
-                  </Link>
-                </span>
-              </li>
+            <FooterHeading>Host &amp; Administration</FooterHeading>
+            <ul className="space-y-2.5 list-none p-0 m-0">
+              <FooterLink to="/organizer/dashboard">Organizer Portal (Abaabule)</FooterLink>
+              <FooterLink to="/organizer/signup">Register as Event Organizer</FooterLink>
+              <FooterLink to="/organizer/login">Organizer Login</FooterLink>
+              <FooterLink to="/maamul/dashboard">Admin Console (Maamul)</FooterLink>
+              <FooterLink to="/sawirqaade/login">Photographer Portal</FooterLink>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-white/10">
-          <div className="shell-wrap py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-            <span>© {new Date().getFullYear()} EventMedia. All rights reserved.</span>
-            <span>Every event, remembered.</span>
+        <div className="border-t border-slate-900 py-6">
+          <div className="shell-wrap flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <span>© {new Date().getFullYear()} Kulan Events. All rights reserved.</span>
+            <div className="flex items-center gap-4">
+              <Link to="/how-it-works" className="hover:text-slate-400 transition-colors">
+                Architecture
+              </Link>
+              <Link to="/contact" className="hover:text-slate-400 transition-colors">
+                Contact
+              </Link>
+              <span className="text-slate-600">·</span>
+              <span className="text-slate-400 font-medium">Knowledge &amp; Innovation</span>
+            </div>
           </div>
         </div>
       </footer>

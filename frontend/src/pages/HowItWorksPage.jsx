@@ -6,55 +6,48 @@ import SectionHeader from "../components/ui/SectionHeader.jsx";
 import IconBadge from "../components/IconBadge.jsx";
 import howItWorksImage from "../images of the page/about image.jpg";
 
-// The guest side is one linear path everyone takes the same way, so it stays
-// a grid of equal, parallel steps.
 const guestSteps = [
   {
     icon: "register",
-    title: "Register for the event",
-    desc: "Create a free account and RSVP to any public event in a few seconds — no app to install, no fees.",
+    title: "Register for your track",
+    desc: "Browse educational conferences, coding bootcamps, and AI summits. Secure your admission in seconds with instant digital badge generation.",
   },
   {
     icon: "checkin",
-    title: "Check in at the door",
-    desc: "On arrival, the event team verifies you with your registration code or QR token. Takes seconds, no lines.",
+    title: "Verify admission at the door",
+    desc: "Present your personal QR digital badge or 6-digit confirmation pin upon arrival. The organizer team checks you in under two seconds.",
   },
   {
     icon: "unlock",
-    title: "Unlock your gallery",
-    desc: "The moment you're checked in, every photo and video from the event unlocks — for you, and no one else.",
+    title: "Unlock keynote archives & media",
+    desc: "The moment you check in, all exclusive lecture slides, recorded sessions, and private event photo galleries unlock strictly for verified attendees.",
   },
 ];
 
-// The organizer side is not one role doing one thing - it's the admin
-// setting the event up and assigning the team, staff verifying guests on
-// site, and the photographer uploading afterward. Each step names who is
-// actually doing it, and the timeline layout below reflects that it is a
-// handoff between roles rather than one person's checklist.
 const organizerSteps = [
   {
     icon: "publish",
-    role: "Admin",
-    title: "Create and publish the event",
-    desc: "Set the title, schedule, and visibility from the console. Publish it live and public, or keep it private and unlisted until you're ready.",
-  },
-  {
-    icon: "camera",
-    role: "Admin",
-    title: "Bring a photographer onto it",
-    desc: "Assign a photographer straight from the event card. Only the photographer you assign — and admins — can ever upload to that event.",
+    role: "Organizer (Abaabule)",
+    title: "Publish curriculum & track details",
+    desc: "Configure event dates, venue or virtual links, academic categorization, capacity limits, and free or tiered certification passes.",
   },
   {
     icon: "shield",
-    role: "Admin & staff",
-    title: "Verify guests at the door",
-    desc: "Scan a QR code or type a registration code at check-in. The gallery only unlocks for people actually verified on site, never the full guest list.",
+    role: "Organizer (Abaabule)",
+    title: "Approve registrations & roster",
+    desc: "Monitor attendee signups in real-time, approve applications, confirm student bursaries or sponsorships, and export class rosters.",
+  },
+  {
+    icon: "camera",
+    role: "On-site Team",
+    title: "Scan badges at the entrance",
+    desc: "Use the built-in mobile camera scanner or rapid token lookup to verify attendees at the door without extra hardware or bottlenecks.",
   },
   {
     icon: "unlock",
-    role: "Photographer",
-    title: "Upload as the event happens",
-    desc: "Drop in as many photos and videos as you've shot in one go, straight from the console. Checked-in guests see them the moment they're up.",
+    role: "Organizer & Media Team",
+    title: "Distribute gated learning resources",
+    desc: "Upload official lecture materials, slide decks, and high-resolution event media directly to the private archive reserved for checked-in participants.",
   },
 ];
 
@@ -62,73 +55,101 @@ export default function HowItWorksPage() {
   return (
     <PublicLayout>
       <PageHero
-        eyebrow="How it works"
-        title="Two sides of the same event, run differently."
-        subtitle="Guests follow one simple path. Organizers and photographers run the event from the other side — setting it up, verifying who's really there, and sharing the moment afterward."
+        eyebrow="Architecture & Operations"
+        title="Designed for high-integrity educational and professional gatherings."
+        subtitle="A verified lifecycle: attendees register and check in with zero friction, while organizers retain complete oversight over admissions, on-site check-in, and gated intellectual property."
         image={howItWorksImage}
       />
 
-      <div className="shell-wrap">
-        <div className="section">
-          <SectionHeader title="For guests" subtitle="One path, the same for everyone" />
-          <div className="grid grid-3">
+      <div className="shell-wrap py-12">
+        {/* For Attendees Section */}
+        <div className="section mt-4">
+          <SectionHeader
+            title="For Attendees, Students &amp; Professionals"
+            subtitle="Three straightforward steps from discovery to private learning archives"
+          />
+          <div className="grid grid-3 gap-6 mt-6">
             {guestSteps.map((step, idx) => (
-              <Card key={step.title} className="relative">
+              <Card key={step.title} className="relative p-6">
                 <div className="flex items-start justify-between">
                   <IconBadge icon={step.icon} tone="brand" />
-                  <span className="text-slate-200 dark:text-slate-700 font-display font-extrabold text-4xl leading-none">
+                  <span className="text-slate-200 dark:text-slate-800 font-display font-extrabold text-4xl leading-none">
                     {String(idx + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <h3 className="mt-4 mb-1.5 text-lg font-bold">{step.title}</h3>
-                <p className="text-muted">{step.desc}</p>
+                <h3 className="mt-5 mb-2 text-lg font-bold text-slate-900 dark:text-white">
+                  {step.title}
+                </h3>
+                <p className="text-muted text-sm leading-relaxed mb-0">
+                  {step.desc}
+                </p>
               </Card>
             ))}
           </div>
         </div>
 
-        <div className="section">
-          <SectionHeader title="For organizers & photographers" subtitle="A handoff between roles, not one person's checklist" />
+        {/* For Organizers Section */}
+        <div className="section mt-16">
+          <SectionHeader
+            title="For Event Organizers &amp; Academic Leads"
+            subtitle="Comprehensive administration from curriculum setup to door check-in"
+            actions={
+              <Link to="/organizer/signup" className="btn btn-primary text-xs">
+                Open Organizer Account (Abaabule) →
+              </Link>
+            }
+          />
 
-          <div className="relative max-w-2xl">
-            {/* Connecting line running behind the numbered circles - this is
-                what makes it read as a sequence rather than a grid of
-                interchangeable cards. */}
-            <div className="absolute left-[27px] top-2 bottom-2 w-0.5 bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
+          <div className="relative max-w-2xl mt-8">
+            <div
+              className="absolute left-[27px] top-4 bottom-4 w-0.5 bg-slate-200 dark:bg-slate-800"
+              aria-hidden="true"
+            />
 
-            <div className="stack gap-8">
+            <div className="space-y-8">
               {organizerSteps.map((step, idx) => (
-                <div key={step.title} className="relative flex gap-5">
+                <div key={step.title} className="flex items-start gap-5 relative">
                   <div className="relative z-10 shrink-0">
-                    <IconBadge icon={step.icon} tone="accent" />
+                    <IconBadge icon={step.icon} tone="brand" />
                   </div>
-                  <Card className="flex-1 !py-5">
-                    <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
-                      <span className="text-xs font-bold text-accent-600 dark:text-accent-400 uppercase tracking-wide">
-                        Step {idx + 1} · {step.role}
+                  <div className="pt-1 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/60 px-2 py-0.5 rounded">
+                        {step.role}
                       </span>
+                      <span className="text-xs text-slate-400 font-semibold">Step 0{idx + 1}</span>
                     </div>
-                    <h3 className="m-0 mb-1.5 text-lg font-bold">{step.title}</h3>
-                    <p className="text-muted m-0">{step.desc}</p>
-                  </Card>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white m-0">
+                      {step.title}
+                    </h3>
+                    <p className="text-muted text-xs sm:text-sm mt-1.5 leading-relaxed m-0">
+                      {step.desc}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="section mb-4">
-          <div className="rounded-3xl bg-gradient-to-br from-brand-700 to-brand-900 text-white px-8 py-14 text-center shadow-lg shadow-brand-900/20">
-            <h2 className="m-0 text-3xl sm:text-4xl font-extrabold">Ready to see it in action?</h2>
-            <p className="mt-3 text-brand-100 max-w-lg mx-auto">
-              Browse what's happening now, or create an account to start organizing your own event.
+        {/* Ready to host CTA */}
+        <div className="section mt-20 mb-8">
+          <div className="rounded-3xl bg-slate-900 p-8 sm:p-12 text-white border border-slate-800 text-center max-w-3xl mx-auto">
+            <h2 className="display text-3xl sm:text-4xl font-extrabold text-white">
+              Ready to host your next educational event?
+            </h2>
+            <p className="mt-4 text-slate-300 text-sm sm:text-base max-w-xl mx-auto">
+              Join leading academic institutions, tech accelerators, and community leaders using Kulan to deliver modern, verified event experiences.
             </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Link className="btn bg-white text-brand-700 hover:bg-brand-50 text-base px-6 py-3.5" to="/events">
-                Explore events
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <Link to="/organizer/signup" className="btn btn-primary px-7 py-3 text-sm">
+                Register as Organizer (Abaabule)
               </Link>
-              <Link className="btn bg-brand-800/60 text-white border border-white/20 hover:bg-brand-800 text-base px-6 py-3.5" to="/register">
-                Create account
+              <Link
+                to="/events"
+                className="btn btn-secondary px-6 py-3 text-sm bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              >
+                Explore Current Programs
               </Link>
             </div>
           </div>

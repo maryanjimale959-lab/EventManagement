@@ -5,99 +5,77 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  /* The editorial voice: used for hero and section headlines on the public
-     site only, so the consoles keep their UI type. */
-  --font-editorial: "Fraunces", "Sora", ui-serif, Georgia, serif;
+  --font-display: "Sora", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Warm ink. This deliberately overrides Tailwind's cool `slate` scale rather
-     than introducing a second neutral family, because roughly 290 utilities
-     across the app already reference slate-50..950 and a sweep would be a much
-     larger diff. What matters is that every neutral now carries the same warm
-     hue, so a card and the surface behind it agree about the light source.
-     Nothing here is pure black: the darkest tone is a near-black charcoal. */
-  --color-slate-50: #faf8f5;
-  --color-slate-100: #f3f0ea;
-  --color-slate-200: #e5e0d7;
-  --color-slate-300: #cfc7ba;
-  --color-slate-400: #a89e90;
-  --color-slate-500: #837a6d;
-  --color-slate-600: #665f55;
-  --color-slate-700: #4c463e;
-  --color-slate-800: #2f2b25;
-  --color-slate-900: #1d1a16;
-  --color-slate-950: #12100d;
+  /* Modern, crisp neutral palette (high-contrast slate & deep obsidian dark mode) */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #070c18;
 
-  /* One accent: tungsten amber. Desaturated enough to sit beside the neutrals
-     instead of shouting over them, and dark enough at the 600/700 end to carry
-     white text. Replaces the indigo scale, which read as a generic SaaS. */
-  --color-brand-50: #fbf4e6;
-  --color-brand-100: #f5e4c0;
-  --color-brand-200: #eacd8f;
-  --color-brand-300: #dfb15d;
-  --color-brand-400: #d19c3b;
-  --color-brand-500: #bd8626;
-  --color-brand-600: #9d6d20;
-  --color-brand-700: #7c551d;
-  --color-brand-800: #5f431b;
-  --color-brand-900: #4a3517;
+  /* Primary Brand: Sophisticated Electric Sapphire Blue */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
 
-  --color-accent-50: #fbf4e6;
-  --color-accent-100: #f5e4c0;
-  --color-accent-400: #dfb15d;
-  --color-accent-500: #bd8626;
-  --color-accent-600: #9d6d20;
+  --color-accent-50: #eff6ff;
+  --color-accent-100: #dbeafe;
+  --color-accent-400: #60a5fa;
+  --color-accent-500: #3b82f6;
+  --color-accent-600: #2563eb;
 }
 
 @layer base {
   html, body {
-    /* max-w-full alone stops content from pushing the page wider than the
-       window. overflow-x: hidden used to sit here too, but setting overflow
-       on one axis forces the browser to compute the other as auto rather
-       than visible - that silently turns html/body into a scroll container,
-       which breaks position: sticky for every sticky element in the app
-       (it starts tracking scroll instead of pinning to the viewport). The
-       real fix for wide content is .shell-wrap's max-width, not this. */
     @apply max-w-full;
   }
   body {
-    @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    @apply bg-slate-50 text-slate-900 antialiased dark:bg-[#070c18] dark:text-slate-100;
     font-family: var(--font-sans);
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     @apply tracking-tight;
     text-wrap: balance;
   }
-  /* Large display headlines get the editorial serif and tighter rhythm; body
-     copy stays on Inter. Opt-in per element so dense console screens are
-     untouched. */
   .display {
-    font-family: var(--font-editorial);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-    font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
   .eyebrow {
-    @apply text-xs font-semibold uppercase;
-    letter-spacing: 0.18em;
+    @apply text-xs font-bold uppercase tracking-wider;
     font-family: var(--font-sans);
   }
   p { max-width: 68ch; }
   a {
-    @apply text-inherit no-underline;
+    @apply text-inherit no-underline transition-colors;
   }
   img {
     @apply max-w-full block;
   }
-  /* Keyboard focus, on every interactive element, in the accent colour. An
-     accessibility requirement rather than decoration, so it lives in base. */
   :focus-visible {
     outline: 2px solid var(--color-brand-500);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   html {
     scroll-behavior: smooth;
@@ -106,86 +84,93 @@
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
-  /* Colour-scheme aware form controls and scrollbars. */
   .dark {
     color-scheme: dark;
   }
 }
 
 @layer components {
-  /* Layout. Every section uses this one container, so page content lines up
-     with the navbar logo instead of drifting to the window edge. */
-  /* No overflow-x-hidden here either - same reasoning as html/body above.
-     The navbar's position: sticky needs .app-shell to stay a plain, non-
-     scrolling ancestor. */
+  /* Layout Containers */
   .app-shell { @apply min-h-screen flex flex-col w-full max-w-full; }
-  .shell-wrap { @apply w-full max-w-6xl mx-auto px-5 sm:px-6 min-w-0; }
-  .page { @apply mt-8 pb-16; }
-  .section { @apply mt-16 first:mt-0; }
+  .shell-wrap { @apply w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0; }
+  .page { @apply mt-8 pb-20; }
+  .section { @apply mt-16 sm:mt-24 first:mt-0; }
 
-  .grid { @apply grid gap-4; }
+  .grid { @apply grid gap-5; }
   .grid-2 { @apply grid-cols-1 sm:grid-cols-2; }
-  .grid-3 { @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3; }
+  .grid-3 { @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3; }
   .grid-4 { @apply grid-cols-2 lg:grid-cols-4; }
-  .two-col { @apply grid gap-4 grid-cols-1 sm:grid-cols-2; }
+  .two-col { @apply grid gap-5 grid-cols-1 sm:grid-cols-2; }
   .stack { @apply flex flex-col gap-3; }
 
   .text-muted { @apply text-slate-500 dark:text-slate-400; }
 
-  /* Cards */
-  /* No border. Elevation comes from the surface being a step lighter than the
-     page and from a shadow tinted with the background hue, which is what makes
-     the dark theme feel lit rather than outlined. */
+  /* Premium Modern Cards */
   .card-surface {
-    @apply bg-white rounded-2xl p-6 shadow-sm shadow-slate-900/[0.04] transition-shadow
-           dark:bg-slate-900 dark:shadow-lg dark:shadow-black/30;
+    @apply bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm transition-all duration-200
+           hover:shadow-md hover:border-slate-300
+           dark:bg-slate-900/80 dark:border-slate-800/80 dark:shadow-none dark:hover:border-slate-700;
   }
   .card-muted {
-    @apply bg-slate-100/70 rounded-xl p-4 text-slate-500
-           dark:bg-slate-900/60 dark:text-slate-400;
+    @apply bg-slate-100/80 rounded-xl p-4 text-slate-600 border border-slate-200/50
+           dark:bg-slate-900/60 dark:text-slate-400 dark:border-slate-800/60;
   }
 
-  /* Photographic surfaces. A warm scrim keeps white type legible over any
-     generated cover without a heavy black band across the image. */
+  /* Interactive Event Cards */
+  .event-card {
+    @apply relative flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/90 shadow-sm
+           transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-500/10 hover:border-brand-500/40
+           dark:bg-slate-900/90 dark:border-slate-800/90 dark:hover:border-brand-500/50 dark:hover:shadow-brand-500/5;
+  }
+
+  /* High Quality Photo Frames */
   .photo-surface { @apply relative overflow-hidden bg-slate-900; }
-  .photo-surface img { @apply absolute inset-0 w-full h-full object-cover; }
+  .photo-surface img { @apply absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out; }
   .photo-scrim {
     @apply absolute inset-0;
-    background: linear-gradient(105deg, rgb(18 16 13 / 0.92) 0%, rgb(18 16 13 / 0.62) 42%, rgb(18 16 13 / 0.15) 78%, transparent 100%);
+    background: linear-gradient(135deg, rgba(7, 12, 24, 0.94) 0%, rgba(7, 12, 24, 0.72) 48%, rgba(7, 12, 24, 0.3) 100%);
   }
   .photo-scrim-b {
-    @apply absolute inset-x-0 bottom-0 h-2/3;
-    background: linear-gradient(to top, rgb(18 16 13 / 0.88), transparent);
+    @apply absolute inset-x-0 bottom-0 h-3/4;
+    background: linear-gradient(to top, rgba(7, 12, 24, 0.92) 0%, rgba(7, 12, 24, 0.5) 50%, transparent 100%);
   }
 
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-sm
-           transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold text-sm
+           transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none cursor-pointer;
   }
   .btn:not(:disabled):hover { @apply -translate-y-0.5; }
-  .btn:not(:disabled):active { @apply translate-y-0 scale-[0.98] shadow-none; }
-  /* Gold carries ink text rather than white - that is what makes it read as a
-     lit bulb instead of a coloured rectangle. */
-  .btn-primary { @apply bg-brand-600 text-white shadow-md shadow-brand-900/25 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-900/30 dark:bg-brand-400 dark:text-slate-950 dark:shadow-brand-500/20 dark:hover:bg-brand-300; }
-  .btn-secondary { @apply bg-slate-900 text-white shadow-md shadow-slate-900/20 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white; }
-  .btn-danger { @apply bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900 dark:hover:bg-rose-950/70; }
+  .btn:not(:disabled):active { @apply translate-y-0 scale-[0.98]; }
+
+  .btn-primary {
+    @apply bg-brand-600 text-white shadow-md shadow-brand-600/20 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/30
+           dark:bg-brand-500 dark:hover:bg-brand-400 dark:text-white dark:shadow-brand-500/20;
+  }
+  .btn-secondary {
+    @apply bg-slate-900 text-white shadow-sm hover:bg-slate-800
+           dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 dark:border dark:border-slate-700;
+  }
+  .btn-danger {
+    @apply bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100
+           dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900 dark:hover:bg-rose-900/60;
+  }
   .btn-ghost {
-    @apply bg-transparent text-slate-700 border border-slate-300 hover:border-slate-400 hover:bg-slate-100
-           dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:border-slate-600;
+    @apply bg-transparent text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-100
+           dark:text-slate-200 dark:border-slate-800 dark:hover:bg-slate-800/80 dark:hover:border-slate-700;
   }
 
-  /* Inputs */
+  /* Form Inputs */
   .input-row { @apply flex flex-col gap-1.5 mb-4; }
   .input-wrapper { @apply relative; }
   .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-slate-900
-           transition-colors focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 text-sm
+           transition-all duration-200 focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/15
            dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500;
   }
-  .input-label { @apply font-semibold text-slate-700 text-sm dark:text-slate-300; }
+  .input-label { @apply font-semibold text-slate-700 text-xs uppercase tracking-wider dark:text-slate-300; }
   .with-icon { @apply pl-10; }
-  .input-icon { @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400; }
+  .input-icon { @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none; }
   .with-icon-right { @apply pr-11; }
   .input-icon-toggle {
     @apply absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 inline-flex items-center justify-center rounded-lg
@@ -193,174 +178,147 @@
            dark:hover:text-slate-200 dark:hover:bg-slate-800;
   }
   .input-error { @apply border-rose-400 dark:border-rose-500; }
-  .error-text { @apply text-rose-600 text-sm dark:text-rose-400; }
-  .helper-text { @apply text-slate-500 text-sm dark:text-slate-400; }
+  .error-text { @apply text-rose-600 text-xs font-medium dark:text-rose-400; }
+  .helper-text { @apply text-slate-500 text-xs dark:text-slate-400; }
 
   /* Alerts */
-  .alert { @apply rounded-xl px-4 py-3 border text-sm font-medium; }
-  .alert-info { @apply bg-brand-50 border-brand-100 text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/30 dark:text-brand-200; }
-  .alert-success { @apply bg-emerald-50 border-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-300; }
-  .alert-error { @apply bg-rose-50 border-rose-100 text-rose-700 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-300; }
-  .alert-warn { @apply bg-orange-50 border-orange-100 text-orange-800 dark:bg-orange-500/10 dark:border-orange-500/30 dark:text-orange-200; }
+  .alert { @apply rounded-xl px-4 py-3 border text-sm font-medium flex items-start gap-3; }
+  .alert-info { @apply bg-brand-50 border-brand-200 text-brand-800 dark:bg-brand-950/40 dark:border-brand-800/60 dark:text-brand-200; }
+  .alert-success { @apply bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800/60 dark:text-emerald-200; }
+  .alert-error { @apply bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800/60 dark:text-rose-200; }
+  .alert-warn { @apply bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/40 dark:border-amber-800/60 dark:text-amber-200; }
 
-  /* Badges */
-  .badge { @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold tracking-wide; }
+  /* Category & Status Badges */
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide; }
   .badge-neutral { @apply bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300; }
-  .badge-success { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300; }
-  .badge-warn { @apply bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300; }
-  .badge-info { @apply bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200; }
-  /* Premium is a tier, not a status, so it gets the solid gold rather than a
-     fourth pastel. Violet went because one accent is the rule. */
-  .badge-premium { @apply bg-brand-400 text-slate-950; }
-  .badge-danger { @apply bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300; }
+  .badge-success { @apply bg-emerald-50 text-emerald-700 border border-emerald-200/60 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20; }
+  .badge-warn { @apply bg-amber-50 text-amber-700 border border-amber-200/60 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20; }
+  .badge-info { @apply bg-brand-50 text-brand-700 border border-brand-200/60 dark:bg-brand-500/10 dark:text-brand-300 dark:border-brand-500/20; }
+  .badge-premium { @apply bg-amber-500 text-slate-950 font-bold shadow-sm; }
+  .badge-danger { @apply bg-rose-50 text-rose-700 border border-rose-200/60 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/20; }
 
-  /* Loading */
+  /* Interactive Category Chips */
+  .category-chip {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer
+           border border-slate-200/80 bg-white text-slate-700 shadow-sm
+           hover:border-brand-400 hover:text-brand-600 hover:-translate-y-0.5
+           dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:border-brand-500/60 dark:hover:text-white;
+  }
+  .category-chip.is-active {
+    @apply bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-600/20 hover:text-white
+           dark:bg-brand-500 dark:border-brand-500 dark:text-white;
+  }
+
+  /* Loading Spinner */
   .loading { @apply inline-flex items-center gap-2 text-slate-500 dark:text-slate-400; }
   .spinner {
-    @apply w-4 h-4 rounded-full border-2 border-slate-200 dark:border-slate-700;
+    @apply w-5 h-5 rounded-full border-2 border-slate-200 dark:border-slate-700;
     border-top-color: var(--color-brand-600);
-    animation: spin 0.8s linear infinite;
+    animation: spin 0.75s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Empty state */
+  /* Empty State */
   .empty-state {
-    @apply text-center py-10 px-6 border border-dashed border-slate-200 rounded-2xl bg-white text-slate-500
-           dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400;
+    @apply text-center py-14 px-6 border border-dashed border-slate-200 rounded-3xl bg-white/60 text-slate-500
+           dark:bg-slate-900/40 dark:border-slate-800 dark:text-slate-400;
   }
-  .empty-icon { @apply text-3xl mb-2; }
 
   /* Page / section headers */
-  .page-header { @apply flex justify-between items-center gap-4 flex-wrap; }
+  .page-header { @apply flex justify-between items-center gap-4 flex-wrap mb-6; }
   .header-actions { @apply flex gap-2; }
 
-  /* Navbar */
+  /* Modern Sticky Navbar */
   .navbar {
-    @apply sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200/70
-           dark:bg-slate-950/85 dark:border-slate-800;
+    @apply sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80
+           dark:bg-[#070c18]/85 dark:border-slate-800/80 transition-colors;
   }
-  .navbar-inner { @apply w-full max-w-6xl mx-auto flex items-center justify-between gap-3 px-5 sm:px-6 py-6; }
-  .nav-links { @apply hidden md:flex items-center gap-8 text-[15px] font-bold text-slate-700 dark:text-slate-200; }
-  .nav-links a { @apply transition-colors hover:text-brand-600 dark:hover:text-brand-300; }
-  .nav-links a.is-active { @apply text-brand-600 dark:text-brand-300; }
-  .nav-brand { @apply flex items-center gap-2 font-extrabold text-slate-900 text-xl dark:text-white; }
-  .nav-user { @apply inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-sm dark:bg-slate-800; }
+  .navbar-inner { @apply w-full max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3.5; }
+  .nav-links { @apply hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300; }
+  .nav-links a { @apply transition-colors hover:text-brand-600 dark:hover:text-brand-400; }
+  .nav-links a.is-active { @apply text-brand-600 dark:text-brand-400 font-bold; }
+  .nav-brand { @apply flex items-center gap-3 font-extrabold text-slate-900 text-lg dark:text-white shrink-0; }
 
   /* Avatar */
   .avatar {
     @apply inline-flex items-center justify-center rounded-full overflow-hidden shrink-0
            bg-brand-100 text-brand-700 font-bold select-none
-           dark:bg-brand-500/20 dark:text-brand-200;
+           dark:bg-brand-500/20 dark:text-brand-300;
   }
-  .avatar-sm { @apply w-9 h-9 text-xs; }
-  .avatar-md { @apply w-12 h-12 text-sm; }
-  .avatar-lg { @apply w-24 h-24 text-xl; }
+  .avatar-sm { @apply w-8 h-8 text-xs; }
+  .avatar-md { @apply w-11 h-11 text-sm; }
+  .avatar-lg { @apply w-20 h-20 text-lg; }
   .avatar img { @apply w-full h-full object-cover; }
   .avatar-button {
-    @apply inline-flex items-center gap-2 rounded-full p-1 pr-3 border border-transparent transition-colors
-           hover:bg-slate-100 dark:hover:bg-slate-800;
+    @apply inline-flex items-center gap-2 rounded-full p-1 pr-3 border border-slate-200/70 transition-all
+           hover:bg-slate-100 hover:border-slate-300
+           dark:border-slate-800 dark:hover:bg-slate-800/70;
   }
   .avatar-button.is-open { @apply bg-slate-100 dark:bg-slate-800; }
 
-  /* Dropdown menu */
+  /* Dropdown Menu */
   .menu {
-    @apply absolute right-0 top-full mt-2 w-60 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-30
+    @apply absolute right-0 top-full mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50
            dark:bg-slate-900 dark:border-slate-800;
+    animation: menuFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes menuFadeIn {
+    from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
   .menu a, .menu button {
-    @apply w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700
+    @apply w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-700
            hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-800;
   }
-  .menu-divider { @apply my-1.5 h-px bg-slate-200 dark:bg-slate-800; }
+  .menu-divider { @apply my-1.5 h-px bg-slate-200/80 dark:bg-slate-800; }
 
-  /* Theme toggle */
+  /* Theme Toggle */
   .theme-toggle {
-    @apply inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 text-slate-600
+    @apply inline-flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 text-slate-600
            transition-colors hover:bg-slate-100 hover:text-slate-900
-           dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white;
+           dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white;
   }
 
-  /* Admin / dashboard shell. Stacks below sm so the sidebar and content are not
-     fighting over a phone-width viewport; min-w-0 lets the content column
-     actually shrink instead of forcing the page to scroll sideways. */
-  .sidebar {
-    @apply w-full sm:w-56 bg-white border-b sm:border-b-0 sm:border-r border-slate-200 sm:min-h-screen p-4 sm:sticky sm:top-0
-           dark:bg-slate-900 dark:border-slate-800;
-  }
-  .sidebar a { @apply block px-3 py-2.5 rounded-lg text-slate-700 font-medium hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800; }
-  .admin-shell { @apply flex flex-col sm:flex-row min-h-screen; }
-  .admin-content { @apply flex-1 min-w-0 p-4 sm:p-6 max-w-5xl; }
-  .topbar { @apply flex items-center justify-between gap-4 mb-6 flex-wrap; }
-
-  /* Dashboard: left rail + content, stacking on small screens. */
+  /* Dashboard Shell */
   .dash-shell { @apply flex flex-col md:flex-row gap-6 items-start w-full min-w-0; }
   .dash-rail {
-    @apply w-full md:w-56 md:shrink-0 md:sticky md:top-20 rounded-2xl border border-slate-200 bg-white p-3
-           dark:bg-slate-900 dark:border-slate-800;
+    @apply w-full md:w-60 md:shrink-0 md:sticky md:top-20 rounded-2xl border border-slate-200 bg-white p-3
+           dark:bg-slate-900/90 dark:border-slate-800 shadow-sm;
   }
   .dash-rail-user {
-    @apply flex items-center gap-3 p-2 mb-2 border-b border-slate-200 pb-3 min-w-0
+    @apply flex items-center gap-3 p-2 mb-2 border-b border-slate-100 pb-3 min-w-0
            dark:border-slate-800;
   }
   .dash-rail-nav { @apply flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-visible; }
   .dash-link {
-    @apply relative inline-flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap
-           text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900
-           dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white;
+    @apply relative inline-flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap
+           text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900
+           dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white;
   }
   .dash-link.is-active {
-    @apply bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200;
+    @apply bg-brand-50 text-brand-700 font-bold dark:bg-brand-500/15 dark:text-brand-300;
   }
-  .dash-dot { @apply w-2 h-2 rounded-full bg-brand-400 ml-auto shrink-0; }
+  .dash-dot { @apply w-2 h-2 rounded-full bg-brand-500 ml-auto shrink-0; }
   .dash-main { @apply flex-1 min-w-0 w-full; }
 
-  /* Gallery: four across on desktop, uniform tiles rather than full-size
-     images. Two rows of four fit without scrolling. */
-  .gallery-grid { @apply grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4; }
-  .gallery-tile {
-    @apply relative block overflow-hidden rounded-xl border border-slate-200 bg-slate-100 aspect-square
-           transition-transform hover:-translate-y-0.5 hover:shadow-lg
-           dark:border-slate-800 dark:bg-slate-800;
-  }
-  .gallery-tile img, .gallery-tile video { @apply w-full h-full object-cover; }
-  .gallery-caption {
-    @apply absolute inset-x-0 bottom-0 px-2.5 py-2 text-xs font-medium text-white truncate;
-    background: linear-gradient(to top, rgb(0 0 0 / 0.75), transparent);
-  }
-  .gallery-download-btn {
-    @apply absolute top-2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full
-           bg-slate-900/70 text-white backdrop-blur-sm transition-opacity hover:bg-slate-900/90
-           disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white;
-  }
-
-  /* Stat cards */
-  .stat-grid { @apply grid gap-4 grid-cols-1 sm:grid-cols-3; }
-  .stat-card { @apply bg-white border border-slate-200 rounded-2xl p-5 shadow-sm dark:bg-slate-900 dark:border-slate-800; }
-  .stat-value { @apply text-2xl font-extrabold text-slate-900 dark:text-white; }
-  .stat-label { @apply text-slate-500 text-sm dark:text-slate-400; }
-
-  /* ---- Admin console shell -------------------------------------------
-     A standalone application frame, deliberately unrelated to the public
-     site's navbar/footer: fixed logo, a full-height sidebar, and a topbar
-     carrying only the account menu and theme toggle. */
-  .console-shell { @apply min-h-screen flex bg-slate-100 dark:bg-slate-950; }
-
+  /* Console Shell (Organizer & Admin) */
+  .console-shell { @apply min-h-screen flex bg-slate-100/70 dark:bg-[#070c18]; }
   .console-sidebar {
-    @apply fixed inset-y-0 left-0 z-30 w-64 flex flex-col bg-slate-900 text-slate-200
+    @apply fixed inset-y-0 left-0 z-30 w-64 flex flex-col bg-slate-900 text-slate-200 border-r border-slate-800
            transition-transform duration-200 -translate-x-full lg:translate-x-0;
   }
   .console-sidebar.is-open { @apply translate-x-0; }
   .console-logo {
-    @apply flex items-center gap-2.5 px-5 h-16 shrink-0 font-extrabold text-white text-lg border-b border-white/10;
+    @apply flex items-center gap-2.5 px-5 h-16 shrink-0 font-extrabold text-white text-lg border-b border-slate-800;
   }
   .console-nav { @apply flex-1 overflow-y-auto p-3 flex flex-col gap-1; }
   .console-nav-group { @apply px-3 pt-4 pb-1 text-xs font-bold uppercase tracking-wider text-slate-500 first:pt-1; }
   .console-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-300
-           transition-colors hover:bg-white/5 hover:text-white;
+    @apply flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300
+           transition-all hover:bg-slate-800 hover:text-white;
   }
-  .console-link.is-active { @apply bg-brand-600 text-white shadow-lg shadow-brand-900/40; }
-  .console-sidebar-footer { @apply p-3 border-t border-white/10; }
+  .console-link.is-active { @apply bg-brand-600 text-white shadow-md shadow-brand-600/30; }
+  .console-sidebar-footer { @apply p-3 border-t border-slate-800; }
 
   .console-main { @apply flex-1 min-w-0 flex flex-col lg:pl-64; }
   .console-topbar {
@@ -368,205 +326,24 @@
            bg-white/90 backdrop-blur border-b border-slate-200
            dark:bg-slate-900/90 dark:border-slate-800;
   }
-  .console-body { @apply flex-1 p-4 sm:p-6 max-w-[1400px] w-full mx-auto; }
+  .console-body { @apply flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto; }
+  .console-overlay { @apply fixed inset-0 z-20 bg-slate-950/50 backdrop-blur-sm lg:hidden; }
 
-  .console-overlay { @apply fixed inset-0 z-20 bg-slate-950/50 lg:hidden; }
-
-  /* Cover thumbnails on event cards. self-start is load-bearing: the parent
-     row has no align-items set, which defaults to stretch for a flex child,
-     and an explicit stretched cross-size wins over aspect-ratio per spec -
-     without this the thumb was stretching to match its sibling's full
-     height (measured 160x349) instead of staying square. */
-  .cover-thumb {
-    @apply w-full sm:w-56 aspect-square shrink-0 self-start rounded-xl overflow-hidden
-           bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400
-           dark:bg-slate-800 dark:border-slate-700;
+  /* Private Event Gallery Grid */
+  .gallery-grid { @apply grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4; }
+  .gallery-tile {
+    @apply relative block overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 aspect-square
+           transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10
+           dark:border-slate-800 dark:bg-slate-800/60;
   }
-  .cover-thumb img { @apply w-full h-full object-cover; }
-
-  /* Modal */
-  /* Always top-aligned, never centered: a centered flex item taller than the
-     viewport gets its top clipped with no way to scroll back up to it, since
-     the overflow container's scrollable area is computed from the centered
-     (partly off-screen) box rather than from the box's actual top edge. */
-  .modal-overlay {
-    @apply fixed inset-0 z-50 flex items-start justify-center p-4 py-8 overflow-y-auto
-           bg-slate-950/60 backdrop-blur-sm;
+  .gallery-tile img, .gallery-tile video { @apply w-full h-full object-cover; }
+  .gallery-caption {
+    @apply absolute inset-x-0 bottom-0 px-3 py-2 text-xs font-semibold text-white truncate;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   }
-  .modal-panel {
-    @apply w-full max-w-2xl rounded-2xl bg-white shadow-2xl flex flex-col
-           dark:bg-slate-900 border border-slate-200 dark:border-slate-800
-           max-h-[calc(100vh-4rem)] overflow-hidden;
+  .gallery-download-btn {
+    @apply absolute top-2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full
+           bg-slate-900/80 text-white backdrop-blur-sm transition-all hover:bg-brand-600 hover:scale-105
+           disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white;
   }
-  .modal-header {
-    @apply flex items-center justify-between gap-3 px-6 py-5 shrink-0
-           border-b border-slate-100 dark:border-slate-800;
-  }
-  .modal-body {
-    @apply px-6 py-5 overflow-y-auto;
-  }
-
-  /* Progress meter (profile completeness) */
-  .progress-track { @apply w-full h-2 rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800; }
-  .progress-fill { @apply h-full rounded-full bg-brand-600 transition-[width] duration-500 dark:bg-brand-400; }
-
-  /* QR scanner.
-     html5-qrcode sizes its <video> once, as a fixed pixel width taken from
-     the container at start time, with no height and no revisit on resize.
-     These rules take that back: the preview is fluid, capped so it does not
-     dominate a desktop card, and full-bleed on a phone.
-
-     Height stays `auto` deliberately. The decoder maps its scan region with
-     videoWidth / clientWidth, so a cropped `object-fit: cover` box would put
-     that mapping out by exactly the cropped margin and QR codes near the
-     edges would stop resolving. Natural height keeps the mapping honest. */
-  .qr-scanner-wrap { @apply w-full flex flex-col items-center; }
-  .qr-scanner {
-    @apply w-full max-w-sm rounded-xl overflow-hidden bg-slate-900 relative mx-auto;
-  }
-  .qr-scanner:not(.is-error) { @apply min-h-48; }
-  .qr-scanner video {
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    /* A phone's rear camera is portrait; without this the preview can push
-       the check-in button off-screen on a small handset. */
-    max-height: 60vh;
-    object-fit: contain;
-  }
-  /* The library's own overlay canvas must track the video, not float loose. */
-  .qr-scanner canvas { @apply max-w-full; }
-  #qr-shaded-region { @apply pointer-events-none; }
-
-  /* Admin event card.
-     Four bands, each answering one question, separated by hairlines rather
-     than by guesswork: what is this, how is it doing, who is on it, what can
-     I do. The old card stacked all of that into one column of chips and
-     boxes, which is why nothing read as primary. */
-  .event-admin-card { @apply !p-0 overflow-hidden; }
-  .event-admin-head { @apply flex items-start gap-4 p-4; }
-  .event-admin-row {
-    @apply flex items-center gap-3 px-4 py-3 border-t border-slate-100 min-h-14
-           dark:border-slate-800;
-  }
-  .event-row-label {
-    @apply text-[11px] uppercase font-bold tracking-wide text-slate-400 shrink-0 w-28
-           dark:text-slate-500;
-  }
-  .event-admin-actions {
-    @apply flex items-center gap-2 flex-wrap px-4 py-3 border-t border-slate-100
-           bg-slate-50/60 dark:border-slate-800 dark:bg-slate-900/40;
-  }
-
-  /* Metrics read left to right as the funnel: requested -> approved ->
-     checked in -> media. Each is a link to where you act on that number. */
-  .event-metrics {
-    @apply grid grid-cols-2 sm:grid-cols-4 border-t border-slate-100 dark:border-slate-800;
-  }
-  .event-metric {
-    @apply flex flex-col gap-0.5 px-4 py-3 border-r border-slate-100 transition-colors
-           last:border-r-0 dark:border-slate-800;
-  }
-  a.event-metric { @apply hover:bg-slate-50 dark:hover:bg-slate-800/50; }
-  .event-metric-value { @apply text-xl font-extrabold leading-none text-slate-900 dark:text-white; }
-  .event-metric-label {
-    @apply text-[11px] uppercase font-bold tracking-wide text-slate-400 dark:text-slate-500;
-  }
-  @media (max-width: 640px) {
-    /* Two columns: the first of each row keeps its divider, the second drops it. */
-    .event-metric:nth-child(2n) { @apply border-r-0; }
-    .event-metric:nth-child(n+3) { @apply border-t border-slate-100 dark:border-slate-800; }
-  }
-
-  /* The one number worth interrupting for. */
-  .attention-pill {
-    @apply inline-flex items-baseline gap-1.5 rounded-full px-3 py-1.5 no-underline
-           bg-orange-50 text-orange-800 border border-orange-200 transition-colors
-           hover:bg-orange-100 dark:bg-orange-500/15 dark:text-orange-200 dark:border-orange-500/30
-           dark:hover:bg-orange-500/25;
-  }
-  .attention-pill strong { @apply text-base font-extrabold; }
-  .attention-pill span { @apply text-xs font-semibold; }
-
-  /* Inline text action, for a secondary control inside a row. */
-  .link-button {
-    @apply text-sm font-semibold text-brand-600 hover:underline disabled:opacity-40
-           disabled:no-underline disabled:cursor-not-allowed dark:text-brand-300;
-  }
-
-  /* Numbered stepper: a dot per stage, joined by the line between them.
-     Used by signup and by the guest's Registered -> Checked in -> Gallery. */
-  .stepper { @apply flex items-center w-full; }
-  .step { @apply flex items-center gap-2.5 min-w-0 shrink-0; }
-  /* The connector grows to fill whatever space is left between two dots. */
-  .step-line { @apply flex-1 h-px min-w-6 bg-slate-200 mx-2.5 dark:bg-slate-700; }
-  .step-line.is-done { @apply bg-emerald-500; }
-  .step-dot {
-    @apply w-8 h-8 shrink-0 rounded-full inline-flex items-center justify-center
-           text-sm font-bold bg-slate-100 text-slate-400 transition-colors
-           dark:bg-slate-800 dark:text-slate-500;
-  }
-  .step.is-done .step-dot { @apply bg-emerald-500 text-white; }
-  .step.is-current .step-dot {
-    @apply bg-brand-600 text-white ring-4 ring-brand-500/20 dark:bg-brand-500;
-  }
-  .step-label { @apply text-sm font-semibold text-slate-400 truncate dark:text-slate-500; }
-  .step.is-done .step-label { @apply text-slate-600 dark:text-slate-300; }
-  .step.is-current .step-label { @apply text-slate-900 dark:text-white; }
-  /* On narrow screens only the active stage keeps its label, so three dots
-     and their text never wrap into each other. */
-  @media (max-width: 480px) {
-    .step:not(.is-current) .step-label { @apply hidden; }
-  }
-
-  /* Select and textarea, matched to .input so a form reads as one control set */
-  .select {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-slate-900 appearance-none
-           bg-no-repeat transition-colors focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15
-           dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-position: right 0.9rem center;
-    padding-right: 2.5rem;
-  }
-  .select:invalid, .select option[value=""] { @apply text-slate-400 dark:text-slate-500; }
-  .textarea {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-slate-900 resize-y min-h-24
-           transition-colors focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15
-           dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500;
-  }
-
-  /* Two-up form rows that stack on small screens */
-  .field-grid { @apply grid grid-cols-1 sm:grid-cols-2 gap-x-4; }
-
-  /* Toasts: bottom-right, above everything, stacked newest last */
-  .toast-viewport {
-    @apply fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none
-           max-w-[calc(100vw-2rem)] w-80;
-  }
-  .toast {
-    @apply pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-sm font-medium
-           shadow-lg shadow-slate-900/10 dark:shadow-black/40;
-    animation: toast-in 200ms ease-out;
-  }
-  .toast-success {
-    @apply bg-emerald-600 border-emerald-500 text-white
-           dark:bg-emerald-600 dark:border-emerald-500 dark:text-white;
-  }
-  .toast-error { @apply bg-rose-600 border-rose-500 text-white; }
-  .toast-info { @apply bg-slate-900 border-slate-700 text-white dark:bg-slate-800; }
-  .toast-icon { @apply shrink-0 mt-0.5; }
-  .toast-message { @apply flex-1 leading-snug; }
-  .toast-close {
-    @apply shrink-0 -mr-1 -mt-1 w-6 h-6 inline-flex items-center justify-center rounded-md
-           text-lg leading-none opacity-70 hover:opacity-100 transition-opacity;
-  }
-}
-
-@keyframes toast-in {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .toast { animation: none; }
 }

@@ -148,7 +148,7 @@ export const createOrganizerEvent = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const body = req.body || {};
-    const { title, description = "", location = "", startDateTime, endDateTime, visibility = "public", status = "draft", isPremium = false, currency = "USD", plans = [], coverImageUrl = "" } = body;
+    const { title, description = "", location = "", category = "Technology", startDateTime, endDateTime, visibility = "public", status = "draft", isPremium = false, currency = "USD", plans = [], coverImageUrl = "" } = body;
 
     if (!title || !startDateTime || !endDateTime) {
       return res.status(400).json(formatError("VALIDATION_ERROR", "title, startDateTime, and endDateTime are required"));
@@ -182,6 +182,7 @@ export const createOrganizerEvent = async (req, res, next) => {
       title: title.trim(),
       description: description.trim(),
       location: location.trim(),
+      category: category.trim(),
       startDateTime: start,
       endDateTime: end,
       visibility,
@@ -217,7 +218,7 @@ export const updateOrganizerEvent = async (req, res, next) => {
     if (error) return res.status(error.error?.code === "NOT_FOUND" ? 404 : 403).json(error);
 
     const body = req.body || {};
-    const updatable = ["title", "description", "location", "startDateTime", "endDateTime", "visibility", "status", "coverImageUrl", "currency", "plans"];
+    const updatable = ["title", "description", "location", "category", "startDateTime", "endDateTime", "visibility", "status", "coverImageUrl", "currency", "plans"];
 
     for (const key of updatable) {
       if (body[key] !== undefined) {

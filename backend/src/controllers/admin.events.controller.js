@@ -31,6 +31,7 @@ const validateEventPayload = (body, isUpdate = false) => {
     "title",
     "description",
     "location",
+    "category",
     "startDateTime",
     "endDateTime",
     "visibility",

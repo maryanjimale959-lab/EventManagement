@@ -39,61 +39,80 @@ const dayOffset = (days, hourUtc) => {
 
 const demoEvents = [
   {
-    title: "Mogadishu Tech Summit 2026",
+    title: "Horn of Africa AI & Machine Learning Summit 2026",
     description:
-      "Somalia's premier technology conference bringing together founders, investors, developers, and telecom leaders across the Horn of Africa. Keynotes on AI, fintech, and digital infrastructure.",
-    location: "Elite Hotel & Halane Conference Centre, Mogadishu",
+      "A flagship technology conference convening AI researchers, machine learning practitioners, and technology leaders. Deep dives into multilingual LLM training for Somali dialects, autonomous systems, neural computing, and ethical AI deployment in emerging markets.",
+    location: "National Innovation & AI Hub, Mogadishu · In-Person & Streaming",
+    category: "Artificial Intelligence",
     coverImageUrl: "/images/cover-tech-summit.jpg",
     isPremium: true,
     currency: "USD",
     plans: [
-      { name: "Standard Delegate", price: 25, description: "Full conference track access, networking sessions & lunch." },
-      { name: "VIP & Investor Lounge", price: 75, description: "VIP seating, founders mixer & private gala dinner." },
+      { name: "Academic / Student Pass", price: 15, description: "Full technical sessions, research tracks & lab access." },
+      { name: "Professional & Researcher Pass", price: 60, description: "VIP research symposium, executive networking & AI workshop kit." },
     ],
-    startDateTime: dayOffset(7, 9),
-    endDateTime: dayOffset(7, 18),
+    startDateTime: dayOffset(5, 9),
+    endDateTime: dayOffset(5, 18),
   },
   {
-    title: "Hargeisa International Book Fair (HIBF)",
+    title: "Full-Stack Cloud & Scalable Systems Hackathon",
     description:
-      "The annual celebration of Somali literature, poetry, folklore, and global contemporary thought. Featuring renowned Somali authors, poets, and international guests.",
-    location: "Mansoor Hotel Cultural Hall, Hargeisa",
-    coverImageUrl: "/images/cover-album-party.jpg",
-    startDateTime: dayOffset(14, 10),
-    endDateTime: dayOffset(14, 20),
-  },
-  {
-    title: "Arooska Qarniga: Somali Royal Wedding & Dhaanto Gala",
-    description:
-      "A grand traditional Somali wedding reception and celebration with live traditional Oud orchestra, energetic Dhaanto dances, and a hosted banquet.",
-    location: "Jazeera Palace Hotel Grand Ballroom, Mogadishu",
-    coverImageUrl: "/images/cover-wedding.jpg",
-    startDateTime: dayOffset(21, 19),
-    endDateTime: dayOffset(21, 23),
-  },
-  {
-    title: "Somali Diaspora Business & Investment Forum",
-    description:
-      "Connecting diaspora entrepreneurs from London, Minneapolis, Toronto, and Nairobi with homeland commercial ventures, solar energy projects, and modern real estate.",
-    location: "Serena Hotel / Jazeera Beach Hall, Mogadishu",
+      "A fast-paced 48-hour collaborative engineering hackathon. Engineers, designers, and students team up to build resilient cloud architectures, fintech integrations, and digital public goods. Mentored by senior industry architects.",
+    location: "Puntland State University Computing Center, Garowe",
+    category: "Hackathons",
     coverImageUrl: "/images/cover-product-launch.jpg",
+    isPremium: false,
+    startDateTime: dayOffset(12, 10),
+    endDateTime: dayOffset(14, 18),
+  },
+  {
+    title: "Islamic Intellectual Thought & Contemporary Ethics Forum",
+    description:
+      "An esteemed scholarly gathering exploring Islamic philosophy, digital ethics, jurisprudence (Fiqh al-Mu'amalat) in modern commerce, and moral stewardship. Featuring keynote lectures by international academics and Islamic scholars.",
+    location: "Grand Cultural & Research Auditorium, Hargeisa",
+    category: "Islamic Studies",
+    coverImageUrl: "/images/cover-album-party.jpg",
+    isPremium: false,
+    startDateTime: dayOffset(18, 14),
+    endDateTime: dayOffset(18, 21),
+  },
+  {
+    title: "Somali Founders & Venture Capital Masterclass",
+    description:
+      "An intensive executive seminar designed for high-growth entrepreneurs, angel syndicates, and diaspora investors. Covering cross-border capital, term sheets, corporate governance, unit economics, and regional expansion.",
+    location: "Mogadishu Serena Executive Conference Center",
+    category: "Business",
+    coverImageUrl: "/images/cover-night-market.jpg",
     isPremium: true,
     currency: "USD",
     plans: [
-      { name: "General Admission", price: 30, description: "Access to trade expo and investment panels." },
-      { name: "Business Executive", price: 100, description: "B2B matchmaking session, VIP banquet & investment reports." },
+      { name: "Founder Ticket", price: 30, description: "Full access to investor panels & startup showcases." },
+      { name: "Investor & Executive Circle", price: 95, description: "Private dealmaking dinner, pitch books & VIP networking." },
     ],
-    startDateTime: dayOffset(30, 9),
-    endDateTime: dayOffset(30, 17),
+    startDateTime: dayOffset(25, 9),
+    endDateTime: dayOffset(25, 17),
   },
   {
-    title: "Garowe Youth & Leadership Innovation Expo",
+    title: "Applied Deep Learning with PyTorch & Modern DevOps Workshop",
     description:
-      "An inspiring gathering of Somali youth activists, tech builders, and creative minds sharing initiatives, grants, and mentorship.",
-    location: "Puntland State Hall, Garowe",
-    coverImageUrl: "/images/cover-night-market.jpg",
-    startDateTime: dayOffset(42, 14),
-    endDateTime: dayOffset(42, 21),
+      "A hands-on, code-first weekend workshop. Participants train custom neural networks, fine-tune open weights, build automated CI/CD container pipelines, and deploy production endpoints on Kubernetes clusters.",
+    location: "Advanced Tech Lab, Mogadishu University Computing Campus",
+    category: "Workshops",
+    coverImageUrl: "/images/cover-tech-summit.jpg",
+    isPremium: false,
+    startDateTime: dayOffset(32, 9),
+    endDateTime: dayOffset(33, 17),
+  },
+  {
+    title: "Pan-Somali Academic Fellowship & Youth Leadership Symposium",
+    description:
+      "Empowering students and recent graduates with academic research grants, international scholarship mentorship, scientific publishing workshops, and career advancement tracks in higher education.",
+    location: "Halane International Convention Center, Mogadishu",
+    category: "Education",
+    coverImageUrl: "/images/cover-wedding.jpg",
+    isPremium: false,
+    startDateTime: dayOffset(40, 9),
+    endDateTime: dayOffset(40, 18),
   },
 ];
 
@@ -113,6 +132,9 @@ const seedEvents = async (createdBy) => {
         existing.description = event.description;
         existing.location = event.location;
         existing.coverImageUrl = event.coverImageUrl;
+        existing.category = event.category || "Technology";
+        existing.isPremium = Boolean(event.isPremium);
+        if (event.plans) existing.plans = event.plans;
         await existing.save();
       }
       console.log(
