@@ -5,54 +5,53 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Warm paper neutrals (ivory -> ink). Replaces the cold blue-slate scale. */
-  --color-slate-50: #faf8f3;
-  --color-slate-100: #f3efe6;
-  --color-slate-200: #e6e0d3;
-  --color-slate-300: #d2cab8;
-  --color-slate-400: #9f9786;
-  --color-slate-500: #766f61;
-  --color-slate-600: #595347;
-  --color-slate-700: #403c33;
-  --color-slate-800: #2a2722;
-  --color-slate-900: #1b1915;
-  --color-slate-950: #12110e;
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #0a0f1e;
 
-  /* Primary brand: deep academic green */
-  --color-brand-50: #eff6f1;
-  --color-brand-100: #dbeade;
-  --color-brand-200: #b9d5c2;
-  --color-brand-300: #8dba9b;
-  --color-brand-400: #5f9a76;
-  --color-brand-500: #3d7d59;
-  --color-brand-600: #2c6446;
-  --color-brand-700: #234f39;
-  --color-brand-800: #1c3f2e;
-  --color-brand-900: #163225;
-  --color-brand-950: #0b1c14;
+  /* Primary brand: vivid indigo */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-brand-950: #1e1b4b;
 
-  /* Accent: a single warm ochre, used sparingly */
-  --color-accent-50: #fbf5e6;
-  --color-accent-100: #f5e8c4;
-  --color-accent-400: #d9a93b;
-  --color-accent-500: #c4912a;
-  --color-accent-600: #a77520;
+  /* Single warm highlight */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
 
-  /* Flatter, more architectural corners */
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.625rem;
-  --radius-2xl: 0.75rem;
-  --radius-3xl: 1rem;
+  /* Soft, generous corners */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
 }
 @layer base {
   html, body {
     @apply max-w-full;
   }
   body {
-    @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    @apply bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
     font-family: var(--font-sans);
     transition: background-color 0.25s ease, color 0.25s ease;
   }
@@ -63,9 +62,9 @@
   }
   .display {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
   }
   .eyebrow {
     @apply text-xs font-bold uppercase tracking-wider;
@@ -134,23 +133,23 @@
   .photo-surface img { @apply absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out; }
   .photo-scrim {
     @apply absolute inset-0;
-    background: linear-gradient(135deg, rgba(18, 17, 14, 0.94) 0%, rgba(18, 17, 14, 0.72) 48%, rgba(18, 17, 14, 0.3) 100%);
+    background: linear-gradient(135deg, rgba(10, 15, 30, 0.94) 0%, rgba(10, 15, 30, 0.72) 48%, rgba(10, 15, 30, 0.3) 100%);
   }
   .photo-scrim-b {
     @apply absolute inset-x-0 bottom-0 h-3/4;
-    background: linear-gradient(to top, rgba(18, 17, 14, 0.92) 0%, rgba(18, 17, 14, 0.5) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(10, 15, 30, 0.92) 0%, rgba(10, 15, 30, 0.5) 50%, transparent 100%);
   }
 
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold text-sm
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-semibold text-sm
            transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none cursor-pointer;
   }
-  .btn:not(:disabled):hover { @apply -translate-y-px; }
+  .btn:not(:disabled):hover { @apply -translate-y-0.5; }
   .btn:not(:disabled):active { @apply translate-y-0 scale-[0.98]; }
 
   .btn-primary {
-    @apply bg-brand-700 text-white hover:bg-brand-800
+    @apply bg-brand-600 text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700 hover:shadow-brand-600/35
            dark:bg-brand-500 dark:hover:bg-brand-400 dark:text-white dark:shadow-brand-500/20;
   }
   .btn-secondary {
@@ -206,12 +205,12 @@
   /* Interactive Category Chips */
   .category-chip {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer
-           border border-slate-300 bg-transparent text-slate-700
+           border border-slate-200 bg-white text-slate-700
            hover:border-brand-500 hover:text-brand-700
            dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:border-brand-500/60 dark:hover:text-white;
   }
   .category-chip.is-active {
-    @apply bg-brand-700 text-white border-brand-700 hover:text-white
+    @apply bg-brand-600 text-white border-brand-600 hover:text-white
            dark:bg-brand-500 dark:border-brand-500 dark:text-white;
   }
 
@@ -236,7 +235,7 @@
 
   /* Modern Sticky Navbar */
   .navbar {
-    @apply sticky top-0 z-40 bg-slate-50/95 backdrop-blur-md border-b border-slate-200
+    @apply sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/70
            dark:bg-slate-950/85 dark:border-slate-800/80 transition-colors;
   }
   .navbar-inner { @apply w-full max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3.5; }
@@ -360,4 +359,5 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 

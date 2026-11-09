@@ -120,7 +120,7 @@ export default function EventsPage() {
   return (
     <PublicLayout>
       {/* Header section */}
-      <section className="border-b border-slate-200 dark:border-slate-800 py-12 sm:py-16">
+      <section className="bg-gradient-to-b from-brand-50 to-white py-12 sm:py-16 dark:from-slate-900 dark:to-slate-950">
 
         <div className="shell-wrap">
           <div className="max-w-2xl">
@@ -153,7 +153,7 @@ export default function EventsPage() {
                 placeholder="Search by topic, speaker, university, or city..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-white"
+                className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-300 rounded-full shadow-lg shadow-brand-900/5 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-white"
               />
               {search && (
                 <button
@@ -222,7 +222,7 @@ export default function EventsPage() {
                   key={r.id}
                   type="button"
                   onClick={() => setActiveRegion(r.id)}
-                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-full font-medium transition-colors ${
                     activeRegion === r.id
                       ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -245,9 +245,9 @@ export default function EventsPage() {
                   key={p.id}
                   type="button"
                   onClick={() => setPricingFilter(p.id)}
-                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-full font-medium transition-colors ${
                     pricingFilter === p.id
-                      ? "bg-brand-700 text-white font-bold"
+                      ? "bg-brand-600 text-white font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -318,4 +318,5 @@ export default function EventsPage() {
     </PublicLayout>
   );
 }
+
 

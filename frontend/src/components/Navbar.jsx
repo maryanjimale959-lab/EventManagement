@@ -24,7 +24,7 @@ function Logo() {
         />
         {!hasLogo && (
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-700 text-white flex items-center justify-center font-semibold text-sm">
+            <div className="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm">
               K
             </div>
             <div className="flex flex-col">
@@ -271,4 +271,5 @@ export default function Navbar() {
     </header>
   );
 }
+
 

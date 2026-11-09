@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const TRACKS = [
-  "Artificial Intelligence",
-  "Workshops",
-  "Hackathons",
-  "Islamic Studies",
-  "Business",
-  "Education",
-];
+const TRACKS = ["Artificial Intelligence", "Workshops", "Hackathons", "Islamic Studies", "Business", "Education"];
 
 export default function Hero() {
   const [term, setTerm] = useState("");
@@ -21,63 +14,69 @@ export default function Hero() {
   };
 
   return (
-    <section className="border-b border-slate-200 dark:border-slate-800">
-      <div className="shell-wrap py-14 sm:py-20 grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div>
-          <p className="eyebrow text-brand-700 dark:text-brand-300 m-0">
-            Learn · Build · Grow
-          </p>
-          <h1 className="display mt-4 mb-0 text-4xl sm:text-5xl lg:text-6xl text-slate-900 dark:text-slate-50">
-            Events that make you smarter.
-          </h1>
-          <p className="mt-5 text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
-            Find lectures, workshops, hackathons and conferences in education, technology, AI,
-            business and Islamic studies. Register in a minute and check in with a QR code.
-          </p>
+    <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
+      <div className="shell-wrap pt-14 sm:pt-20 pb-6 text-center">
+        <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm ring-1 ring-brand-100 dark:bg-slate-900 dark:text-brand-300 dark:ring-slate-800">
+          <span className="h-2 w-2 rounded-full bg-accent-500" />
+          Education · Technology · AI · Business · Islamic Studies
+        </span>
 
-          <form
-            onSubmit={submit}
-            className="mt-8 flex max-w-xl items-center gap-2 rounded-xl border border-slate-300 bg-white p-1.5 focus-within:border-brand-600 focus-within:ring-4 focus-within:ring-brand-600/10 dark:bg-slate-900 dark:border-slate-700"
-          >
-            <input
-              type="text"
-              value={term}
-              onChange={(e) => setTerm(e.target.value)}
-              placeholder="Search a topic, speaker or city"
-              aria-label="Search events"
-              className="flex-1 min-w-0 bg-transparent px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none dark:text-slate-100"
-            />
-            <button type="submit" className="btn btn-primary shrink-0">
-              Search
-            </button>
-          </form>
+        <h1 className="display mx-auto mt-6 mb-0 max-w-4xl text-5xl sm:text-6xl lg:text-7xl text-slate-900 dark:text-white">
+          Learn something new at your next{" "}
+          <span className="text-brand-600 dark:text-brand-400">event.</span>
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          Discover workshops, lectures, hackathons and conferences. Register in a minute, check in
+          with a QR code, and keep the materials afterwards.
+        </p>
 
-          <div className="mt-5 flex flex-wrap gap-2">
-            {TRACKS.map((t) => (
-              <Link
-                key={t}
-                to={`/events?category=${encodeURIComponent(t)}`}
-                className="category-chip !py-1.5"
-              >
-                {t}
-              </Link>
-            ))}
+        <form
+          onSubmit={submit}
+          className="mx-auto mt-9 flex max-w-2xl items-center gap-2 rounded-full bg-white p-2 shadow-xl shadow-brand-900/10 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-brand-500 dark:bg-slate-900 dark:ring-slate-800"
+        >
+          <svg className="ml-3 shrink-0 text-slate-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="Search events, topics or cities"
+            aria-label="Search events"
+            className="min-w-0 flex-1 bg-transparent px-1 py-3 text-base text-slate-900 placeholder-slate-400 focus:outline-none dark:text-white"
+          />
+          <button type="submit" className="btn btn-primary shrink-0 !px-7 !py-3">
+            Search
+          </button>
+        </form>
+
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          {TRACKS.map((t) => (
+            <Link key={t} to={`/events?category=${encodeURIComponent(t)}`} className="category-chip">
+              {t}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Image bento */}
+      <div className="shell-wrap pb-14 sm:pb-20 pt-10">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-6 sm:grid-rows-2 sm:h-[460px]">
+          <div className="col-span-2 sm:col-span-3 sm:row-span-2 overflow-hidden rounded-3xl h-64 sm:h-auto">
+            <img src="/images/edu-hero.jpg" alt="Students collaborating at a study space" className="h-full w-full object-cover" />
+          </div>
+          <div className="sm:col-span-3 overflow-hidden rounded-3xl h-40 sm:h-auto relative">
+            <img src="/images/edu-lecture.jpg" alt="Speaker at a lecture hall" className="h-full w-full object-cover" />
+          </div>
+          <div className="sm:col-span-2 overflow-hidden rounded-3xl h-40 sm:h-auto">
+            <img src="/images/edu-workshop.jpg" alt="Hands-on coding workshop" className="h-full w-full object-cover" />
+          </div>
+          <div className="sm:col-span-1 flex flex-col justify-center rounded-3xl bg-brand-600 p-5 text-white h-40 sm:h-auto">
+            <span className="display text-4xl">8</span>
+            <span className="mt-1 text-sm text-brand-100">learning tracks</span>
           </div>
         </div>
-
-        <figure className="m-0 relative">
-          <div className="overflow-hidden rounded-3xl border border-slate-200 aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] bg-slate-200 dark:border-slate-800 dark:bg-slate-800">
-            <img
-              src="/images/edu-hero.jpg"
-              alt="Students and a teacher working together at a university study space"
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <figcaption className="absolute -bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-64 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:bg-slate-900 dark:border-slate-700">
-            <span className="block font-semibold text-slate-900 dark:text-white">8 learning tracks</span>
-            <span className="text-slate-500 dark:text-slate-400">From academics to AI and ethics</span>
-          </figcaption>
-        </figure>
       </div>
     </section>
   );

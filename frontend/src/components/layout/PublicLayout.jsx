@@ -24,15 +24,15 @@ export default function PublicLayout({ children }) {
   const { isAuthed } = useAuth();
 
   return (
-    <div className="app-shell min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors">
+    <div className="app-shell min-h-screen flex flex-col bg-white dark:bg-slate-950 transition-colors">
       <Navbar />
       <main className="flex-1">{children}</main>
 
-      <footer className="bg-brand-950 text-brand-200/70 mt-20">
+      <footer className="bg-slate-950 text-slate-400 mt-20">
         <div className="shell-wrap py-14 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-900 flex items-center justify-center font-bold text-sm">
+              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm">
                 K
               </div>
               <span className="font-extrabold tracking-tight text-lg text-white">
@@ -114,4 +114,5 @@ export default function PublicLayout({ children }) {
     </div>
   );
 }
+
 
