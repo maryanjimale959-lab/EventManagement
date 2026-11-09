@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { AdminAuthProvider } from "./context/AdminAuthContext.jsx";
+import { OrganizerAuthProvider } from "./context/OrganizerAuthContext.jsx";
 import { PhotographerAuthProvider } from "./context/PhotographerAuthContext.jsx";
 import { ToastProvider } from "./context/ToastContext.jsx";
 import "./styles/global.css";
@@ -30,9 +31,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               can live side by side without sharing a session. */}
           <AuthProvider>
             <AdminAuthProvider>
-              <PhotographerAuthProvider>
-                <App />
-              </PhotographerAuthProvider>
+              <OrganizerAuthProvider>
+                <PhotographerAuthProvider>
+                  <App />
+                </PhotographerAuthProvider>
+              </OrganizerAuthProvider>
             </AdminAuthProvider>
           </AuthProvider>
         </ToastProvider>

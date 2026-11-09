@@ -69,10 +69,11 @@ eventSchema.pre(/^find/, function (next) {
 export const canRegisterFor = (event) =>
   !!event && event.published === true && event.status === "registration-open";
 
-/** Admins work every event; photographers only the ones they are assigned to. */
+/** Admins work every event; organizers work their own; photographers only the ones they are assigned to. */
 export const canManageEventMedia = (event, user) => {
   if (!event || !user) return false;
   if (user.role === "admin") return true;
+  if (user.role === "organizer" && String(event.createdBy) === String(user.userId || user._id)) return true;
   if (user.role !== "photographer") return false;
   return (event.photographers || []).some((id) => String(id) === String(user.userId || user._id));
 };

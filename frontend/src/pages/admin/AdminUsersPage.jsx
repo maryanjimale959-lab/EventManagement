@@ -14,6 +14,12 @@ import Avatar from "../../components/Avatar.jsx";
 
 const GROUPS = {
   attendees: { role: "attendee", label: "Attendees", singular: "attendee", verifiedNote: "" },
+  organizers: {
+    role: "organizer",
+    label: "Organizers (Abaabulayaasha)",
+    singular: "organizer",
+    verifiedNote: "Organizers publish Somali events, manage ticket tiers, and oversee door staff.",
+  },
   photographers: {
     role: "photographer",
     label: "Photographers",

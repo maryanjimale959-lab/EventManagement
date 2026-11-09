@@ -10,12 +10,12 @@ const router = Router();
 router.post("/:eventId/register", requireAuth, registerForEvent);
 router.get("/:eventId/registration/me", requireAuth, getMyRegistration);
 
-// Check-in (admin or photographer)
+// Check-in (admin, organizer, or photographer)
 router.post(
   "/:eventId/checkin",
   checkInLimiter,
   requireAuth,
-  requireRole("admin", "photographer"),
+  requireRole("admin", "organizer", "photographer"),
   checkIn
 );
 

@@ -6,19 +6,18 @@ import ThemeToggle from "./ThemeToggle.jsx";
 
 function Logo() {
   return (
-    <Link to="/" className="nav-brand">
-      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <circle cx="16" cy="16" r="15" stroke="url(#navLogoGrad)" strokeWidth="2" />
-        <path d="M16 6 L23 12 L23 20 L16 26 L9 20 L9 12 Z" stroke="url(#navLogoGrad)" strokeWidth="1.6" fill="none" />
-        <circle cx="16" cy="16" r="4.5" fill="url(#navLogoGrad)" />
-        <defs>
-          <linearGradient id="navLogoGrad" x1="0" y1="0" x2="32" y2="32">
-            <stop offset="0" stopColor="#6366f1" />
-            <stop offset="1" stopColor="#4338ca" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <span>EventMedia</span>
+    <Link to="/" className="nav-brand flex items-center gap-2.5">
+      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+        ★
+      </div>
+      <div className="flex flex-col">
+        <span className="font-extrabold tracking-tight text-lg text-slate-900 dark:text-white leading-none">
+          Kulan <span className="text-brand-500">Events</span>
+        </span>
+        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">
+          Hoyga Dhacdooyinka
+        </span>
+      </div>
     </Link>
   );
 }
@@ -87,10 +86,18 @@ export default function Navbar() {
 
         <nav className="nav-links">
           <NavLink to="/" end className={linkClass}>Home</NavLink>
+          <NavLink to="/events" className={linkClass}>Events (Dhacdooyinka)</NavLink>
           <NavLink to="/how-it-works" className={linkClass}>How it works</NavLink>
-          <NavLink to="/events" className={linkClass}>Events</NavLink>
+          <NavLink to="/contact" className={linkClass}>Contact</NavLink>
           {/* Dashboard only exists for signed-in users. */}
-          {isAuthed && <NavLink to="/dashboard" className={linkClass}>Dashboard</NavLink>}
+          {isAuthed && <NavLink to="/dashboard" className={linkClass}>My Tickets</NavLink>}
+          <Link
+            to="/organizer/dashboard"
+            className="text-xs uppercase tracking-wider font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 hover:bg-brand-500/20 px-2.5 py-1 rounded-md transition-colors inline-flex items-center gap-1"
+          >
+            <span>Abaabule</span>
+            <span className="text-[10px] opacity-75">Portal →</span>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -174,7 +181,13 @@ export default function Navbar() {
               How it works
             </NavLink>
             <NavLink to="/events" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
-              Events
+              Events (Dhacdooyinka)
+            </NavLink>
+            <NavLink to="/organizer/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
+              Organizer Portal (Abaabule)
+            </NavLink>
+            <NavLink to="/maamul/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
+              Admin Portal (Maamul)
             </NavLink>
             {isAuthed && (
               <NavLink to="/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>

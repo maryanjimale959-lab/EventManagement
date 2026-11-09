@@ -5,6 +5,8 @@ import {
   adminSignup,
   login,
   logout,
+  organizerLogin,
+  organizerSignup,
   photographerLogin,
   refresh,
   register,
@@ -31,6 +33,8 @@ router.post("/admin/login", authLimiter, adminLogin);
 router.get("/admin/exists", adminExists);
 router.post("/admin/signup", authLimiter, adminSignup);
 router.post("/photographer/login", authLimiter, photographerLogin);
+router.post("/organizer/login", authLimiter, organizerLogin);
+router.post("/organizer/signup", authLimiter, organizerSignup);
 router.post("/refresh", authLimiter, refresh);
 router.post("/logout", logout);
 

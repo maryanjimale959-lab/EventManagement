@@ -155,6 +155,46 @@ export const adminSignup = async (req, res, next) => {
 export const login = loginForRoles(["attendee"]);
 export const adminLogin = loginForRoles(["admin"]);
 export const photographerLogin = loginForRoles(["photographer"]);
+export const organizerLogin = loginForRoles(["organizer", "admin"]);
+
+export const organizerSignup = async (req, res, next) => {
+  try {
+    const { fullName, organization, password } = req.body || {};
+    const email = String(req.body?.email || "").toLowerCase().trim();
+    if (!fullName || !email || !password) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "fullName, email, and password are required"));
+    }
+    if (!isValidEmail(email)) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Invalid email format"));
+    }
+    if (!isValidPassword(password)) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Password must be at least 6 characters"));
+    }
+    if (await User.findOne({ email })) {
+      return res.status(409).json(formatError("EMAIL_EXISTS", "Email is already registered"));
+    }
+
+    const user = await User.create({
+      fullName,
+      email,
+      organization: String(organization || "").trim(),
+      passwordHash: await bcrypt.hash(password, 10),
+      role: "organizer",
+      isActive: true,
+      refreshTokens: [],
+    });
+
+    const accessToken = signAccessToken({ userId: user._id, role: user.role, email: user.email });
+    const refreshToken = signRefreshToken({ userId: user._id, role: user.role, email: user.email });
+    user.refreshTokens.push(refreshToken);
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    return res.status(201).json({ user: toUserDTO(user.toObject()), accessToken, refreshToken });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export const refresh = async (req, res, next) => {
   try {

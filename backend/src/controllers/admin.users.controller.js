@@ -9,12 +9,13 @@ import { logActivity } from "../utils/activityLog.js";
 
 const formatError = (code, message) => ({ error: { code, message } });
 
-const ROLES = ["attendee", "photographer", "admin"];
+const ROLES = ["attendee", "organizer", "photographer", "admin"];
 
 const LOGIN_PATHS = {
   // Each role signs in at its own door; the admin path is deliberately not
   // guessable from the public site.
   admin: "/maamul/login",
+  organizer: "/organizer/login",
   photographer: "/photographer/login",
   attendee: "/login",
 };
@@ -71,6 +72,7 @@ export const listUsers = async (req, res, next) => {
 
     const counts = {
       attendee: await User.countDocuments({ role: "attendee" }),
+      organizer: await User.countDocuments({ role: "organizer" }),
       photographer: await User.countDocuments({ role: "photographer" }),
       admin: await User.countDocuments({ role: "admin" }),
     };

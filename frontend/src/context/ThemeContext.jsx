@@ -3,19 +3,16 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 const STORAGE_KEY = "ems_theme";
 const ThemeContext = createContext(null);
 
-const systemPrefersDark = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
-
 const readStoredTheme = () => {
   if (typeof window === "undefined") return null;
   const stored = window.localStorage.getItem(STORAGE_KEY);
   return stored === "light" || stored === "dark" ? stored : null;
 };
 
-export const resolveInitialTheme = () =>
-  readStoredTheme() || (systemPrefersDark() ? "dark" : "light");
+// Dark is the product's default rather than a mirror of the OS, so the site
+// looks the same on every machine. A stored choice always wins, and index.html
+// applies the same rule before first paint so there is no flash.
+export const resolveInitialTheme = () => readStoredTheme() || "dark";
 
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState(resolveInitialTheme);
@@ -25,17 +22,6 @@ export function ThemeProvider({ children }) {
     root.classList.toggle("dark", theme === "dark");
     root.dataset.theme = theme;
   }, [theme]);
-
-  // Follow the OS only while the user has not made an explicit choice.
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return undefined;
-    const query = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (event) => {
-      if (!readStoredTheme()) setThemeState(event.matches ? "dark" : "light");
-    };
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
 
   const setTheme = useCallback((next) => {
     window.localStorage.setItem(STORAGE_KEY, next);

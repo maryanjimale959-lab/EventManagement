@@ -21,7 +21,17 @@ import PhotographerLoginPage from "../pages/PhotographerLoginPage.jsx";
 import PhotographerForgotPasswordPage from "../pages/PhotographerForgotPasswordPage.jsx";
 import RealmProtectedRoute from "../components/RealmProtectedRoute.jsx";
 import { useAdminAuth } from "../context/AdminAuthContext.jsx";
+import { useOrganizerAuth } from "../context/OrganizerAuthContext.jsx";
 import { usePhotographerAuth } from "../context/PhotographerAuthContext.jsx";
+
+import OrganizerLoginPage from "../pages/organizer/OrganizerLoginPage.jsx";
+import OrganizerSignupPage from "../pages/organizer/OrganizerSignupPage.jsx";
+import OrganizerDashboardPage from "../pages/organizer/OrganizerDashboardPage.jsx";
+import OrganizerEventsPage from "../pages/organizer/OrganizerEventsPage.jsx";
+import OrganizerEventRegistrationsPage from "../pages/organizer/OrganizerEventRegistrationsPage.jsx";
+import OrganizerCheckInPage from "../pages/organizer/OrganizerCheckInPage.jsx";
+import OrganizerPhotographersPage from "../pages/organizer/OrganizerPhotographersPage.jsx";
+import OrganizerProfilePage from "../pages/organizer/OrganizerProfilePage.jsx";
 
 import AdminOverviewPage from "../pages/admin/AdminOverviewPage.jsx";
 import AdminUsersPage from "../pages/admin/AdminUsersPage.jsx";
@@ -42,6 +52,9 @@ import PhotographerProfilePage from "../pages/photographer/PhotographerProfilePa
 
 const AdminGuard = ({ children }) => (
   <RealmProtectedRoute useAuth={useAdminAuth} loginPath="/maamul/login">{children}</RealmProtectedRoute>
+);
+const OrganizerGuard = ({ children }) => (
+  <RealmProtectedRoute useAuth={useOrganizerAuth} loginPath="/organizer/login">{children}</RealmProtectedRoute>
 );
 const PhotographerGuard = ({ children }) => (
   <RealmProtectedRoute useAuth={usePhotographerAuth} loginPath="/photographer/login">{children}</RealmProtectedRoute>
@@ -89,6 +102,16 @@ export default function AppRouter() {
       <Route path="/maamul/profile" element={<AdminGuard><AdminProfilePage /></AdminGuard>} />
       <Route path="/maamul/messages" element={<AdminGuard><AdminMessagesPage /></AdminGuard>} />
       <Route path="/maamul/reports" element={<AdminGuard><AdminReportsPage /></AdminGuard>} />
+
+      {/* ---- Organizer realm: Somali event creators & hosts ---- */}
+      <Route path="/organizer/login" element={<OrganizerLoginPage />} />
+      <Route path="/organizer/signup" element={<OrganizerSignupPage />} />
+      <Route path="/organizer/dashboard" element={<OrganizerGuard><OrganizerDashboardPage /></OrganizerGuard>} />
+      <Route path="/organizer/events" element={<OrganizerGuard><OrganizerEventsPage /></OrganizerGuard>} />
+      <Route path="/organizer/events/:eventId/registrations" element={<OrganizerGuard><OrganizerEventRegistrationsPage /></OrganizerGuard>} />
+      <Route path="/organizer/checkin" element={<OrganizerGuard><OrganizerCheckInPage /></OrganizerGuard>} />
+      <Route path="/organizer/photographers" element={<OrganizerGuard><OrganizerPhotographersPage /></OrganizerGuard>} />
+      <Route path="/organizer/profile" element={<OrganizerGuard><OrganizerProfilePage /></OrganizerGuard>} />
 
       {/* ---- Photographer realm: sign-in only, accounts made by an admin ---- */}
       <Route path="/photographer/login" element={<PhotographerLoginPage />} />

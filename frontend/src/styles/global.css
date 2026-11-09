@@ -7,23 +7,47 @@
 @theme {
   --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* The editorial voice: used for hero and section headlines on the public
+     site only, so the consoles keep their UI type. */
+  --font-editorial: "Fraunces", "Sora", ui-serif, Georgia, serif;
 
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
+  /* Warm ink. This deliberately overrides Tailwind's cool `slate` scale rather
+     than introducing a second neutral family, because roughly 290 utilities
+     across the app already reference slate-50..950 and a sweep would be a much
+     larger diff. What matters is that every neutral now carries the same warm
+     hue, so a card and the surface behind it agree about the light source.
+     Nothing here is pure black: the darkest tone is a near-black charcoal. */
+  --color-slate-50: #faf8f5;
+  --color-slate-100: #f3f0ea;
+  --color-slate-200: #e5e0d7;
+  --color-slate-300: #cfc7ba;
+  --color-slate-400: #a89e90;
+  --color-slate-500: #837a6d;
+  --color-slate-600: #665f55;
+  --color-slate-700: #4c463e;
+  --color-slate-800: #2f2b25;
+  --color-slate-900: #1d1a16;
+  --color-slate-950: #12100d;
 
-  --color-accent-50: #fffbeb;
-  --color-accent-100: #fef3c7;
-  --color-accent-400: #fbbf24;
-  --color-accent-500: #f59e0b;
-  --color-accent-600: #d97706;
+  /* One accent: tungsten amber. Desaturated enough to sit beside the neutrals
+     instead of shouting over them, and dark enough at the 600/700 end to carry
+     white text. Replaces the indigo scale, which read as a generic SaaS. */
+  --color-brand-50: #fbf4e6;
+  --color-brand-100: #f5e4c0;
+  --color-brand-200: #eacd8f;
+  --color-brand-300: #dfb15d;
+  --color-brand-400: #d19c3b;
+  --color-brand-500: #bd8626;
+  --color-brand-600: #9d6d20;
+  --color-brand-700: #7c551d;
+  --color-brand-800: #5f431b;
+  --color-brand-900: #4a3517;
+
+  --color-accent-50: #fbf4e6;
+  --color-accent-100: #f5e4c0;
+  --color-accent-400: #dfb15d;
+  --color-accent-500: #bd8626;
+  --color-accent-600: #9d6d20;
 }
 
 @layer base {
@@ -44,12 +68,43 @@
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     @apply tracking-tight;
+    text-wrap: balance;
   }
+  /* Large display headlines get the editorial serif and tighter rhythm; body
+     copy stays on Inter. Opt-in per element so dense console screens are
+     untouched. */
+  .display {
+    font-family: var(--font-editorial);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    font-variation-settings: "SOFT" 0, "WONK" 1;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase;
+    letter-spacing: 0.18em;
+    font-family: var(--font-sans);
+  }
+  p { max-width: 68ch; }
   a {
     @apply text-inherit no-underline;
   }
   img {
     @apply max-w-full block;
+  }
+  /* Keyboard focus, on every interactive element, in the accent colour. An
+     accessibility requirement rather than decoration, so it lives in base. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
   /* Colour-scheme aware form controls and scrollbars. */
   .dark {
@@ -78,27 +133,46 @@
   .text-muted { @apply text-slate-500 dark:text-slate-400; }
 
   /* Cards */
+  /* No border. Elevation comes from the surface being a step lighter than the
+     page and from a shadow tinted with the background hue, which is what makes
+     the dark theme feel lit rather than outlined. */
   .card-surface {
-    @apply bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm shadow-slate-900/[0.03] transition-shadow
-           dark:bg-slate-900 dark:border-slate-800;
+    @apply bg-white rounded-2xl p-6 shadow-sm shadow-slate-900/[0.04] transition-shadow
+           dark:bg-slate-900 dark:shadow-lg dark:shadow-black/30;
   }
   .card-muted {
-    @apply bg-slate-50 border border-dashed border-slate-200 rounded-xl p-4 text-slate-500
-           dark:bg-slate-900/60 dark:border-slate-700 dark:text-slate-400;
+    @apply bg-slate-100/70 rounded-xl p-4 text-slate-500
+           dark:bg-slate-900/60 dark:text-slate-400;
+  }
+
+  /* Photographic surfaces. A warm scrim keeps white type legible over any
+     generated cover without a heavy black band across the image. */
+  .photo-surface { @apply relative overflow-hidden bg-slate-900; }
+  .photo-surface img { @apply absolute inset-0 w-full h-full object-cover; }
+  .photo-scrim {
+    @apply absolute inset-0;
+    background: linear-gradient(105deg, rgb(18 16 13 / 0.92) 0%, rgb(18 16 13 / 0.62) 42%, rgb(18 16 13 / 0.15) 78%, transparent 100%);
+  }
+  .photo-scrim-b {
+    @apply absolute inset-x-0 bottom-0 h-2/3;
+    background: linear-gradient(to top, rgb(18 16 13 / 0.88), transparent);
   }
 
   /* Buttons */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-sm
-           transition-all duration-150 ease-out disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none;
+           transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none;
   }
-  .btn:not(:disabled):hover { @apply -translate-y-0.5 shadow-lg; }
-  .btn-primary { @apply bg-brand-600 text-white shadow-md shadow-brand-600/25 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400; }
-  .btn-secondary { @apply bg-slate-900 text-white shadow-md shadow-slate-900/15 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white; }
+  .btn:not(:disabled):hover { @apply -translate-y-0.5; }
+  .btn:not(:disabled):active { @apply translate-y-0 scale-[0.98] shadow-none; }
+  /* Gold carries ink text rather than white - that is what makes it read as a
+     lit bulb instead of a coloured rectangle. */
+  .btn-primary { @apply bg-brand-600 text-white shadow-md shadow-brand-900/25 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-900/30 dark:bg-brand-400 dark:text-slate-950 dark:shadow-brand-500/20 dark:hover:bg-brand-300; }
+  .btn-secondary { @apply bg-slate-900 text-white shadow-md shadow-slate-900/20 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white; }
   .btn-danger { @apply bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900 dark:hover:bg-rose-950/70; }
   .btn-ghost {
-    @apply bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50
-           dark:bg-slate-900 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:border-slate-600;
+    @apply bg-transparent text-slate-700 border border-slate-300 hover:border-slate-400 hover:bg-slate-100
+           dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:border-slate-600;
   }
 
   /* Inputs */
@@ -127,15 +201,17 @@
   .alert-info { @apply bg-brand-50 border-brand-100 text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/30 dark:text-brand-200; }
   .alert-success { @apply bg-emerald-50 border-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-300; }
   .alert-error { @apply bg-rose-50 border-rose-100 text-rose-700 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-300; }
-  .alert-warn { @apply bg-amber-50 border-amber-100 text-amber-800 dark:bg-amber-500/10 dark:border-amber-500/30 dark:text-amber-200; }
+  .alert-warn { @apply bg-orange-50 border-orange-100 text-orange-800 dark:bg-orange-500/10 dark:border-orange-500/30 dark:text-orange-200; }
 
   /* Badges */
   .badge { @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold tracking-wide; }
   .badge-neutral { @apply bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300; }
   .badge-success { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300; }
-  .badge-warn { @apply bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300; }
+  .badge-warn { @apply bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300; }
   .badge-info { @apply bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200; }
-  .badge-premium { @apply bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300; }
+  /* Premium is a tier, not a status, so it gets the solid gold rather than a
+     fourth pastel. Violet went because one accent is the rule. */
+  .badge-premium { @apply bg-brand-400 text-slate-950; }
   .badge-danger { @apply bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300; }
 
   /* Loading */
@@ -235,7 +311,7 @@
   .dash-link.is-active {
     @apply bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200;
   }
-  .dash-dot { @apply w-2 h-2 rounded-full bg-amber-500 ml-auto shrink-0; }
+  .dash-dot { @apply w-2 h-2 rounded-full bg-brand-400 ml-auto shrink-0; }
   .dash-main { @apply flex-1 min-w-0 w-full; }
 
   /* Gallery: four across on desktop, uniform tiles rather than full-size
@@ -405,9 +481,9 @@
   /* The one number worth interrupting for. */
   .attention-pill {
     @apply inline-flex items-baseline gap-1.5 rounded-full px-3 py-1.5 no-underline
-           bg-amber-50 text-amber-800 border border-amber-200 transition-colors
-           hover:bg-amber-100 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-500/30
-           dark:hover:bg-amber-500/25;
+           bg-orange-50 text-orange-800 border border-orange-200 transition-colors
+           hover:bg-orange-100 dark:bg-orange-500/15 dark:text-orange-200 dark:border-orange-500/30
+           dark:hover:bg-orange-500/25;
   }
   .attention-pill strong { @apply text-base font-extrabold; }
   .attention-pill span { @apply text-xs font-semibold; }

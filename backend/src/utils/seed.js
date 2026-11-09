@@ -6,7 +6,7 @@ import Event from "../models/Event.js";
 
 dotenv.config();
 
-const seedUser = async ({ fullName, email, password, role }) => {
+const seedUser = async ({ fullName, email, password, role, organization = "" }) => {
   const existing = await User.findOne({ email });
   if (existing) {
     console.log(`${role} user already exists:`, email);
@@ -19,6 +19,7 @@ const seedUser = async ({ fullName, email, password, role }) => {
     email,
     passwordHash,
     role,
+    organization,
     refreshTokens: [],
   });
   console.log(`${role} user created:`, email);
@@ -26,46 +27,73 @@ const seedUser = async ({ fullName, email, password, role }) => {
 };
 
 // Demo events for the public Events page. Keyed by title so re-running is safe.
+// Dates are offsets from today rather than fixed calendar days: a hard-coded
+// list goes stale within weeks, and then the one thing the site has to show -
+// an event you can register for - reads as finished.
+const dayOffset = (days, hourUtc) => {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + days);
+  d.setUTCHours(hourUtc, 0, 0, 0);
+  return d.toISOString();
+};
+
 const demoEvents = [
   {
-    title: "Northside Product Launch",
+    title: "Mogadishu Tech Summit 2026",
     description:
-      "An evening product reveal with live demos, a keynote from the founding team, and a hosted reception afterward.",
-    location: "Bluepoint Hall, Downtown",
-    startDateTime: "2026-09-12T18:00:00.000Z",
-    endDateTime: "2026-09-12T21:30:00.000Z",
+      "Somalia's premier technology conference bringing together founders, investors, developers, and telecom leaders across the Horn of Africa. Keynotes on AI, fintech, and digital infrastructure.",
+    location: "Elite Hotel & Halane Conference Centre, Mogadishu",
+    coverImageUrl: "/images/cover-tech-summit.jpg",
+    isPremium: true,
+    currency: "USD",
+    plans: [
+      { name: "Standard Delegate", price: 25, description: "Full conference track access, networking sessions & lunch." },
+      { name: "VIP & Investor Lounge", price: 75, description: "VIP seating, founders mixer & private gala dinner." },
+    ],
+    startDateTime: dayOffset(7, 9),
+    endDateTime: dayOffset(7, 18),
   },
   {
-    title: "Studio 12 Album Release Party",
+    title: "Hargeisa International Book Fair (HIBF)",
     description:
-      "An intimate listening party and live acoustic set to celebrate the new record, with photography by the in-house team.",
-    location: "Studio 12, Arts District",
-    startDateTime: "2026-09-19T20:00:00.000Z",
-    endDateTime: "2026-09-20T00:00:00.000Z",
+      "The annual celebration of Somali literature, poetry, folklore, and global contemporary thought. Featuring renowned Somali authors, poets, and international guests.",
+    location: "Mansoor Hotel Cultural Hall, Hargeisa",
+    coverImageUrl: "/images/cover-album-party.jpg",
+    startDateTime: dayOffset(14, 10),
+    endDateTime: dayOffset(14, 20),
   },
   {
-    title: "Community Night Market",
+    title: "Arooska Qarniga: Somali Royal Wedding & Dhaanto Gala",
     description:
-      "Local vendors, live music, and family activities. Come hungry and bring the whole crew.",
-    location: "Fifth Avenue Plaza",
-    startDateTime: "2026-09-27T16:00:00.000Z",
-    endDateTime: "2026-09-27T22:00:00.000Z",
+      "A grand traditional Somali wedding reception and celebration with live traditional Oud orchestra, energetic Dhaanto dances, and a hosted banquet.",
+    location: "Jazeera Palace Hotel Grand Ballroom, Mogadishu",
+    coverImageUrl: "/images/cover-wedding.jpg",
+    startDateTime: dayOffset(21, 19),
+    endDateTime: dayOffset(21, 23),
   },
   {
-    title: "Amara & Jordan's Wedding Reception",
+    title: "Somali Diaspora Business & Investment Forum",
     description:
-      "Join us in celebrating with dinner, dancing, and an open-bar reception. Photo booth on-site all evening.",
-    location: "Willow Creek Gardens",
-    startDateTime: "2026-10-04T17:00:00.000Z",
-    endDateTime: "2026-10-04T23:00:00.000Z",
+      "Connecting diaspora entrepreneurs from London, Minneapolis, Toronto, and Nairobi with homeland commercial ventures, solar energy projects, and modern real estate.",
+    location: "Serena Hotel / Jazeera Beach Hall, Mogadishu",
+    coverImageUrl: "/images/cover-product-launch.jpg",
+    isPremium: true,
+    currency: "USD",
+    plans: [
+      { name: "General Admission", price: 30, description: "Access to trade expo and investment panels." },
+      { name: "Business Executive", price: 100, description: "B2B matchmaking session, VIP banquet & investment reports." },
+    ],
+    startDateTime: dayOffset(30, 9),
+    endDateTime: dayOffset(30, 17),
   },
   {
-    title: "Riverside Tech Summit 2026",
+    title: "Garowe Youth & Leadership Innovation Expo",
     description:
-      "A full-day conference with three stage tracks covering AI, platform engineering, and design systems, plus a networking lounge.",
-    location: "Riverside Convention Center",
-    startDateTime: "2026-11-02T09:00:00.000Z",
-    endDateTime: "2026-11-02T18:00:00.000Z",
+      "An inspiring gathering of Somali youth activists, tech builders, and creative minds sharing initiatives, grants, and mentorship.",
+    location: "Puntland State Hall, Garowe",
+    coverImageUrl: "/images/cover-night-market.jpg",
+    startDateTime: dayOffset(42, 14),
+    endDateTime: dayOffset(42, 21),
   },
 ];
 
@@ -75,8 +103,22 @@ const seedEvents = async (createdBy) => {
     // create a second copy of it under the same title.
     const existing = await Event.findOne({ title: event.title }).setOptions({ includeDeleted: true });
     if (existing) {
+      // Demo dates are offsets from today, so a re-run refreshes them. Without
+      // this the first seeded copy keeps ageing until every event on the
+      // public page has finished. Only the demo content is rewritten - status,
+      // publication and the check-in door stay whatever an admin set.
+      if (!existing.deletedAt) {
+        existing.startDateTime = new Date(event.startDateTime);
+        existing.endDateTime = new Date(event.endDateTime);
+        existing.description = event.description;
+        existing.location = event.location;
+        existing.coverImageUrl = event.coverImageUrl;
+        await existing.save();
+      }
       console.log(
-        existing.deletedAt ? `event is in the trash, left alone: ${event.title}` : `event already exists: ${event.title}`
+        existing.deletedAt
+          ? `event is in the trash, left alone: ${event.title}`
+          : `event dates refreshed: ${event.title}`
       );
       continue;
     }
@@ -98,14 +140,22 @@ const seed = async () => {
   await connectDB();
 
   const admin = await seedUser({
-    fullName: "System Admin",
+    fullName: "System Admin (Maamulka)",
     email: "admin@example.com",
     password: "Admin123!",
     role: "admin",
   });
 
+  const organizer = await seedUser({
+    fullName: "Jama Musse",
+    email: "organizer@example.com",
+    password: "Organizer123!",
+    role: "organizer",
+    organization: "Kulan Media & Somali Events Co.",
+  });
+
   await seedUser({
-    fullName: "Test Photographer",
+    fullName: "Astaan Media Team",
     email: "photographer@example.com",
     password: "Photo123!",
     role: "photographer",
@@ -114,13 +164,13 @@ const seed = async () => {
   // Deliberately left unregistered so the register -> check-in -> gallery
   // flow can be demonstrated from the beginning.
   await seedUser({
-    fullName: "Demo Attendee",
+    fullName: "Amina Farah",
     email: "attendee@example.com",
     password: "Attend123!",
     role: "attendee",
   });
 
-  await seedEvents(admin._id);
+  await seedEvents(organizer._id || admin._id);
 
   process.exit(0);
 };

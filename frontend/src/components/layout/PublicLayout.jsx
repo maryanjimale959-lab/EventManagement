@@ -6,7 +6,6 @@ import { useAuth } from "../../context/AuthContext.jsx";
 // filled in with real details later.
 const ORGANIZER_NAME = "EventMedia Team";
 const ORGANIZER_LOCATION = "Mogadishu, Somalia";
-const ORGANIZER_EMAIL = "hello@eventmedia.example";
 
 function FooterLink({ to, children }) {
   return (
@@ -99,11 +98,14 @@ export default function PublicLayout({ children }) {
                   <rect x="3" y="5" width="18" height="14" rx="2" />
                   <path d="m3 7 9 6 9-6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
+                {/* No mailto: the address here is still a placeholder, and a
+                    link that goes nowhere is worse than pointing at the form
+                    that actually reaches someone. */}
                 <span>
-                  <strong className="text-white font-semibold">Email:</strong>{" "}
-                  <a href={`mailto:${ORGANIZER_EMAIL}`} className="text-brand-300 hover:text-brand-200 transition-colors">
-                    {ORGANIZER_EMAIL}
-                  </a>
+                  <strong className="text-white font-semibold">Questions:</strong>{" "}
+                  <Link to="/contact" className="text-brand-300 hover:text-brand-200 transition-colors">
+                    use the contact form
+                  </Link>
                 </span>
               </li>
             </ul>

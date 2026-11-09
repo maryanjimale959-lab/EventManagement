@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ["admin", "photographer", "attendee"], default: "attendee" },
+  role: { type: String, enum: ["admin", "organizer", "photographer", "attendee"], default: "attendee" },
+  organization: { type: String, trim: true, default: "" },
   // Deactivated accounts keep their data but cannot sign in.
   isActive: { type: Boolean, default: true },
   // Set when an admin creates the account rather than the user signing up.
@@ -71,6 +72,7 @@ export const toUserDTO = (user) => {
     initials: `${firstName[0] || ""}${(rest[rest.length - 1] || "")[0] || ""}`.toUpperCase(),
     email: user.email,
     role: user.role,
+    organization: user.organization || "",
     isActive: user.isActive !== false,
     lastLoginAt: user.lastLoginAt || null,
     phone: user.phone || "",

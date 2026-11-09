@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import client from "../api/client.js";
 import EmptyState from "../components/ui/EmptyState.jsx";
 import Loading from "../components/ui/Loading.jsx";
@@ -8,29 +9,52 @@ import EventCard from "../components/EventCard.jsx";
 import PremiumEventCard from "../components/PremiumEventCard.jsx";
 
 /**
- * A mosaic of the actual upcoming events rather than one generic stock photo -
- * it changes as real events are published instead of being decoration
- * unrelated to what the page is about. Only events with a real cover image
- * are eligible; an event with none never contributes a placeholder tile.
+ * A mosaic of the events actually on this page, so it changes as real events
+ * are published instead of being decoration unrelated to the content. Only
+ * events with a cover qualify. When none have one, the panel says so plainly
+ * rather than filling the space with an icon.
  */
 function EventMosaic({ events }) {
-  const tiles = events.filter((e) => e.coverImageUrl).slice(0, 4);
+  const tiles = events.filter((e) => e.coverImageUrl).slice(0, 3);
+
   if (tiles.length === 0) {
     return (
-      <div className="rounded-3xl overflow-hidden shadow-xl shadow-slate-900/10 aspect-square bg-gradient-to-br from-brand-100 to-accent-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center">
-        <span className="text-5xl" aria-hidden="true">🎟️</span>
+      <div className="flex aspect-[4/3] flex-col justify-end rounded-3xl bg-slate-900 p-8">
+        <p className="display m-0 text-3xl text-white">Nothing published yet.</p>
+        <p className="mt-3 text-slate-400">When an organiser publishes an event, its photograph lands here.</p>
+        <Link to="/register" className="btn btn-primary mt-6 self-start">
+          Publish your event
+        </Link>
       </div>
     );
   }
+
+  // Three tiles make one tall panel beside two stacked ones, which fills the
+  // rectangle exactly. Any other count stays an even row rather than leaving a
+  // hole in the grid.
+  const tall = tiles.length === 3;
+
   return (
-    <div className="grid grid-cols-2 gap-3 aspect-square">
+    <div className="grid grid-cols-2 gap-3">
       {tiles.map((e, i) => (
-        <div
+        <Link
           key={e._id}
-          className={`rounded-2xl overflow-hidden shadow-lg shadow-slate-900/10 ${tiles.length === 3 && i === 2 ? "col-span-2" : ""}`}
+          to={`/events/${e._id}`}
+          className={`group relative overflow-hidden rounded-2xl bg-slate-800 ${
+            tall && i === 0 ? "row-span-2" : "aspect-square"
+          }`}
         >
-          <img src={e.coverImageUrl} alt="" className="w-full h-full object-cover" />
-        </div>
+          <img
+            src={e.coverImageUrl}
+            alt={`Cover photograph for ${e.title}`}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+            loading="lazy"
+          />
+          <span className="photo-scrim-b opacity-90" />
+          <span className="absolute inset-x-0 bottom-0 z-10 p-4 text-sm font-semibold text-white">
+            {e.title}
+          </span>
+        </Link>
       ))}
     </div>
   );
@@ -41,6 +65,8 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [activeCity, setActiveCity] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
     const load = async () => {
@@ -58,37 +84,38 @@ export default function EventsPage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return events.filter((e) => e.title.toLowerCase().includes(q) || (e.location || "").toLowerCase().includes(q));
-  }, [events, search]);
+    return events.filter((e) => {
+      const matchText = e.title.toLowerCase().includes(q) || (e.location || "").toLowerCase().includes(q);
+      if (!matchText) return false;
 
-  const upcomingCount = events.filter((e) => new Date(e.startDateTime) >= new Date()).length;
+      if (activeCity !== "all") {
+        if (!e.location?.toLowerCase().includes(activeCity.toLowerCase())) return false;
+      }
+
+      if (activeCategory === "tech" && !/tech|summit|business|launch/i.test(e.title + e.description)) return false;
+      if (activeCategory === "wedding" && !/wedding|aroos|reception/i.test(e.title + e.description)) return false;
+      if (activeCategory === "culture" && !/book|dhaanto|culture|market|arts/i.test(e.title + e.description)) return false;
+      if (activeCategory === "youth" && !/youth|leadership|innovation|forum/i.test(e.title + e.description)) return false;
+
+      return true;
+    });
+  }, [events, search, activeCity, activeCategory]);
 
   return (
     <PublicLayout>
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-accent-50 border-b border-slate-200/70 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 dark:border-slate-800">
-        <div className="shell-wrap py-14 sm:py-20 grid gap-10 lg:grid-cols-2 items-center">
+      <section className="border-b border-slate-200/70 dark:border-slate-800">
+        <div className="shell-wrap grid gap-12 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
-            <span className="badge badge-info mb-5">Events</span>
-            <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.08] text-slate-900 dark:text-white">
-              Every event on EventMedia, in one place.
+            <p className="eyebrow mb-4 text-brand-600 dark:text-brand-400">What's on</p>
+            <h1 className="display m-0 text-5xl sm:text-6xl text-slate-900 dark:text-white">
+              Every public event, in one place.
             </h1>
-            <p className="mt-5 text-lg text-slate-600 dark:text-slate-300 max-w-lg">
-              Public and published events, open for anyone to browse and register. Find yours, RSVP, and check
-              your gallery after check-in.
+            <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-lg">
+              Browse what is open, register in a minute, and your gallery unlocks the moment you are
+              checked in at the door.
             </p>
 
-            <div className="flex gap-6 mt-7">
-              <div>
-                <div className="text-2xl font-extrabold text-slate-900 dark:text-white">{events.length}</div>
-                <div className="text-sm text-muted">Public events</div>
-              </div>
-              <div>
-                <div className="text-2xl font-extrabold text-slate-900 dark:text-white">{upcomingCount}</div>
-                <div className="text-sm text-muted">Upcoming</div>
-              </div>
-            </div>
-
-            <div className="max-w-md mt-8">
+            <div className="max-w-md mt-9">
               <Input
                 className="!mb-0"
                 placeholder="Search by title or location"
@@ -104,7 +131,56 @@ export default function EventsPage() {
 
       <div className="shell-wrap">
         <div className="section">
-          {loading && <Loading label="Loading events..." />}
+          {/* Somali Categories & Cities Filter Bar */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold uppercase text-slate-400 mr-1">Category:</span>
+              {[
+                { id: "all", label: "All (Dhammaan)" },
+                { id: "tech", label: "⚡ Tech & Business" },
+                { id: "wedding", label: "💍 Aroos & Galas" },
+                { id: "culture", label: "📚 Culture & Arts" },
+                { id: "youth", label: "🌟 Youth & Forums" },
+              ].map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setActiveCategory(c.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    activeCategory === c.id
+                      ? "bg-brand-600 text-white shadow-sm"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold uppercase text-slate-400 mr-1">City:</span>
+              {[
+                { id: "all", label: "Everywhere" },
+                { id: "mogadishu", label: "Mogadishu" },
+                { id: "hargeisa", label: "Hargeisa" },
+                { id: "garowe", label: "Garowe" },
+                { id: "nairobi", label: "Nairobi" },
+              ].map((city) => (
+                <button
+                  key={city.id}
+                  onClick={() => setActiveCity(city.id)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+                    activeCity === city.id
+                      ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900"
+                      : "bg-transparent text-slate-600 dark:text-slate-400 hover:underline"
+                  }`}
+                >
+                  {city.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading && <Loading label="Loading Somali events..." />}
           {error && <p className="text-rose-600">{error}</p>}
           {!loading && !error && (
             filtered.length === 0 ? (

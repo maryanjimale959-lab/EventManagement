@@ -4,7 +4,7 @@ import Card from "../components/ui/Card.jsx";
 import Input from "../components/ui/Input.jsx";
 import Button from "../components/ui/Button.jsx";
 import Alert from "../components/ui/Alert.jsx";
-import PageHeader from "../components/ui/PageHeader.jsx";
+import AuthShell from "../components/AuthShell.jsx";
 import PublicLayout from "../components/layout/PublicLayout.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -41,8 +41,13 @@ export default function LoginPage() {
 
   return (
     <PublicLayout>
-      <div className="shell-wrap page" style={{ maxWidth: 460 }}>
-        <PageHeader title="Welcome back" subtitle="Access your event workspace" />
+      <AuthShell
+        title="Welcome back"
+        subtitle="Access your event workspace"
+        image="/images/cover-album-party.jpg"
+        imageAlt="Guests at an intimate release party listening to a live acoustic set"
+        claim="The gallery is waiting for the people who showed up."
+      >
         <Card>
           <form onSubmit={handleSubmit}>
             <Input
@@ -53,7 +58,17 @@ export default function LoginPage() {
               value={form.email}
               onChange={handleChange}
               required
-              icon="@"
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 7.5A1.5 1.5 0 0 1 4.5 6h15A1.5 1.5 0 0 1 21 7.5v9A1.5 1.5 0 0 1 19.5 18h-15A1.5 1.5 0 0 1 3 16.5v-9Zm1.5.5L12 13l7.5-5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              }
             />
             <Input
               label="Password"
@@ -63,7 +78,17 @@ export default function LoginPage() {
               value={form.password}
               onChange={handleChange}
               required
-              icon="🔒"
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M7 10V7a5 5 0 0 1 10 0v3M5.5 10h13v10h-13V10Zm6.5 4v2.5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              }
             />
             <p style={{ marginTop: "-0.5rem", marginBottom: "1rem", textAlign: "right" }}>
               <Link to="/forgot-password" className="text-sm font-semibold text-brand-600 dark:text-brand-300">
@@ -79,7 +104,7 @@ export default function LoginPage() {
             No account? <Link to="/register">Create one</Link>
           </p>
         </Card>
-      </div>
+      </AuthShell>
     </PublicLayout>
   );
 }

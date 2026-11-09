@@ -11,6 +11,7 @@ import contactRoutes from "./contact.routes.js";
 import adminMessagesRoutes from "./admin.messages.routes.js";
 import adminActivityRoutes from "./admin.activity.routes.js";
 import photographerRoutes from "./photographer.routes.js";
+import organizerRoutes from "./organizer.routes.js";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/contact", contactRoutes);
 router.use("/admin/messages", adminMessagesRoutes);
 router.use("/admin/activity", adminActivityRoutes);
 router.use("/photographer", photographerRoutes);
+router.use("/organizer", organizerRoutes);
 
 export default router;

@@ -43,6 +43,7 @@ const NAV_GROUPS = [
     label: "Users",
     items: [
       { to: "/maamul/users/attendees", label: "Attendees", icon: ICONS.attendee },
+      { to: "/maamul/users/organizers", label: "Organizers", icon: ICONS.events },
       { to: "/maamul/users/photographers", label: "Photographers", icon: ICONS.camera },
       { to: "/maamul/users/admins", label: "Admins", icon: ICONS.shield },
     ],

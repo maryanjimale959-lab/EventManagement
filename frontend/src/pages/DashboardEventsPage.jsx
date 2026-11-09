@@ -6,6 +6,7 @@ import Card from "../components/ui/Card.jsx";
 import Alert from "../components/ui/Alert.jsx";
 import Loading from "../components/ui/Loading.jsx";
 import Badge from "../components/ui/Badge.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 import EventJourney, { stageMessage } from "../components/EventJourney.jsx";
 
 const formatDate = (v) =>
@@ -63,15 +64,19 @@ export default function DashboardEventsPage() {
           </div>
 
           {visible.length === 0 && (
-            <div className="empty-state">
-              <div className="empty-icon">🗓️</div>
-              <p className="m-0">
-                {items.length === 0
-                  ? "You have not registered for any events yet."
-                  : "No events match this filter."}
-              </p>
-              <Link to="/events" className="btn btn-primary mt-4">Browse events</Link>
-            </div>
+            <EmptyState
+              title={items.length === 0 ? "No registrations yet" : "Nothing in this filter"}
+              description={
+                items.length === 0
+                  ? "Once you register for an event, its progress from ticket to gallery shows up here."
+                  : "Try a different filter to see the rest of your events."
+              }
+              action={
+                <Link to="/events" className="btn btn-primary mt-4">
+                  Browse events
+                </Link>
+              }
+            />
           )}
 
           <div className="stack gap-4">
