@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import Card from "../components/ui/Card.jsx";
 import Input from "../components/ui/Input.jsx";
@@ -44,7 +44,7 @@ export default function LoginPage() {
       <AuthShell
         title="Welcome back"
         subtitle="Access your event workspace"
-        image="/images/cover-album-party.jpg"
+        image="/images/edu-library.jpg"
         imageAlt="Guests at an intimate release party listening to a live acoustic set"
         claim="The gallery is waiting for the people who showed up."
       >
@@ -74,7 +74,7 @@ export default function LoginPage() {
               label="Password"
               name="password"
               type="password"
-              placeholder="••••••"
+              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
               value={form.password}
               onChange={handleChange}
               required
@@ -108,3 +108,4 @@ export default function LoginPage() {
     </PublicLayout>
   );
 }
+

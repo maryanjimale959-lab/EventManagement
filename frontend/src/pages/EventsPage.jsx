@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import client from "../api/client.js";
 import EmptyState from "../components/ui/EmptyState.jsx";
@@ -120,17 +120,16 @@ export default function EventsPage() {
   return (
     <PublicLayout>
       {/* Header section */}
-      <section className="bg-slate-900 text-white border-b border-slate-800 py-14 sm:py-20 relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-brand-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <section className="border-b border-slate-200 dark:border-slate-800 py-12 sm:py-16">
 
-        <div className="shell-wrap relative z-10">
+        <div className="shell-wrap">
           <div className="max-w-2xl">
-            <span className="eyebrow text-brand-400">Discover Opportunities</span>
-            <h1 className="display text-4xl sm:text-5xl font-extrabold text-white mt-2">
-              Educational &amp; Tech Programs
+            <span className="eyebrow text-brand-700 dark:text-brand-300">All events</span>
+            <h1 className="display text-4xl sm:text-5xl text-slate-900 dark:text-white mt-2">
+              Find your next event
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-              Explore upcoming academic conferences, hands-on development workshops, AI summits, competitive hackathons, and Islamic knowledge seminars.
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+              Lectures, workshops, hackathons and conferences. Filter by track, city and price.
             </p>
           </div>
 
@@ -154,13 +153,13 @@ export default function EventsPage() {
                 placeholder="Search by topic, speaker, university, or city..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-800/90 border border-slate-700/80 rounded-2xl text-white placeholder-slate-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/20 transition-all"
+                className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-white"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs font-semibold px-2 py-1 rounded bg-slate-700/50"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 text-xs font-semibold px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 dark:hover:text-white"
                 >
                   Clear
                 </button>
@@ -248,7 +247,7 @@ export default function EventsPage() {
                   onClick={() => setPricingFilter(p.id)}
                   className={`px-3 py-1 rounded-lg font-medium transition-colors ${
                     pricingFilter === p.id
-                      ? "bg-brand-600 text-white font-bold"
+                      ? "bg-brand-700 text-white font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -319,3 +318,4 @@ export default function EventsPage() {
     </PublicLayout>
   );
 }
+

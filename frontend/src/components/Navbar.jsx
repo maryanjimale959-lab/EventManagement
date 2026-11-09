@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import Avatar from "./Avatar.jsx";
@@ -24,7 +24,7 @@ function Logo() {
         />
         {!hasLogo && (
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-white/20">
+            <div className="w-8 h-8 rounded-lg bg-brand-700 text-white flex items-center justify-center font-semibold text-sm">
               K
             </div>
             <div className="flex flex-col">
@@ -227,10 +227,10 @@ export default function Navbar() {
 
             <div className="py-2.5 space-y-1">
               <NavLink to="/organizer/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
-                Organizer Portal (Abaabule) →
+                Organizer Portal (Abaabule) â†’
               </NavLink>
               <NavLink to="/maamul/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
-                Admin Console (Maamul) →
+                Admin Console (Maamul) â†’
               </NavLink>
             </div>
 
@@ -271,3 +271,4 @@ export default function Navbar() {
     </header>
   );
 }
+

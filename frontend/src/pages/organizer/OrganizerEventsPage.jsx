@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import OrganizerConsoleLayout from "../../components/layout/OrganizerConsoleLayout.jsx";
 import Card from "../../components/ui/Card.jsx";
@@ -26,11 +26,10 @@ const SOMALI_CITIES = [
 ];
 
 const PRESET_COVERS = [
-  { label: "Tech & Summit", url: "/images/cover-tech-summit.jpg" },
-  { label: "Somali Wedding / Aroos", url: "/images/cover-wedding.jpg" },
-  { label: "Cultural Arts / Literature", url: "/images/cover-album-party.jpg" },
-  { label: "Community & Market", url: "/images/cover-night-market.jpg" },
-  { label: "Business & Innovation", url: "/images/cover-product-launch.jpg" },
+  { label: "Conference / Summit", url: "/images/edu-lecture.jpg" },
+  { label: "Academic / Library", url: "/images/edu-library.jpg" },
+    { label: "Study & Community", url: "/images/edu-hero.jpg" },
+  { label: "Workshop / Business", url: "/images/edu-workshop.jpg" },
 ];
 
 export default function OrganizerEventsPage() {
@@ -54,7 +53,7 @@ export default function OrganizerEventsPage() {
     isPremium: false,
     currency: "USD",
     plans: [{ name: "Standard Ticket", price: 20, description: "Full event access" }],
-    coverImageUrl: "/images/cover-tech-summit.jpg",
+    coverImageUrl: "/images/edu-lecture.jpg",
   });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
@@ -97,7 +96,7 @@ export default function OrganizerEventsPage() {
       isPremium: false,
       currency: "USD",
       plans: [{ name: "Standard Delegate", price: 20, description: "Full event admission" }],
-      coverImageUrl: "/images/cover-tech-summit.jpg",
+      coverImageUrl: "/images/edu-lecture.jpg",
     });
     setFormError("");
     setModalOpen(true);
@@ -117,7 +116,7 @@ export default function OrganizerEventsPage() {
       isPremium: Boolean(ev.isPremium),
       currency: ev.currency || "USD",
       plans: ev.plans?.length ? ev.plans : [{ name: "General Admission", price: 10, description: "" }],
-      coverImageUrl: ev.coverImageUrl || "/images/cover-tech-summit.jpg",
+      coverImageUrl: ev.coverImageUrl || "/images/edu-lecture.jpg",
     });
     setFormError("");
     setModalOpen(true);
@@ -214,7 +213,7 @@ export default function OrganizerEventsPage() {
             name="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search events, venues, cities…"
+            placeholder="Search events, venues, citiesâ€¦"
           />
         </div>
       </div>
@@ -224,7 +223,7 @@ export default function OrganizerEventsPage() {
       ) : filtered.length === 0 ? (
         <Card>
           <div className="text-center py-12">
-            <p className="text-4xl mb-2">🎪</p>
+            <p className="text-4xl mb-2">ðŸŽª</p>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">No Somali events found</h3>
             <p className="text-muted text-sm max-w-sm mx-auto mb-5">
               Create your first Somali event to start taking registrations and scanning door tickets.
@@ -241,7 +240,7 @@ export default function OrganizerEventsPage() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-slate-900 aspect-square">
-                    <img src={ev.coverImageUrl || "/images/cover-tech-summit.jpg"} alt="" className="w-full h-full object-cover" />
+                    <img src={ev.coverImageUrl || "/images/edu-lecture.jpg"} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -256,15 +255,15 @@ export default function OrganizerEventsPage() {
                       )}
                     </div>
                     <p className="text-xs text-muted m-0 flex flex-wrap items-center gap-3">
-                      <span>📍 {ev.location}</span>
-                      <span>·</span>
-                      <span>📅 {new Date(ev.startDateTime).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
+                      <span>ðŸ“ {ev.location}</span>
+                      <span>Â·</span>
+                      <span>ðŸ“… {new Date(ev.startDateTime).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
                     </p>
                     <div className="mt-3 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600 dark:text-slate-300">
-                      <span>👥 <strong>{ev.registrationCount || 0}</strong> Registered</span>
-                      <span>🚪 <strong>{ev.attendedCount || 0}</strong> Checked In</span>
-                      <span>📸 <strong>{ev.mediaCount || 0}</strong> Photos</span>
-                      {ev.revenue > 0 && <span className="text-amber-600 dark:text-amber-400 font-bold">💰 ${ev.revenue} USD</span>}
+                      <span>ðŸ‘¥ <strong>{ev.registrationCount || 0}</strong> Registered</span>
+                      <span>ðŸšª <strong>{ev.attendedCount || 0}</strong> Checked In</span>
+                      <span>ðŸ“¸ <strong>{ev.mediaCount || 0}</strong> Photos</span>
+                      {ev.revenue > 0 && <span className="text-amber-600 dark:text-amber-400 font-bold">ðŸ’° ${ev.revenue} USD</span>}
                     </div>
                   </div>
                 </div>
@@ -275,7 +274,7 @@ export default function OrganizerEventsPage() {
                     variant={ev.checkInOpen ? "success" : "secondary"}
                     onClick={() => toggleCheckIn(ev._id, ev.checkInOpen)}
                   >
-                    {ev.checkInOpen ? "✓ Door Open" : "Open Door"}
+                    {ev.checkInOpen ? "âœ“ Door Open" : "Open Door"}
                   </Button>
                   <Link to={`/organizer/events/${ev._id}/registrations`}>
                     <Button size="sm" variant="ghost">Guest List</Button>
@@ -461,7 +460,7 @@ export default function OrganizerEventsPage() {
                           onClick={() => setForm((p) => ({ ...p, plans: p.plans.filter((_, i) => i !== idx) }))}
                           className="text-red-500 hover:text-red-700 text-sm px-1 font-bold"
                         >
-                          ✕
+                          âœ•
                         </button>
                       )}
                     </div>
@@ -482,7 +481,7 @@ export default function OrganizerEventsPage() {
                 Cancel
               </Button>
               <Button type="submit" variant="primary" disabled={saving}>
-                {saving ? "Saving…" : editingEvent ? "Save Changes" : "Publish Event"}
+                {saving ? "Savingâ€¦" : editingEvent ? "Save Changes" : "Publish Event"}
               </Button>
             </div>
           </form>
@@ -491,3 +490,5 @@ export default function OrganizerEventsPage() {
     </OrganizerConsoleLayout>
   );
 }
+
+

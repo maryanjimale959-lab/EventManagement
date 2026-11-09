@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+﻿import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import connectDB from "../config/db.js";
 import User from "../models/User.js";
@@ -42,9 +42,9 @@ const demoEvents = [
     title: "Horn of Africa AI & Machine Learning Summit 2026",
     description:
       "A flagship technology conference convening AI researchers, machine learning practitioners, and technology leaders. Deep dives into multilingual LLM training for Somali dialects, autonomous systems, neural computing, and ethical AI deployment in emerging markets.",
-    location: "National Innovation & AI Hub, Mogadishu · In-Person & Streaming",
+    location: "National Innovation & AI Hub, Mogadishu Â· In-Person & Streaming",
     category: "Artificial Intelligence",
-    coverImageUrl: "/images/cover-tech-summit.jpg",
+    coverImageUrl: "/images/edu-lecture.jpg",
     isPremium: true,
     currency: "USD",
     plans: [
@@ -60,7 +60,7 @@ const demoEvents = [
       "A fast-paced 48-hour collaborative engineering hackathon. Engineers, designers, and students team up to build resilient cloud architectures, fintech integrations, and digital public goods. Mentored by senior industry architects.",
     location: "Puntland State University Computing Center, Garowe",
     category: "Hackathons",
-    coverImageUrl: "/images/cover-product-launch.jpg",
+    coverImageUrl: "/images/edu-workshop.jpg",
     isPremium: false,
     startDateTime: dayOffset(12, 10),
     endDateTime: dayOffset(14, 18),
@@ -71,7 +71,7 @@ const demoEvents = [
       "An esteemed scholarly gathering exploring Islamic philosophy, digital ethics, jurisprudence (Fiqh al-Mu'amalat) in modern commerce, and moral stewardship. Featuring keynote lectures by international academics and Islamic scholars.",
     location: "Grand Cultural & Research Auditorium, Hargeisa",
     category: "Islamic Studies",
-    coverImageUrl: "/images/cover-album-party.jpg",
+    coverImageUrl: "/images/edu-library.jpg",
     isPremium: false,
     startDateTime: dayOffset(18, 14),
     endDateTime: dayOffset(18, 21),
@@ -82,7 +82,7 @@ const demoEvents = [
       "An intensive executive seminar designed for high-growth entrepreneurs, angel syndicates, and diaspora investors. Covering cross-border capital, term sheets, corporate governance, unit economics, and regional expansion.",
     location: "Mogadishu Serena Executive Conference Center",
     category: "Business",
-    coverImageUrl: "/images/cover-night-market.jpg",
+    coverImageUrl: "/images/edu-hero.jpg",
     isPremium: true,
     currency: "USD",
     plans: [
@@ -98,7 +98,7 @@ const demoEvents = [
       "A hands-on, code-first weekend workshop. Participants train custom neural networks, fine-tune open weights, build automated CI/CD container pipelines, and deploy production endpoints on Kubernetes clusters.",
     location: "Advanced Tech Lab, Mogadishu University Computing Campus",
     category: "Workshops",
-    coverImageUrl: "/images/cover-tech-summit.jpg",
+    coverImageUrl: "/images/edu-lecture.jpg",
     isPremium: false,
     startDateTime: dayOffset(32, 9),
     endDateTime: dayOffset(33, 17),
@@ -109,7 +109,7 @@ const demoEvents = [
       "Empowering students and recent graduates with academic research grants, international scholarship mentorship, scientific publishing workshops, and career advancement tracks in higher education.",
     location: "Halane International Convention Center, Mogadishu",
     category: "Education",
-    coverImageUrl: "/images/cover-wedding.jpg",
+    coverImageUrl: "/images/edu-library.jpg",
     isPremium: false,
     startDateTime: dayOffset(40, 9),
     endDateTime: dayOffset(40, 18),
@@ -201,3 +201,4 @@ seed().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+
