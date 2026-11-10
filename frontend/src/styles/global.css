@@ -5,55 +5,48 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Pure neutrals: paper white to near-black */
-  --color-slate-50: #fafafa;
-  --color-slate-100: #f4f4f5;
-  --color-slate-200: #e4e4e7;
-  --color-slate-300: #d4d4d8;
-  --color-slate-400: #a1a1aa;
-  --color-slate-500: #71717a;
-  --color-slate-600: #52525b;
-  --color-slate-700: #3f3f46;
-  --color-slate-800: #27272a;
-  --color-slate-900: #121212;
-  --color-slate-950: #0a0a0a;
+  /* Modern, crisp neutral palette (high-contrast slate & deep obsidian dark mode) */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #070c18;
 
-  /* "Brand" is ink. The only color on the site is the acid accent below. */
-  --color-brand-50: #f4f4f5;
-  --color-brand-100: #e4e4e7;
-  --color-brand-200: #d4d4d8;
-  --color-brand-300: #a1a1aa;
-  --color-brand-400: #71717a;
-  --color-brand-500: #3f3f46;
-  --color-brand-600: #121212;
-  --color-brand-700: #000000;
-  --color-brand-800: #000000;
-  --color-brand-900: #000000;
-  --color-brand-950: #000000;
+  /* Primary Brand: Sophisticated Electric Sapphire Blue */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
 
-  /* Acid lime accent */
-  --color-accent-50: #f7ffd6;
-  --color-accent-100: #eeff9e;
-  --color-accent-400: #d4ff3a;
-  --color-accent-500: #c2f000;
-  --color-accent-600: #9cc400;
-
-  /* Square, architectural corners */
-  --radius-lg: 0.125rem;
-  --radius-xl: 0.25rem;
-  --radius-2xl: 0.25rem;
-  --radius-3xl: 0.25rem;
+  --color-accent-50: #eff6ff;
+  --color-accent-100: #dbeafe;
+  --color-accent-400: #60a5fa;
+  --color-accent-500: #3b82f6;
+  --color-accent-600: #2563eb;
 }
+
 @layer base {
   html, body {
     @apply max-w-full;
   }
   body {
-    @apply bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    @apply bg-slate-50 text-slate-900 antialiased dark:bg-[#070c18] dark:text-slate-100;
     font-family: var(--font-sans);
     transition: background-color 0.25s ease, color 0.25s ease;
   }
@@ -64,13 +57,13 @@
   }
   .display {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 0.98;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
   .eyebrow {
     @apply text-xs font-bold uppercase tracking-wider;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
   }
   p { max-width: 68ch; }
   a {
@@ -135,24 +128,24 @@
   .photo-surface img { @apply absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out; }
   .photo-scrim {
     @apply absolute inset-0;
-    background: linear-gradient(135deg, rgba(10, 15, 30, 0.94) 0%, rgba(10, 15, 30, 0.72) 48%, rgba(10, 15, 30, 0.3) 100%);
+    background: linear-gradient(135deg, rgba(7, 12, 24, 0.94) 0%, rgba(7, 12, 24, 0.72) 48%, rgba(7, 12, 24, 0.3) 100%);
   }
   .photo-scrim-b {
     @apply absolute inset-x-0 bottom-0 h-3/4;
-    background: linear-gradient(to top, rgba(10, 15, 30, 0.92) 0%, rgba(10, 15, 30, 0.5) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(7, 12, 24, 0.92) 0%, rgba(7, 12, 24, 0.5) 50%, transparent 100%);
   }
 
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-sm px-5 py-2.5 font-semibold text-sm
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold text-sm
            transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none cursor-pointer;
   }
   .btn:not(:disabled):hover { @apply -translate-y-0.5; }
   .btn:not(:disabled):active { @apply translate-y-0 scale-[0.98]; }
 
   .btn-primary {
-    @apply bg-slate-900 text-white border-2 border-slate-900 hover:bg-accent-400 hover:text-slate-900
-           dark:bg-accent-400 dark:text-slate-900 dark:border-accent-400 dark:hover:bg-white dark:hover:border-white;
+    @apply bg-brand-600 text-white shadow-md shadow-brand-600/20 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/30
+           dark:bg-brand-500 dark:hover:bg-brand-400 dark:text-white dark:shadow-brand-500/20;
   }
   .btn-secondary {
     @apply bg-slate-900 text-white shadow-sm hover:bg-slate-800
@@ -206,14 +199,14 @@
 
   /* Interactive Category Chips */
   .category-chip {
-    @apply inline-flex items-center gap-2 px-3.5 py-1.5 rounded-sm font-mono uppercase tracking-wider text-xs font-semibold transition-all duration-200 cursor-pointer
-           border-2 border-slate-900 bg-transparent text-slate-900
-           hover:border-brand-500 hover:text-brand-700
-           dark:bg-transparent dark:border-slate-600 dark:text-slate-200 dark:hover:border-accent-400 dark:hover:text-accent-400;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer
+           border border-slate-200/80 bg-white text-slate-700 shadow-sm
+           hover:border-brand-400 hover:text-brand-600 hover:-translate-y-0.5
+           dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:border-brand-500/60 dark:hover:text-white;
   }
   .category-chip.is-active {
-    @apply bg-brand-600 text-white border-brand-600 hover:text-white
-           dark:bg-accent-400 dark:border-accent-400 dark:text-slate-900;
+    @apply bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-600/20 hover:text-white
+           dark:bg-brand-500 dark:border-brand-500 dark:text-white;
   }
 
   /* Loading Spinner */
@@ -237,8 +230,8 @@
 
   /* Modern Sticky Navbar */
   .navbar {
-    @apply sticky top-0 z-40 bg-white border-b-2 border-slate-900
-           dark:bg-slate-950/85 dark:border-slate-800/80 transition-colors;
+    @apply sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80
+           dark:bg-[#070c18]/85 dark:border-slate-800/80 transition-colors;
   }
   .navbar-inner { @apply w-full max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3.5; }
   .nav-links { @apply hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300; }
@@ -309,7 +302,7 @@
   .dash-main { @apply flex-1 min-w-0 w-full; }
 
   /* Console Shell (Organizer & Admin) */
-  .console-shell { @apply min-h-screen flex bg-slate-100/70 dark:bg-slate-950; }
+  .console-shell { @apply min-h-screen flex bg-slate-100/70 dark:bg-[#070c18]; }
   .console-sidebar {
     @apply fixed inset-y-0 left-0 z-30 w-64 flex flex-col bg-slate-900 text-slate-200 border-r border-slate-800
            transition-transform duration-200 -translate-x-full lg:translate-x-0;
@@ -355,18 +348,39 @@
   }
 }
 
+/* ---------- Motion system (slow, subtle, respects reduced-motion) ---------- */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes blobA { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(40px,-30px,0) scale(1.12); } }
+@keyframes blobB { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-50px,30px,0) scale(1.08); } }
+@keyframes wordIn { from { opacity: 0; transform: translateY(0.4em); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes ripple { to { transform: scale(2.6); opacity: 0; } }
 
+.page-fade { animation: pageIn 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); transition-delay: var(--reveal-delay, 0ms); will-change: opacity, transform; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+.blob-a { animation: blobA 18s ease-in-out infinite; }
+.blob-b { animation: blobB 22s ease-in-out infinite; }
+.word-swap { display: inline-block; animation: wordIn 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* Pointer-follow spotlight + gentle tilt on cards */
+.interactive-card { position: relative; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0px)); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.3s ease; transform-style: preserve-3d; }
+.interactive-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.35s ease; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(59, 130, 246, 0.14), transparent 55%); }
+.interactive-card:hover { --ty: -4px; }
+.interactive-card:hover::after { opacity: 1; }
+
+.scroll-progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; transform-origin: 0 50%; transform: scaleX(var(--progress, 0)); background: linear-gradient(90deg, #2563eb, #60a5fa); }
+
+.btn-ripple { position: relative; overflow: hidden; }
+.btn-ripple .ripple-dot { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 9999px; background: rgba(255, 255, 255, 0.35); transform: scale(0); animation: ripple 0.7s ease-out forwards; pointer-events: none; }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .blob-a, .blob-b, .word-swap, .page-fade { animation: none; }
+  .interactive-card { transform: none !important; }
 }
-
-
-
-
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-

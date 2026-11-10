@@ -24,12 +24,12 @@ function Logo() {
         />
         {!hasLogo && (
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-sm bg-accent-400 text-slate-900 border-2 border-slate-900 flex items-center justify-center font-bold text-sm">
+            <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-white/20">
               K
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold tracking-tight text-base sm:text-lg text-slate-900 dark:text-white leading-none">
-                Kulan<span className="text-slate-900 dark:text-accent-400 underline decoration-accent-400 decoration-4 underline-offset-2">Events</span>
+                Kulan<span className="text-brand-600 dark:text-brand-400">Events</span>
               </span>
               <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 dark:text-slate-500 mt-0.5">
                 Education &amp; Tech
@@ -43,10 +43,8 @@ function Logo() {
 }
 
 const linkClass = ({ isActive }) =>
-  `whitespace-nowrap transition-colors font-medium text-sm py-1 hover:text-slate-900 dark:hover:text-white ${
-    isActive
-      ? "text-slate-900 dark:text-white font-bold underline decoration-accent-400 decoration-[3px] underline-offset-[10px]"
-      : "text-slate-500 dark:text-slate-400"
+  `whitespace-nowrap transition-colors whitespace-nowrap font-medium text-sm hover:text-brand-600 dark:hover:text-brand-400 ${
+    isActive ? "text-brand-600 dark:text-brand-400 font-bold" : "text-slate-600 dark:text-slate-300"
   }`;
 
 const mobileLinkClass = ({ isActive }) =>
@@ -60,6 +58,18 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef(null);
+  const [progress, setProgress] = useState(0);
+
+  // Thin reading-progress line under the bar.
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(h > 0 ? Math.min(1, window.scrollY / h) : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Close the account menu on outside click or Escape.
   useEffect(() => {
@@ -96,6 +106,7 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
+      <span className="scroll-progress" style={{ "--progress": progress }} aria-hidden="true" />
       <div className="navbar-inner">
         <Logo />
 
@@ -104,14 +115,13 @@ export default function Navbar() {
             Home
           </NavLink>
           <NavLink to="/events" className={linkClass}>
-            Events
-          </NavLink>
-          <NavLink to="/events?category=Workshops" className={linkClass}>
+            Events</NavLink>
+          <Link to="/events?category=Workshops" className={linkClass({ isActive: false })}>
             Workshops
-          </NavLink>
-          <NavLink to="/events?category=Hackathons" className={linkClass}>
+          </Link>
+          <Link to="/events?category=Hackathons" className={linkClass({ isActive: false })}>
             Hackathons
-          </NavLink>
+          </Link>
           <NavLink to="/how-it-works" className={linkClass}>
             How it works
           </NavLink>
@@ -125,11 +135,11 @@ export default function Navbar() {
         <div className="flex items-center gap-2.5">
           <Link
             to="/organizer/dashboard"
-            className="hidden xl:inline-flex whitespace-nowrap items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-sm border-2 border-slate-900 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-accent-400 hover:border-accent-400 hover:text-slate-900 transition-colors duration-200"
+            className="hidden xl:inline-flex whitespace-nowrap items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-brand-200 dark:border-brand-800/80 bg-brand-50/50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 hover:bg-brand-100/70 dark:hover:bg-brand-900/50 transition-all duration-200"
           >
-            <span className="w-1.5 h-1.5 bg-accent-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
             <span>Host an Event</span>
-            <span className="text-[10px] font-mono opacity-60 font-bold uppercase tracking-wider">Abaabule</span>
+            <span className="text-[10px] text-brand-500 font-bold uppercase tracking-wider">Abaabule</span>
           </Link>
 
           <ThemeToggle />
@@ -214,8 +224,7 @@ export default function Navbar() {
                 Home
               </NavLink>
               <NavLink to="/events" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
-                All Events
-              </NavLink>
+                All Events</NavLink>
               <NavLink to="/events?category=Workshops" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
                 Workshops &amp; Labs
               </NavLink>
@@ -229,10 +238,10 @@ export default function Navbar() {
 
             <div className="py-2.5 space-y-1">
               <NavLink to="/organizer/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
-                Organizer Portal (Abaabule) â†’
+                Organizer Portal (Abaabule) →
               </NavLink>
               <NavLink to="/maamul/dashboard" className={mobileLinkClass} onClick={() => setMobileOpen(false)}>
-                Admin Console (Maamul) â†’
+                Admin Console (Maamul) →
               </NavLink>
             </div>
 
@@ -273,6 +282,3 @@ export default function Navbar() {
     </header>
   );
 }
-
-
-

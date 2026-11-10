@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
             subtitle="Comprehensive administration from curriculum setup to door check-in"
             actions={
               <Link to="/organizer/signup" className="btn btn-primary text-xs">
-                Open Organizer Account (Abaabule) â†’
+                Open Organizer Account (Abaabule) →
               </Link>
             }
           />
@@ -134,11 +134,11 @@ export default function HowItWorksPage() {
 
         {/* Ready to host CTA */}
         <div className="section mt-20 mb-8">
-          <div className="rounded-3xl bg-brand-50 p-8 sm:p-12 border border-slate-200 text-center max-w-3xl mx-auto dark:bg-brand-950/40 dark:border-slate-800">
-            <h2 className="display text-3xl sm:text-4xl text-slate-900 dark:text-white">
+          <div className="rounded-3xl bg-slate-900 p-8 sm:p-12 text-white border border-slate-800 text-center max-w-3xl mx-auto">
+            <h2 className="display text-3xl sm:text-4xl font-extrabold text-white">
               Ready to host your next educational event?
             </h2>
-            <p className="mt-4 text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-xl mx-auto">
+            <p className="mt-4 text-slate-300 text-sm sm:text-base max-w-xl mx-auto">
               Join leading academic institutions, tech accelerators, and community leaders using Kulan to deliver modern, verified event experiences.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
               </Link>
               <Link
                 to="/events"
-                className="btn btn-ghost px-6 py-3 text-sm"
+                className="btn btn-secondary px-6 py-3 text-sm bg-white/10 hover:bg-white/20 text-white border border-white/20"
               >
                 Explore Current Programs
               </Link>
@@ -158,4 +158,3 @@ export default function HowItWorksPage() {
     </PublicLayout>
   );
 }
-

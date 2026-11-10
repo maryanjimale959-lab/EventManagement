@@ -120,16 +120,17 @@ export default function EventsPage() {
   return (
     <PublicLayout>
       {/* Header section */}
-      <section className="border-b-2 border-slate-900 py-12 sm:py-16 dark:border-slate-700">
+      <section className="bg-slate-900 text-white border-b border-slate-800 py-14 sm:py-20 relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-brand-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="shell-wrap">
+        <div className="shell-wrap relative z-10">
           <div className="max-w-2xl">
-            <span className="eyebrow text-slate-900 dark:text-slate-300">[ All events ]</span>
-            <h1 className="display text-6xl sm:text-8xl uppercase text-slate-900 dark:text-white mt-3 leading-[0.9]">
-              Find an event
+            <span className="eyebrow text-brand-400">Discover Opportunities</span>
+            <h1 className="display text-4xl sm:text-5xl font-extrabold text-white mt-2">
+              Educational &amp; Tech Programs
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-              Lectures, workshops, hackathons and conferences. Filter by track, city and price.
+            <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
+              Explore upcoming academic conferences, hands-on development workshops, AI summits, competitive hackathons, and Islamic knowledge seminars.
             </p>
           </div>
 
@@ -153,13 +154,13 @@ export default function EventsPage() {
                 placeholder="Search by topic, speaker, university, or city..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-900 rounded-sm text-slate-900 placeholder-slate-500 text-sm focus:outline-none focus:shadow-[5px_5px_0_0_#121212] transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-white"
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-800/90 border border-slate-700/80 rounded-2xl text-white placeholder-slate-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/20 transition-all"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 text-xs font-semibold px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 dark:hover:text-white"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs font-semibold px-2 py-1 rounded bg-slate-700/50"
                 >
                   Clear
                 </button>
@@ -222,7 +223,7 @@ export default function EventsPage() {
                   key={r.id}
                   type="button"
                   onClick={() => setActiveRegion(r.id)}
-                  className={`px-3 py-1 rounded-sm font-mono uppercase text-[11px] tracking-wider font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
                     activeRegion === r.id
                       ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -245,9 +246,9 @@ export default function EventsPage() {
                   key={p.id}
                   type="button"
                   onClick={() => setPricingFilter(p.id)}
-                  className={`px-3 py-1 rounded-sm font-mono uppercase text-[11px] tracking-wider font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
                     pricingFilter === p.id
-                      ? "bg-accent-400 text-slate-900 font-bold"
+                      ? "bg-brand-600 text-white font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -309,7 +310,7 @@ export default function EventsPage() {
               }
             />
           ) : (
-            <div className="border-b-2 border-slate-900 dark:border-slate-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map(renderCard)}
             </div>
           )
@@ -318,6 +319,3 @@ export default function EventsPage() {
     </PublicLayout>
   );
 }
-
-
-
