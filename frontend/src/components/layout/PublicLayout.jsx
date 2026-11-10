@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../Navbar.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 
@@ -28,15 +28,15 @@ export default function PublicLayout({ children }) {
       <Navbar />
       <main className="flex-1">{children}</main>
 
-      <footer className="bg-slate-950 text-slate-400 mt-20">
+      <footer className="bg-slate-950 text-slate-400 mt-0">
         <div className="shell-wrap py-14 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm">
+              <div className="w-8 h-8 rounded-lg bg-accent-400 text-slate-900 flex items-center justify-center font-bold text-sm">
                 K
               </div>
               <span className="font-extrabold tracking-tight text-lg text-white">
-                Kulan<span className="text-brand-400">Events</span>
+                Kulan<span className="text-accent-400">Events</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm m-0">
@@ -97,7 +97,7 @@ export default function PublicLayout({ children }) {
 
         <div className="border-t border-white/10 py-6">
           <div className="shell-wrap flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <span>Â© {new Date().getFullYear()} Kulan Events. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Kulan Events. All rights reserved.</span>
             <div className="flex items-center gap-4">
               <Link to="/how-it-works" className="hover:text-slate-400 transition-colors">
                 Architecture
@@ -105,7 +105,7 @@ export default function PublicLayout({ children }) {
               <Link to="/contact" className="hover:text-slate-400 transition-colors">
                 Contact
               </Link>
-              <span className="text-slate-600">Â·</span>
+              <span className="text-slate-600">·</span>
               <span className="text-slate-400 font-medium">Knowledge &amp; Innovation</span>
             </div>
           </div>
@@ -114,5 +114,6 @@ export default function PublicLayout({ children }) {
     </div>
   );
 }
+
 
 

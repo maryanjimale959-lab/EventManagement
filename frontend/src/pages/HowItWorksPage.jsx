@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PublicLayout from "../components/layout/PublicLayout.jsx";
 import PageHero from "../components/PageHero.jsx";
 import Card from "../components/ui/Card.jsx";

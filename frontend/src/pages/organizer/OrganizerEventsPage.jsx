@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import OrganizerConsoleLayout from "../../components/layout/OrganizerConsoleLayout.jsx";
 import Card from "../../components/ui/Card.jsx";
@@ -213,7 +213,7 @@ export default function OrganizerEventsPage() {
             name="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search events, venues, citiesâ€¦"
+            placeholder="Search events, venues, cities…"
           />
         </div>
       </div>
@@ -223,7 +223,7 @@ export default function OrganizerEventsPage() {
       ) : filtered.length === 0 ? (
         <Card>
           <div className="text-center py-12">
-            <p className="text-4xl mb-2">ðŸŽª</p>
+            <p className="text-4xl mb-2">🎪</p>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">No Somali events found</h3>
             <p className="text-muted text-sm max-w-sm mx-auto mb-5">
               Create your first Somali event to start taking registrations and scanning door tickets.
@@ -255,15 +255,15 @@ export default function OrganizerEventsPage() {
                       )}
                     </div>
                     <p className="text-xs text-muted m-0 flex flex-wrap items-center gap-3">
-                      <span>ðŸ“ {ev.location}</span>
-                      <span>Â·</span>
-                      <span>ðŸ“… {new Date(ev.startDateTime).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
+                      <span>📍 {ev.location}</span>
+                      <span>·</span>
+                      <span>📅 {new Date(ev.startDateTime).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
                     </p>
                     <div className="mt-3 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600 dark:text-slate-300">
-                      <span>ðŸ‘¥ <strong>{ev.registrationCount || 0}</strong> Registered</span>
-                      <span>ðŸšª <strong>{ev.attendedCount || 0}</strong> Checked In</span>
-                      <span>ðŸ“¸ <strong>{ev.mediaCount || 0}</strong> Photos</span>
-                      {ev.revenue > 0 && <span className="text-amber-600 dark:text-amber-400 font-bold">ðŸ’° ${ev.revenue} USD</span>}
+                      <span>👥 <strong>{ev.registrationCount || 0}</strong> Registered</span>
+                      <span>🚪 <strong>{ev.attendedCount || 0}</strong> Checked In</span>
+                      <span>📸 <strong>{ev.mediaCount || 0}</strong> Photos</span>
+                      {ev.revenue > 0 && <span className="text-amber-600 dark:text-amber-400 font-bold">💰 ${ev.revenue} USD</span>}
                     </div>
                   </div>
                 </div>
@@ -274,7 +274,7 @@ export default function OrganizerEventsPage() {
                     variant={ev.checkInOpen ? "success" : "secondary"}
                     onClick={() => toggleCheckIn(ev._id, ev.checkInOpen)}
                   >
-                    {ev.checkInOpen ? "âœ“ Door Open" : "Open Door"}
+                    {ev.checkInOpen ? "✓ Door Open" : "Open Door"}
                   </Button>
                   <Link to={`/organizer/events/${ev._id}/registrations`}>
                     <Button size="sm" variant="ghost">Guest List</Button>
@@ -460,7 +460,7 @@ export default function OrganizerEventsPage() {
                           onClick={() => setForm((p) => ({ ...p, plans: p.plans.filter((_, i) => i !== idx) }))}
                           className="text-red-500 hover:text-red-700 text-sm px-1 font-bold"
                         >
-                          âœ•
+                          ✕
                         </button>
                       )}
                     </div>
@@ -481,7 +481,7 @@ export default function OrganizerEventsPage() {
                 Cancel
               </Button>
               <Button type="submit" variant="primary" disabled={saving}>
-                {saving ? "Savingâ€¦" : editingEvent ? "Save Changes" : "Publish Event"}
+                {saving ? "Saving…" : editingEvent ? "Save Changes" : "Publish Event"}
               </Button>
             </div>
           </form>

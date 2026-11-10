@@ -1,4 +1,4 @@
-﻿import dotenv from "dotenv";
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import connectDB from "../config/db.js";
 import User from "../models/User.js";
@@ -42,7 +42,7 @@ const demoEvents = [
     title: "Horn of Africa AI & Machine Learning Summit 2026",
     description:
       "A flagship technology conference convening AI researchers, machine learning practitioners, and technology leaders. Deep dives into multilingual LLM training for Somali dialects, autonomous systems, neural computing, and ethical AI deployment in emerging markets.",
-    location: "National Innovation & AI Hub, Mogadishu Â· In-Person & Streaming",
+    location: "National Innovation & AI Hub, Mogadishu · In-Person & Streaming",
     category: "Artificial Intelligence",
     coverImageUrl: "/images/edu-lecture.jpg",
     isPremium: true,

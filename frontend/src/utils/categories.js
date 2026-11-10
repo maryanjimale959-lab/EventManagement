@@ -1,4 +1,4 @@
-﻿export const EVENT_CATEGORIES = [
+export const EVENT_CATEGORIES = [
   "All",
   "Artificial Intelligence",
   "Technology",

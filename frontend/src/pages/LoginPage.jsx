@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import Card from "../components/ui/Card.jsx";
 import Input from "../components/ui/Input.jsx";
@@ -74,7 +74,7 @@ export default function LoginPage() {
               label="Password"
               name="password"
               type="password"
-              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
+              placeholder="••••••"
               value={form.password}
               onChange={handleChange}
               required

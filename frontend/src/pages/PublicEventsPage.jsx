@@ -6,15 +6,15 @@ import Loading from "../components/ui/Loading.jsx";
 import PublicLayout from "../components/layout/PublicLayout.jsx";
 import Hero from "../components/Hero.jsx";
 import EventCard from "../components/EventCard.jsx";
-import { EVENT_CATEGORIES, CATEGORY_METADATA, getCategoryMeta } from "../utils/categories.js";
+import { EVENT_CATEGORIES, getCategoryMeta } from "../utils/categories.js";
 
 const STEPS = [
-  { n: 1, title: "Find an event", desc: "Browse by track, city or price and open the one that fits." },
-  { n: 2, title: "Register", desc: "Reserve your place. The organizer approves it and your QR pass is issued." },
-  { n: 3, title: "Check in and learn", desc: "Scan at the door. Slides and photos unlock only for people who attended." },
+  { n: "01", title: "Find", desc: "Browse by topic, city or price and open the event that fits." },
+  { n: "02", title: "Register", desc: "Reserve a place. The organizer approves it and your QR pass is issued." },
+  { n: "03", title: "Attend", desc: "Scan at the door. Slides and photos unlock only for people who were there." },
 ];
 
-const TILE_CATEGORIES = EVENT_CATEGORIES.filter((c) => c !== "All");
+const TOPICS = EVENT_CATEGORIES.filter((c) => c !== "All");
 
 export default function PublicEventsPage() {
   const [events, setEvents] = useState([]);
@@ -43,118 +43,111 @@ export default function PublicEventsPage() {
     () => (category === "All" ? events : events.filter((e) => getCategoryMeta(e.category).label === category)),
     [events, category]
   );
-  const shown = filtered.slice(0, 6);
+  const shown = filtered.slice(0, 8);
+
+  const pick = (c) => {
+    setCategory((cur) => (cur === c ? "All" : c));
+    document.getElementById("agenda")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <PublicLayout>
       <Hero />
 
-      {/* Categories as tiles */}
-      <section className="shell-wrap section" id="categories">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="display m-0 text-3xl sm:text-4xl text-slate-900 dark:text-white">Browse by topic</h2>
-          <p className="mt-3 text-slate-500 dark:text-slate-400">Pick a track to see only the events that matter to you.</p>
-        </div>
-        <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {TILE_CATEGORIES.map((c) => {
-            const active = category === c;
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={() => {
-                  setCategory(active ? "All" : c);
-                  document.getElementById("events")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                aria-pressed={active}
-                className={`group rounded-3xl p-5 text-left transition-all duration-300 hover:-translate-y-1 ${
-                  active
-                    ? "bg-brand-600 text-white shadow-xl shadow-brand-600/25"
-                    : "bg-slate-50 text-slate-900 ring-1 ring-slate-200 hover:bg-white hover:shadow-xl hover:shadow-brand-900/10 dark:bg-slate-900 dark:text-white dark:ring-slate-800"
-                }`}
-              >
-                <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-extrabold ${active ? "bg-white/20 text-white" : "bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300"}`}>
-                  {(counts[c] || 0).toString()}
-                </span>
-                <span className="mt-4 block text-base font-bold leading-snug">{c}</span>
-                <span className={`mt-1 block text-xs leading-relaxed line-clamp-2 ${active ? "text-brand-100" : "text-slate-500 dark:text-slate-400"}`}>
-                  {CATEGORY_METADATA[c]?.description}
-                </span>
+      {/* Agenda */}
+      <section className="shell-wrap section" id="agenda">
+        <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
+          <div>
+            <p className="eyebrow m-0 text-slate-900 dark:text-slate-300">[ Agenda ]</p>
+            <h2 className="display m-0 mt-3 text-5xl uppercase text-slate-900 dark:text-white sm:text-7xl">
+              {category === "All" ? "Coming up" : category}
+            </h2>
+          </div>
+          <div className="font-mono text-sm uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            {filtered.length} event{filtered.length === 1 ? "" : "s"}
+            {category !== "All" && (
+              <button type="button" onClick={() => setCategory("All")} className="ml-4 underline underline-offset-4 hover:bg-accent-400 hover:text-slate-900">
+                Clear
               </button>
-            );
-          })}
+            )}
+          </div>
         </div>
-      </section>
 
-      {/* Events */}
-      <section className="bg-slate-50 py-16 sm:py-24 dark:bg-slate-900/40" id="events">
-        <div className="shell-wrap">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="display m-0 text-3xl sm:text-4xl text-slate-900 dark:text-white">
-                {category === "All" ? "Upcoming events" : category}
-              </h2>
-              <p className="mt-2 mb-0 text-slate-500 dark:text-slate-400">
-                {filtered.length} event{filtered.length === 1 ? "" : "s"}
-                {category !== "All" && (
-                  <button type="button" onClick={() => setCategory("All")} className="ml-3 font-semibold text-brand-600 hover:underline dark:text-brand-400">
-                    Clear filter
-                  </button>
-                )}
-              </p>
+        <div>
+          {loading && <Loading label="Loading events..." />}
+          {error && <p className="font-semibold text-rose-600">{error}</p>}
+          {!loading && !error && shown.length === 0 && (
+            <EmptyState title="Nothing here yet" description="Try another topic or check back soon." />
+          )}
+          {shown.length > 0 && (
+            <div key={category} className="border-b-2 border-slate-900 dark:border-slate-700 animate-[fadeUp_0.5s_ease-out]">
+              {shown.map((e) => (
+                <EventCard key={e._id} event={e} />
+              ))}
             </div>
-            <Link to="/events" className="btn btn-ghost">View all events</Link>
-          </div>
-
+          )}
           <div className="mt-8">
-            {loading && <Loading label="Loading events..." />}
-            {error && <p className="text-rose-600 text-sm font-semibold">{error}</p>}
-            {!loading && !error && shown.length === 0 && (
-              <EmptyState title="No events here yet" description="Try another topic or check back soon." />
-            )}
-            {shown.length > 0 && (
-              <div key={category} className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 animate-[fadeUp_0.5s_ease-out]">
-                {shown.map((e) => (
-                  <EventCard key={e._id} event={e} />
-                ))}
-              </div>
-            )}
+            <Link to="/events" className="btn btn-primary">All events →</Link>
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="shell-wrap section">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="display m-0 text-3xl sm:text-4xl text-slate-900 dark:text-white">How it works</h2>
-          <p className="mt-3 text-slate-500 dark:text-slate-400">Three simple steps from discovery to learning.</p>
+      {/* Topics as a typographic index */}
+      <section className="bg-slate-900 py-16 text-white sm:py-24 dark:bg-slate-900">
+        <div className="shell-wrap">
+          <p className="eyebrow m-0 text-accent-400">[ Topics ]</p>
+          <h2 className="display m-0 mt-3 text-5xl uppercase sm:text-7xl">Pick a track</h2>
+          <ul className="mt-10 m-0 list-none border-b border-slate-700 p-0">
+            {TOPICS.map((c, i) => (
+              <li key={c}>
+                <button
+                  type="button"
+                  onClick={() => pick(c)}
+                  className={`group flex w-full items-baseline gap-4 border-t border-slate-700 px-2 py-4 text-left transition-colors hover:bg-accent-400 hover:text-slate-900 sm:gap-8 sm:px-4 ${
+                    category === c ? "bg-accent-400 text-slate-900" : ""
+                  }`}
+                >
+                  <span className="font-mono text-sm opacity-60">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="display flex-1 text-3xl sm:text-5xl">{c}</span>
+                  <span className="font-mono text-sm">{counts[c] || 0}</span>
+                  <span className="translate-x-0 transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ol className="mt-10 grid list-none gap-6 p-0 md:grid-cols-3">
-          {STEPS.map((s) => (
-            <li key={s.n} className="rounded-3xl bg-slate-50 p-7 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-600 text-lg font-extrabold text-white">{s.n}</span>
-              <h3 className="mt-5 mb-0 text-xl font-bold text-slate-900 dark:text-white">{s.title}</h3>
-              <p className="mt-2 mb-0 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{s.desc}</p>
-            </li>
+      </section>
+
+      {/* Steps */}
+      <section className="shell-wrap section">
+        <p className="eyebrow m-0 text-slate-900 dark:text-slate-300">[ How it works ]</p>
+        <div className="mt-8 grid border-2 border-slate-900 dark:border-slate-700 md:grid-cols-3">
+          {STEPS.map((s, i) => (
+            <div key={s.n} className={`p-8 ${i > 0 ? "border-t-2 border-slate-900 md:border-l-2 md:border-t-0 dark:border-slate-700" : ""}`}>
+              <span className="display block text-7xl text-slate-900 dark:text-white">{s.n}</span>
+              <h3 className="mt-6 mb-0 text-2xl font-bold uppercase text-slate-900 dark:text-white">{s.title}</h3>
+              <p className="mt-2 mb-0 text-slate-600 dark:text-slate-400">{s.desc}</p>
+            </div>
           ))}
-        </ol>
+        </div>
       </section>
 
       {/* Organizer CTA */}
-      <section className="shell-wrap pb-16 sm:pb-24">
-        <div className="grid overflow-hidden rounded-3xl bg-brand-600 text-white lg:grid-cols-2">
-          <div className="p-8 sm:p-14 flex flex-col justify-center">
-            <p className="m-0 text-sm font-semibold text-brand-200">For organizers · Abaabule</p>
-            <h2 className="display m-0 mt-3 text-3xl sm:text-4xl text-white">Host your own workshop, lecture or conference.</h2>
-            <p className="mt-4 text-brand-100 leading-relaxed">
-              Publish events, approve registrations, scan QR passes at the door and share materials privately.
+      <section className="bg-accent-400">
+        <div className="shell-wrap grid gap-8 py-16 sm:py-24 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+          <div>
+            <p className="eyebrow m-0 text-slate-900">[ Organizers · Abaabule ]</p>
+            <h2 className="display m-0 mt-3 text-5xl uppercase text-slate-900 sm:text-7xl lg:text-8xl">Host an event.</h2>
+          </div>
+          <div>
+            <p className="m-0 text-lg text-slate-900">
+              Publish, approve registrations, scan QR passes at the door and share materials privately.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link to="/organizer/signup" className="btn bg-white !text-brand-700 hover:bg-brand-50">Become an organizer</Link>
-              <Link to="/organizer/login" className="btn !text-white ring-1 ring-white/40 hover:bg-white/10">Sign in</Link>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to="/organizer/signup" className="btn !bg-slate-900 !text-white hover:!bg-white hover:!text-slate-900 !border-slate-900">Become an organizer</Link>
+              <Link to="/organizer/login" className="btn !bg-transparent !text-slate-900 !border-slate-900 hover:!bg-slate-900 hover:!text-white">Sign in</Link>
             </div>
           </div>
-          <img src="/images/edu-library.jpg" alt="Students studying in a library" loading="lazy" className="h-64 w-full object-cover lg:h-full" />
         </div>
       </section>
     </PublicLayout>

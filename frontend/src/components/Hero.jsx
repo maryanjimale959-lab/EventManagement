@@ -1,7 +1,32 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const TRACKS = ["Artificial Intelligence", "Workshops", "Hackathons", "Islamic Studies", "Business", "Education"];
+const TRACKS = [
+  "Artificial Intelligence",
+  "Technology",
+  "Hackathons",
+  "Workshops",
+  "Islamic Studies",
+  "Business",
+  "Education",
+  "Professional Development",
+];
+
+function Marquee() {
+  const items = [...TRACKS, ...TRACKS];
+  return (
+    <div className="overflow-hidden border-y-2 border-slate-900 bg-slate-900 py-3 text-accent-400 dark:border-slate-700" aria-hidden="true">
+      <div className="flex w-max gap-10 whitespace-nowrap font-mono text-sm uppercase tracking-widest animate-[marquee_45s_linear_infinite] motion-reduce:animate-none">
+        {items.concat(items).map((t, i) => (
+          <span key={i} className="flex items-center gap-10">
+            {t}
+            <span>✦</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Hero() {
   const [term, setTerm] = useState("");
@@ -14,69 +39,58 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
-      <div className="shell-wrap pt-14 sm:pt-20 pb-6 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm ring-1 ring-brand-100 dark:bg-slate-900 dark:text-brand-300 dark:ring-slate-800">
-          <span className="h-2 w-2 rounded-full bg-accent-500" />
-          Education · Technology · AI · Business · Islamic Studies
-        </span>
+    <section>
+      <div className="shell-wrap pt-12 sm:pt-16">
+        <p className="eyebrow m-0 text-slate-900 dark:text-slate-200">[ Education · Tech · AI · Business · Islamic Studies ]</p>
 
-        <h1 className="display mx-auto mt-6 mb-0 max-w-4xl text-5xl sm:text-6xl lg:text-7xl text-slate-900 dark:text-white">
-          Learn something new at your next{" "}
-          <span className="text-brand-600 dark:text-brand-400">event.</span>
+        <h1 className="display mt-6 mb-0 text-[clamp(3.25rem,12vw,10.5rem)] uppercase leading-[0.95] text-slate-900 dark:text-white">
+          <span className="block">Learn.</span>
+          <span className="my-1 inline-block bg-accent-400 px-3 pb-1 leading-[0.9] text-slate-900">Build.</span>
+          <span className="block">Gather.</span>
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-          Discover workshops, lectures, hackathons and conferences. Register in a minute, check in
-          with a QR code, and keep the materials afterwards.
-        </p>
 
-        <form
-          onSubmit={submit}
-          className="mx-auto mt-9 flex max-w-2xl items-center gap-2 rounded-full bg-white p-2 shadow-xl shadow-brand-900/10 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-brand-500 dark:bg-slate-900 dark:ring-slate-800"
-        >
-          <svg className="ml-3 shrink-0 text-slate-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-          </svg>
-          <input
-            type="text"
-            value={term}
-            onChange={(e) => setTerm(e.target.value)}
-            placeholder="Search events, topics or cities"
-            aria-label="Search events"
-            className="min-w-0 flex-1 bg-transparent px-1 py-3 text-base text-slate-900 placeholder-slate-400 focus:outline-none dark:text-white"
-          />
-          <button type="submit" className="btn btn-primary shrink-0 !px-7 !py-3">
-            Search
-          </button>
-        </form>
+        <div className="mt-12 grid gap-10 border-t-2 border-slate-900 pt-8 dark:border-slate-700 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <p className="m-0 text-xl leading-snug text-slate-900 dark:text-slate-100">
+              Workshops, lectures, hackathons and conferences. Register, scan a QR at the door,
+              keep the materials.
+            </p>
 
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          {TRACKS.map((t) => (
-            <Link key={t} to={`/events?category=${encodeURIComponent(t)}`} className="category-chip">
-              {t}
-            </Link>
-          ))}
+            <form onSubmit={submit} className="mt-8 flex border-2 border-slate-900 bg-white focus-within:shadow-[5px_5px_0_0_#121212] dark:border-slate-500 dark:bg-slate-900 dark:focus-within:shadow-[5px_5px_0_0_#d4ff3a]">
+              <input
+                type="text"
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                placeholder="Search a topic, speaker or city"
+                aria-label="Search events"
+                className="min-w-0 flex-1 bg-transparent px-4 py-3.5 text-base text-slate-900 placeholder-slate-500 focus:outline-none dark:text-white"
+              />
+              <button type="submit" className="bg-slate-900 px-6 font-mono text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-accent-400 hover:text-slate-900 dark:bg-accent-400 dark:text-slate-900 dark:hover:bg-white">
+                Search
+              </button>
+            </form>
+
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm uppercase tracking-wider">
+              <Link to="/events" className="font-bold underline underline-offset-4 decoration-2 hover:bg-accent-400 hover:text-slate-900 dark:text-white">All events →</Link>
+              <Link to="/organizer/signup" className="underline underline-offset-4 hover:bg-accent-400 hover:text-slate-900 dark:text-white">Host one →</Link>
+            </div>
+          </div>
+
+          <div className="relative lg:col-span-7">
+            <img
+              src="/images/edu-hero.jpg"
+              alt="Students and a teacher working together at a study space"
+              className="aspect-[16/10] w-full border-2 border-slate-900 object-cover grayscale transition-all duration-700 hover:grayscale-0 dark:border-slate-600"
+            />
+            <span className="absolute -top-5 right-4 rotate-6 bg-accent-400 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-900 border-2 border-slate-900">
+              8 tracks open
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Image bento */}
-      <div className="shell-wrap pb-14 sm:pb-20 pt-10">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-6 sm:grid-rows-2 sm:h-[460px]">
-          <div className="col-span-2 sm:col-span-3 sm:row-span-2 overflow-hidden rounded-3xl h-64 sm:h-auto">
-            <img src="/images/edu-hero.jpg" alt="Students collaborating at a study space" className="h-full w-full object-cover" />
-          </div>
-          <div className="sm:col-span-3 overflow-hidden rounded-3xl h-40 sm:h-auto relative">
-            <img src="/images/edu-lecture.jpg" alt="Speaker at a lecture hall" className="h-full w-full object-cover" />
-          </div>
-          <div className="sm:col-span-2 overflow-hidden rounded-3xl h-40 sm:h-auto">
-            <img src="/images/edu-workshop.jpg" alt="Hands-on coding workshop" className="h-full w-full object-cover" />
-          </div>
-          <div className="sm:col-span-1 flex flex-col justify-center rounded-3xl bg-brand-600 p-5 text-white h-40 sm:h-auto">
-            <span className="display text-4xl">8</span>
-            <span className="mt-1 text-sm text-brand-100">learning tracks</span>
-          </div>
-        </div>
+      <div className="mt-16">
+        <Marquee />
       </div>
     </section>
   );

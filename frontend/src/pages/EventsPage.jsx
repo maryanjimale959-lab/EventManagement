@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import client from "../api/client.js";
 import EmptyState from "../components/ui/EmptyState.jsx";
@@ -120,13 +120,13 @@ export default function EventsPage() {
   return (
     <PublicLayout>
       {/* Header section */}
-      <section className="bg-gradient-to-b from-brand-50 to-white py-12 sm:py-16 dark:from-slate-900 dark:to-slate-950">
+      <section className="border-b-2 border-slate-900 py-12 sm:py-16 dark:border-slate-700">
 
         <div className="shell-wrap">
           <div className="max-w-2xl">
-            <span className="eyebrow text-brand-700 dark:text-brand-300">All events</span>
-            <h1 className="display text-4xl sm:text-5xl text-slate-900 dark:text-white mt-2">
-              Find your next event
+            <span className="eyebrow text-slate-900 dark:text-slate-300">[ All events ]</span>
+            <h1 className="display text-6xl sm:text-8xl uppercase text-slate-900 dark:text-white mt-3 leading-[0.9]">
+              Find an event
             </h1>
             <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
               Lectures, workshops, hackathons and conferences. Filter by track, city and price.
@@ -153,7 +153,7 @@ export default function EventsPage() {
                 placeholder="Search by topic, speaker, university, or city..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-300 rounded-full shadow-lg shadow-brand-900/5 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-white"
+                className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-900 rounded-sm text-slate-900 placeholder-slate-500 text-sm focus:outline-none focus:shadow-[5px_5px_0_0_#121212] transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-white"
               />
               {search && (
                 <button
@@ -222,7 +222,7 @@ export default function EventsPage() {
                   key={r.id}
                   type="button"
                   onClick={() => setActiveRegion(r.id)}
-                  className={`px-3 py-1 rounded-full font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-sm font-mono uppercase text-[11px] tracking-wider font-medium transition-colors ${
                     activeRegion === r.id
                       ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -245,9 +245,9 @@ export default function EventsPage() {
                   key={p.id}
                   type="button"
                   onClick={() => setPricingFilter(p.id)}
-                  className={`px-3 py-1 rounded-full font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-sm font-mono uppercase text-[11px] tracking-wider font-medium transition-colors ${
                     pricingFilter === p.id
-                      ? "bg-brand-600 text-white font-bold"
+                      ? "bg-accent-400 text-slate-900 font-bold"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -309,7 +309,7 @@ export default function EventsPage() {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="border-b-2 border-slate-900 dark:border-slate-700">
               {filtered.map(renderCard)}
             </div>
           )
@@ -318,5 +318,6 @@ export default function EventsPage() {
     </PublicLayout>
   );
 }
+
 
 
