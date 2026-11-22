@@ -24,12 +24,8 @@ const icons = {
 // didn't, added here so every colored-icon-badge in the app (stat cards
 // included) draws from one shared palette rather than two similar-but-not-
 // identical ones.
-const TONE_CLASSES = {
-  brand: "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300",
-  accent: "bg-accent-50 text-accent-600 dark:bg-accent-500/15 dark:text-accent-400",
-  success: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300",
-  slate: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-};
+const NEUTRAL = "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200";
+const TONE_CLASSES = { brand: NEUTRAL, accent: NEUTRAL, success: NEUTRAL, slate: NEUTRAL };
 
 const SIZE_CLASSES = {
   md: "w-12 h-12 rounded-2xl",

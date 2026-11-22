@@ -1,23 +1,14 @@
-import crypto from "crypto";
+﻿import crypto from "crypto";
 import mongoose from "mongoose";
-import Event, { EVENT_STATUSES, TRASH_RETENTION_DAYS, trashExpiryFor } from "../models/Event.js";
+import Event, { EVENT_STATUSES, TRASH_RETENTION_DAYS, trashExpiryFor, parseCapacity } from "../models/Event.js";
 import User from "../models/User.js";
 import Media from "../models/Media.js";
 import EventRegistration from "../models/EventRegistration.js";
 import { isStorageReady, removeMedia, storeMedia } from "../config/storage.js";
 import { logActivity } from "../utils/activityLog.js";
-import {
-  sendRegistrationApprovedEmail,
-  sendRegistrationRejectedEmail,
-} from "../config/mailer.js";
+import { decideRegistration, applyPayment, seatsTaken } from "../services/registrationService.js";
 
 const formatError = (code, message) => ({ error: { code, message } });
-
-const appBaseUrl = () =>
-  (process.env.APP_BASE_URL || process.env.CORS_ORIGIN || "http://localhost:5173").replace(/\/+$/, "");
-
-const generateRegistrationCode = () => `EVT-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
-const generateQrToken = () => crypto.randomBytes(32).toString("hex");
 
 // `published` is not in this list on purpose: the console UI only exposes
 // status, and published is derived from it below rather than being settable
@@ -39,11 +30,17 @@ const validateEventPayload = (body, isUpdate = false) => {
     "isPremium",
     "currency",
     "plans",
+    "capacity",
   ];
   const payload = {};
   allowed.forEach((key) => {
     if (body[key] !== undefined) payload[key] = body[key];
   });
+  if (payload.capacity !== undefined) {
+    const parsed = parseCapacity(payload.capacity);
+    if (parsed.error) return { error: formatError("VALIDATION_ERROR", parsed.error) };
+    payload.capacity = parsed.value;
+  }
   if (payload.status && !EVENT_STATUSES.includes(payload.status)) {
     return { error: formatError("VALIDATION_ERROR", `status must be one of: ${EVENT_STATUSES.join(", ")}`) };
   }
@@ -160,6 +157,37 @@ export const updateEvent = async (req, res, next) => {
     const { payload, error } = validateEventPayload(req.body, true);
     if (error) return res.status(400).json(error);
     const { eventId } = req.params;
+
+    const current = await Event.findById(eventId).select("isPremium capacity startDateTime endDateTime").lean();
+    if (!current) return res.status(404).json(formatError("NOT_FOUND", "Event not found"));
+
+    // The change a partial update can still get wrong: dates are validated as a
+    // pair above only when both are sent, so check against the stored one too.
+    const start = new Date(payload.startDateTime ?? current.startDateTime);
+    const end = new Date(payload.endDateTime ?? current.endDateTime);
+    if (end <= start) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "endDateTime must be after startDateTime"));
+    }
+
+    // Free and paid events are told apart at the door, so flipping one that
+    // already has guests would strand them with the wrong payment state.
+    if (payload.isPremium !== undefined && Boolean(payload.isPremium) !== current.isPremium) {
+      if ((await EventRegistration.countDocuments({ eventId })) > 0) {
+        return res.status(409).json(formatError("HAS_REGISTRATIONS", "This event already has registrations, so it cannot switch between free and paid."));
+      }
+    }
+
+    // Capacity can never drop below the guests already holding a place.
+    if (payload.capacity) {
+      const taken = await seatsTaken(eventId);
+      if (payload.capacity < taken) {
+        return res.status(409).json(formatError("CAPACITY_TOO_LOW", `${taken} places are already taken, so capacity cannot be set below that.`));
+      }
+    }
+
+    // A finished event has no door to keep open.
+    if (payload.status === "completed") payload.checkInOpen = false;
+
     const event = await Event.findByIdAndUpdate(eventId, payload, { new: true, runValidators: true })
       .populate("photographers", "fullName email avatarUrl")
       .lean();
@@ -481,6 +509,11 @@ export const setCheckInOpen = async (req, res, next) => {
     if (!event) return res.status(404).json(formatError("NOT_FOUND", "Event not found"));
 
     if (checkInOpen) {
+      if (event.status !== "registration-open") {
+        return res.status(409).json(
+          formatError("EVENT_NOT_LIVE", "Check-in can only be opened for a published event that has not been completed.")
+        );
+      }
       const registrationCount = await EventRegistration.countDocuments({ eventId });
       if (registrationCount === 0) {
         return res.status(400).json(
@@ -607,102 +640,21 @@ export const listEventRegistrations = async (req, res, next) => {
 };
 
 /**
- * Manually confirms (or reverses) payment for one premium-event registration.
- * This is the whole "payment gateway" for now - an admin reviews proof of
- * payment collected outside the app and flips this switch. A future gateway
- * integration would set paymentStatus/paymentMethod automatically instead,
- * without needing any schema change here.
- */
-/**
- * The admin's decision on who actually attends.
- *
- * Approving is what mints the registration code and QR token - they do not
- * exist before this - and emails them to the guest. Rejecting revokes them, so
- * a code that was already sent stops working at the door.
- *
- * A rejection is scoped to this event only: nothing on the user's account is
- * touched, and they remain free to register for anything else.
+ * The admin's decision on who actually attends. The rules live in
+ * registrationService so the organizer console behaves identically.
  */
 export const setRegistrationApproval = async (req, res, next) => {
   try {
     const { eventId, registrationId } = req.params;
     const { approvalStatus, note = "" } = req.body || {};
 
-    if (!["pending", "approved", "rejected"].includes(approvalStatus)) {
-      return res.status(400).json(
-        formatError("VALIDATION_ERROR", "approvalStatus must be pending, approved, or rejected")
-      );
-    }
-
     const registration = await EventRegistration.findOne({ _id: registrationId, eventId });
     if (!registration) return res.status(404).json(formatError("NOT_FOUND", "Registration not found"));
+    const event = await Event.findById(eventId).lean();
+    if (!event) return res.status(404).json(formatError("NOT_FOUND", "Event not found"));
 
-    // Someone already through the door cannot be un-approved: their attendance
-    // is a fact, and revoking the code would not undo it.
-    if (registration.attended && approvalStatus !== "approved") {
-      return res.status(409).json(
-        formatError("ALREADY_CHECKED_IN", "This guest is already checked in, so their approval cannot be withdrawn.")
-      );
-    }
-
-    const event = await Event.findById(eventId).select("title startDateTime location isPremium").lean();
-    const guest = await User.findById(registration.userId).select("fullName email").lean();
-
-    registration.approvalStatus = approvalStatus;
-    registration.decidedAt = new Date();
-    registration.decidedBy = req.user.userId;
-    registration.decisionNote = String(note || "").trim();
-
-    if (approvalStatus === "approved") {
-      // Issued once and then kept, so re-approving after a mistaken rejection
-      // does not invalidate a code the guest may already be holding.
-      if (!registration.registrationCode) registration.registrationCode = generateRegistrationCode();
-      if (!registration.qrToken) registration.qrToken = generateQrToken();
-    } else {
-      // Rejected or moved back to pending: the guest must have nothing to
-      // present. Clearing these is what makes an already-emailed code dead.
-      registration.registrationCode = undefined;
-      registration.qrToken = undefined;
-    }
-
-    await registration.save();
-
-    let emailDelivered = false;
-    if (guest?.email && approvalStatus !== "pending") {
-      try {
-        const result = approvalStatus === "approved"
-          ? await sendRegistrationApprovedEmail({
-              to: guest.email,
-              fullName: guest.fullName,
-              event,
-              registrationCode: registration.registrationCode,
-              qrToken: registration.qrToken,
-              note: registration.decisionNote,
-              statusUrl: `${appBaseUrl()}/dashboard/events/${eventId}/registration`,
-            })
-          : await sendRegistrationRejectedEmail({
-              to: guest.email,
-              fullName: guest.fullName,
-              event,
-              note: registration.decisionNote,
-              eventsUrl: `${appBaseUrl()}/events`,
-            });
-        emailDelivered = result.delivered;
-      } catch (err) {
-        // The decision stands even if the mail server is unreachable; the
-        // admin is told so they can pass the details on another way.
-        console.warn("Could not email the registration decision:", err.message);
-      }
-    }
-
-    await logActivity({
-      actor: req.user,
-      action: `registration.${approvalStatus}`,
-      summary: `${approvalStatus === "approved" ? "Approved" : approvalStatus === "rejected" ? "Rejected" : "Reset to pending"} ${guest?.fullName || "a guest"} for "${event?.title || "an event"}"`,
-      targetType: "registration",
-      targetId: registration._id,
-      targetLabel: guest?.fullName || "",
-    });
+    const result = await decideRegistration({ event, registration, approvalStatus, note, actor: req.user });
+    if (result.error) return res.status(result.status).json(result.error);
 
     return res.json({
       registration: {
@@ -713,45 +665,29 @@ export const setRegistrationApproval = async (req, res, next) => {
         registrationCode: registration.registrationCode || "",
         attended: registration.attended,
       },
-      emailDelivered,
+      emailDelivered: result.emailDelivered,
     });
   } catch (err) {
     return next(err);
   }
 };
 
+/**
+ * Manually confirms (or reverses) payment for one premium-event registration.
+ * An admin reviews proof of payment collected outside the app and flips this.
+ */
 export const setRegistrationPayment = async (req, res, next) => {
   try {
     const { eventId, registrationId } = req.params;
     const { paymentStatus, paymentReference } = req.body || {};
-    if (!["pending", "paid", "refunded"].includes(paymentStatus)) {
-      return res.status(400).json(formatError("VALIDATION_ERROR", "paymentStatus must be pending, paid, or refunded"));
-    }
 
     const registration = await EventRegistration.findOne({ _id: registrationId, eventId });
     if (!registration) return res.status(404).json(formatError("NOT_FOUND", "Registration not found"));
+    const event = await Event.findById(eventId).select("title isPremium").lean();
+    if (!event) return res.status(404).json(formatError("NOT_FOUND", "Event not found"));
 
-    registration.paymentStatus = paymentStatus;
-    if (paymentReference !== undefined) registration.paymentReference = paymentReference;
-    if (paymentStatus === "paid") {
-      registration.paymentConfirmedAt = new Date();
-      registration.paymentConfirmedBy = req.user.userId;
-    } else {
-      registration.paymentConfirmedAt = undefined;
-      registration.paymentConfirmedBy = undefined;
-    }
-    await registration.save();
-
-    const event = await Event.findById(eventId).select("title").lean();
-    await logActivity({
-      actor: req.user,
-      action: `registration.payment_${paymentStatus}`,
-      summary: `Marked payment ${paymentStatus} on "${event?.title || "an event"}"`,
-      targetType: "registration",
-      targetId: registration._id,
-      targetLabel: event?.title || "",
-    });
-
+    const result = await applyPayment({ event, registration, paymentStatus, paymentReference, actor: req.user });
+    if (result.error) return res.status(result.status).json(result.error);
     return res.json({ registration });
   } catch (err) {
     return next(err);

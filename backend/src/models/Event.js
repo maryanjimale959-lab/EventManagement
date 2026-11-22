@@ -33,6 +33,9 @@ const eventSchema = new mongoose.Schema({
   // event to let check-in actually happen. Independent of `status` so
   // registration can stay open before/after the check-in window.
   checkInOpen: { type: Boolean, default: false },
+  // Maximum number of guests. null means unlimited. Pending and approved
+  // registrations hold a seat; rejected ones release it.
+  capacity: { type: Number, default: null, min: 1 },
   coverImageUrl: { type: String, default: "" },
   coverImagePublicId: { type: String, default: "" },
   // Premium events require a paid plan to register. isPremium is set only at
@@ -80,9 +83,25 @@ eventSchema.pre(/^find/, function (next) {
   return next();
 });
 
-/** A guest may only take a place while the event is published and open. */
+/** An event is over once its end time has passed, whatever its status says. */
+export const hasEventEnded = (event, now = new Date()) =>
+  !!event?.endDateTime && new Date(event.endDateTime).getTime() < now.getTime();
+
+/** A guest may only take a place while the event is published, open, and not yet over. */
 export const canRegisterFor = (event) =>
-  !!event && event.published === true && event.status === "registration-open";
+  !!event &&
+  event.published === true &&
+  event.status === "registration-open" &&
+  !hasEventEnded(event);
+
+/** Parses a capacity input: blank/null means unlimited, otherwise a whole number >= 1. */
+export const parseCapacity = (value) => {
+  if (value === undefined) return { value: undefined };
+  if (value === null || value === "") return { value: null };
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1) return { error: "capacity must be a whole number of 1 or more, or left empty for unlimited" };
+  return { value: n };
+};
 
 /** Admins work every event; organizers work their own; photographers only the ones they are assigned to. */
 export const canManageEventMedia = (event, user) => {

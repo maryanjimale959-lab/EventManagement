@@ -44,6 +44,71 @@ const issueSession = async (user) => {
 };
 
 /**
+ * Reads and validates a signup body. Shared by the direct signup and the
+ * emailed-code signup so both accept exactly the same profile.
+ */
+const readSignupBody = (body = {}) => {
+  const { fullName, password } = body;
+  const email = normalise(body.email);
+
+  const profile = {};
+  for (const field of PROFILE_FIELDS) {
+    if (body[field] !== undefined && body[field] !== null && body[field] !== "") {
+      profile[field] = body[field];
+    }
+  }
+
+  // Every required profile field is checked in the same pass as the rest,
+  // so the form gets one complete map of what to fix instead of one error
+  // at a time.
+  const fields = validateProfile({ ...profile, fullName }, { requireAll: true });
+  if (!email) fields.email = "Email is required";
+  else if (!isValidEmail(email)) fields.email = "That email address looks invalid";
+  if (!password) fields.password = "Password is required";
+  else if (!isValidPassword(password)) fields.password = "Password must be at least 6 characters";
+
+  return { fullName, password, email, profile, fields };
+};
+
+/**
+ * Direct signup: validates, creates the account and signs the person in, with
+ * no emailed code. Used while the product is being built and tested; the
+ * code-based flow below is kept so verification can be switched back on by
+ * pointing the signup form at /signup/request again.
+ */
+export const signupDirect = async (req, res, next) => {
+  try {
+    const { fullName, password, email, profile, fields } = readSignupBody(req.body || {});
+    if (Object.keys(fields).length > 0) return res.status(400).json(fieldError(fields));
+
+    if (await User.findOne({ email })) {
+      return res.status(409).json({
+        error: {
+          code: "EMAIL_EXISTS",
+          message: "Email is already registered",
+          fields: { email: "That email is already registered" },
+        },
+      });
+    }
+
+    const user = await User.create({
+      ...profile,
+      dateOfBirth: profile.dateOfBirth ? new Date(profile.dateOfBirth) : null,
+      fullName: String(fullName).trim(),
+      email,
+      passwordHash: await bcrypt.hash(password, 10),
+      role: "attendee",
+      refreshTokens: [],
+    });
+
+    const tokens = await issueSession(user);
+    return res.status(201).json({ user: toUserDTO(user.toObject()), ...tokens });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
  * Step 1 of signup. Holds the whole account - profile included - against a
  * one-time code and emails it. No User document is created until the code is
  * verified, so cancelling leaves nothing behind.
@@ -54,24 +119,7 @@ const issueSession = async (user) => {
  */
 export const requestSignupOtp = async (req, res, next) => {
   try {
-    const { fullName, password } = req.body || {};
-    const email = normalise(req.body?.email);
-
-    const profile = {};
-    for (const field of PROFILE_FIELDS) {
-      if (req.body?.[field] !== undefined && req.body[field] !== null && req.body[field] !== "") {
-        profile[field] = req.body[field];
-      }
-    }
-
-    // Every required profile field is checked in the same pass as the rest,
-    // so the form gets one complete map of what to fix instead of one error
-    // at a time.
-    const fields = validateProfile({ ...profile, fullName }, { requireAll: true });
-    if (!email) fields.email = "Email is required";
-    else if (!isValidEmail(email)) fields.email = "That email address looks invalid";
-    if (!password) fields.password = "Password is required";
-    else if (!isValidPassword(password)) fields.password = "Password must be at least 6 characters";
+    const { fullName, password, email, profile, fields } = readSignupBody(req.body || {});
 
     if (Object.keys(fields).length > 0) return res.status(400).json(fieldError(fields));
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { adminClient } from "../../context/AdminAuthContext.jsx";
 import AdminConsoleLayout from "../../components/layout/AdminConsoleLayout.jsx";
@@ -24,7 +24,7 @@ const toLocalInput = (v) => {
 
 const BASE_EMPTY = {
   title: "", description: "", location: "",
-  startDateTime: "", endDateTime: "", visibility: "public", status: "draft",
+  startDateTime: "", endDateTime: "", visibility: "public", status: "draft", capacity: "",
 };
 // Non-premium form state never carries currency/plans keys at all, so the
 // standard console never sends them - only the premium page seeds these.
@@ -109,6 +109,7 @@ export default function AdminEventsConsolePage({ premium = false }) {
       endDateTime: toLocalInput(event.endDateTime),
       visibility: event.visibility || "public",
       status: event.status || "draft",
+      capacity: event.capacity ? String(event.capacity) : "",
       ...(premium
         ? {
             currency: event.currency || "USD",
@@ -147,6 +148,7 @@ export default function AdminEventsConsolePage({ premium = false }) {
         ...form,
         startDateTime: new Date(form.startDateTime).toISOString(),
         endDateTime: new Date(form.endDateTime).toISOString(),
+        capacity: form.capacity === "" ? null : Number(form.capacity),
       };
       if (premium) {
         payload.isPremium = true;
@@ -284,7 +286,7 @@ export default function AdminEventsConsolePage({ premium = false }) {
                 <div className="cover-thumb shrink-0">
                   {event.coverImageUrl
                     ? <img src={event.coverImageUrl} alt="" />
-                    : <span className="text-3xl" aria-hidden="true">🖼️</span>}
+                    : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="m3 16 5-5 4 4 3-3 6 6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="15.5" cy="9" r="1.5" /></svg>}
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -328,7 +330,7 @@ export default function AdminEventsConsolePage({ premium = false }) {
                   <span className="event-metric-label">Requested</span>
                 </Link>
                 <Link to={`/maamul/events/${event._id}/registrations`} className="event-metric">
-                  <span className="event-metric-value text-emerald-600 dark:text-emerald-400">
+                  <span className="event-metric-value text-slate-900 dark:text-slate-200">
                     {event.approvedCount ?? 0}
                   </span>
                   <span className="event-metric-label">Approved</span>
@@ -431,7 +433,7 @@ export default function AdminEventsConsolePage({ premium = false }) {
           <form onSubmit={submit}>
             <div className="flex gap-4 flex-col sm:flex-row mb-1">
               <div className="cover-thumb">
-                {coverPreview ? <img src={coverPreview} alt="Cover preview" /> : <span className="text-3xl" aria-hidden="true">🖼️</span>}
+                {coverPreview ? <img src={coverPreview} alt="Cover preview" /> : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="m3 16 5-5 4 4 3-3 6 6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="15.5" cy="9" r="1.5" /></svg>}
               </div>
               <div className="flex-1">
                 <label className="input-label">Cover image</label>
@@ -443,6 +445,7 @@ export default function AdminEventsConsolePage({ premium = false }) {
             <Input label="Title" id="title" name="title" value={form.title} onChange={handleChange} required />
             <Input label="Description" id="description" name="description" value={form.description} onChange={handleChange} />
             <Input label="Location" id="location" name="location" value={form.location} onChange={handleChange} />
+            <Input label="Capacity" id="capacity" type="number" min="1" step="1" name="capacity" placeholder="Unlimited" helper="Maximum guests. Leave empty for no limit." value={form.capacity} onChange={handleChange} />
             <div className="two-col">
               <Input label="Start" id="startDateTime" type="datetime-local" name="startDateTime" value={form.startDateTime} onChange={handleChange} required />
               <Input label="End" id="endDateTime" type="datetime-local" name="endDateTime" value={form.endDateTime} onChange={handleChange} required />

@@ -18,8 +18,8 @@ const STATUS_BADGE = { draft: "neutral", "registration-open": "success", complet
 const STATUS_LABEL = { draft: "Draft", "registration-open": "Registration open", completed: "Completed" };
 const STATUS_BAR_COLOR = {
   draft: "bg-slate-300 dark:bg-slate-600",
-  "registration-open": "bg-emerald-500",
-  completed: "bg-brand-500",
+  "registration-open": "bg-slate-900 dark:bg-white",
+  completed: "bg-slate-500",
 };
 
 function Stat({ label, value, hint, icon, tone = "brand" }) {
@@ -188,15 +188,15 @@ export default function AdminOverviewPage() {
                   <RateBar label="Overall check-in rate" done={totals.attended} total={totals.registrations} />
                   <div className="grid grid-3 !gap-3">
                     <div className="card-muted !p-3">
-                      <div className="text-xs uppercase">Registered</div>
+                      <div className="text-xs">Registered</div>
                       <strong className="text-lg">{totals.registrations}</strong>
                     </div>
                     <div className="card-muted !p-3">
-                      <div className="text-xs uppercase">Checked in</div>
+                      <div className="text-xs">Checked in</div>
                       <strong className="text-lg">{totals.attended}</strong>
                     </div>
                     <div className="card-muted !p-3">
-                      <div className="text-xs uppercase">Media files</div>
+                      <div className="text-xs">Media files</div>
                       <strong className="text-lg">{totals.media}</strong>
                     </div>
                   </div>

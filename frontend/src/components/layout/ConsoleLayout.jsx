@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Avatar from "../Avatar.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
+import Logo from "../Logo.jsx";
 
 /**
  * Standalone application shell for a role's console (admin, photographer).
@@ -52,19 +53,7 @@ export default function ConsoleLayout({
 
       <aside className={`console-sidebar ${sidebarOpen ? "is-open" : ""}`}>
         <div className="console-logo">
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="15" stroke="url(#consoleLogoGrad)" strokeWidth="2" />
-            <path d="M16 6 L23 12 L23 20 L16 26 L9 20 L9 12 Z" stroke="url(#consoleLogoGrad)" strokeWidth="1.6" fill="none" />
-            <circle cx="16" cy="16" r="4.5" fill="url(#consoleLogoGrad)" />
-            <defs>
-              <linearGradient id="consoleLogoGrad" x1="0" y1="0" x2="32" y2="32">
-                <stop offset="0" stopColor="#818cf8" />
-                <stop offset="1" stopColor="#6366f1" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <span>EventMedia</span>
-          {brandLabel && <span className="badge badge-info ml-auto">{brandLabel}</span>}
+          <Logo size={26} label={brandLabel} />
         </div>
 
         <nav className="console-nav">
@@ -95,7 +84,7 @@ export default function ConsoleLayout({
         <header className="console-topbar">
           <button
             type="button"
-            className="lg:hidden w-9 h-9 inline-flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="theme-toggle lg:hidden"
             onClick={() => setSidebarOpen((o) => !o)}
             aria-label="Toggle menu"
           >
@@ -105,7 +94,7 @@ export default function ConsoleLayout({
           </button>
 
           <div className="min-w-0 flex-1">
-            {title && <h1 className="text-lg font-extrabold m-0 truncate">{title}</h1>}
+            {title && <h1 className="text-xl m-0 truncate">{title}</h1>}
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -120,7 +109,7 @@ export default function ConsoleLayout({
               >
                 <Avatar user={user} size="sm" />
                 <span className="hidden sm:flex flex-col items-start leading-tight max-w-[9rem]">
-                  <span className="text-sm font-bold truncate w-full text-left">
+                  <span className="text-sm font-semibold truncate w-full text-left">
                     {user?.firstName || user?.fullName || "Account"}
                   </span>
                   <span className="text-xs text-muted capitalize truncate w-full text-left">{user?.role}</span>
@@ -129,7 +118,7 @@ export default function ConsoleLayout({
               {menuOpen && (
                 <div className="menu" role="menu">
                   <div className="px-3 py-2">
-                    <div className="font-bold truncate">{user?.fullName}</div>
+                    <div className="font-semibold text-sm truncate">{user?.fullName}</div>
                     <div className="text-muted text-xs truncate">{user?.email}</div>
                   </div>
                   <div className="menu-divider" />

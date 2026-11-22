@@ -20,7 +20,7 @@ const guestSteps = [
   {
     icon: "unlock",
     title: "Unlock keynote archives & media",
-    desc: "The moment you check in, all exclusive lecture slides, recorded sessions, and private event photo galleries unlock strictly for verified attendees.",
+    desc: "The moment you check in, all exclusive slides, recorded sessions, and private event photo galleries unlock strictly for verified attendees.",
   },
 ];
 
@@ -47,7 +47,7 @@ const organizerSteps = [
     icon: "unlock",
     role: "Organizer & Media Team",
     title: "Distribute gated learning resources",
-    desc: "Upload official lecture materials, slide decks, and high-resolution event media directly to the private archive reserved for checked-in participants.",
+    desc: "Upload official event materials, slide decks, and high-resolution event media directly to the private archive reserved for checked-in participants.",
   },
 ];
 
@@ -73,7 +73,7 @@ export default function HowItWorksPage() {
               <Card key={step.title} className="relative p-6">
                 <div className="flex items-start justify-between">
                   <IconBadge icon={step.icon} tone="brand" />
-                  <span className="text-slate-200 dark:text-slate-800 font-display font-extrabold text-4xl leading-none">
+                  <span className="text-slate-200 dark:text-slate-800 font-display font-semibold text-4xl leading-none">
                     {String(idx + 1).padStart(2, "0")}
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export default function HowItWorksPage() {
                   </div>
                   <div className="pt-1 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/60 px-2 py-0.5 rounded">
+                      <span className="text-[11px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/60 px-2 py-0.5 rounded">
                         {step.role}
                       </span>
                       <span className="text-xs text-slate-400 font-semibold">Step 0{idx + 1}</span>
@@ -135,7 +135,7 @@ export default function HowItWorksPage() {
         {/* Ready to host CTA */}
         <div className="section mt-20 mb-8">
           <div className="rounded-3xl bg-slate-900 p-8 sm:p-12 text-white border border-slate-800 text-center max-w-3xl mx-auto">
-            <h2 className="display text-3xl sm:text-4xl font-extrabold text-white">
+            <h2 className="display text-3xl sm:text-4xl font-semibold text-white">
               Ready to host your next educational event?
             </h2>
             <p className="mt-4 text-slate-300 text-sm sm:text-base max-w-xl mx-auto">

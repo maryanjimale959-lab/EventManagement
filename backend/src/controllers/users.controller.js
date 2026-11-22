@@ -172,8 +172,13 @@ export const getMyRegistrations = async (req, res, next) => {
 
         // Approval sits between requesting a place and turning up for it, so
         // a guest can see they are waiting on the organiser rather than on
-        // the day of the event.
-        let stage = approvalStatus === "approved" ? "approved" : "requested";
+        // the day of the event. A rejected registration leaves the journey.
+        let stage =
+          approvalStatus === "rejected"
+            ? "rejected"
+            : approvalStatus === "approved"
+              ? "approved"
+              : "requested";
         if (reg.attended && mediaCount > 0) stage = "gallery-ready";
         else if (reg.attended) stage = "checked-in";
 
@@ -211,18 +216,19 @@ export const getMyRegistrations = async (req, res, next) => {
       });
 
     const stats = {
-      total: items.length,
+      total: items.filter((i) => i.approvalStatus !== "rejected").length,
       attended: items.filter((i) => i.attended).length,
-      pending: items.filter((i) => !i.attended && !i.hasEnded).length,
+      // Only approved guests who have not yet checked in are awaiting check-in.
+      pending: items.filter((i) => i.approvalStatus === "approved" && !i.attended && !i.hasEnded).length,
       awaitingApproval: items.filter((i) => i.approvalStatus === "pending" && !i.hasEnded).length,
       approved: items.filter((i) => i.approvalStatus === "approved").length,
       rejected: items.filter((i) => i.approvalStatus === "rejected").length,
-      missed: items.filter((i) => !i.attended && i.hasEnded).length,
+      missed: items.filter((i) => i.approvalStatus === "approved" && !i.attended && i.hasEnded).length,
       galleriesAvailable: items.filter((i) => i.stage === "gallery-ready").length,
       photosAvailable: items
         .filter((i) => i.attended)
         .reduce((sum, i) => sum + i.mediaCount, 0),
-      upcoming: items.filter((i) => !i.hasEnded).length,
+      upcoming: items.filter((i) => i.approvalStatus !== "rejected" && !i.hasEnded).length,
     };
 
     return res.json({ registrations: items, stats });

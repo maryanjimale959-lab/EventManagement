@@ -1,173 +1,96 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import client from "../api/client.js";
-import { CountUp } from "../hooks/useMotion.jsx";
+﻿import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { CountUp, Reveal } from "../hooks/useMotion.jsx";
 
-const WORDS = ["workshops", "AI summits", "hackathons", "lectures", "startups"];
-const QUICK_TRACKS = [
-  { label: "Artificial Intelligence", query: "Artificial Intelligence" },
-  { label: "Workshops", query: "Workshops" },
-  { label: "Hackathons", query: "Hackathons" },
-  { label: "Islamic Studies", query: "Islamic Studies" },
-  { label: "Business", query: "Business" },
+const FACTS = [
+  { title: "Free and ticketed events", desc: "Choose a plan at registration and see the price before you commit." },
+  { title: "A QR pass for the door", desc: "Approved attendees get a personal code that is scanned once at check-in." },
+  { title: "Slides and photos afterwards", desc: "Materials from the event unlock for the people who attended." },
 ];
 
+const STATS = [
+  { value: 6, suffix: "", label: "event tracks" },
+  { value: 1, suffix: " scan", label: "per pass, never reused" },
+  { value: 3, suffix: " roles", label: "attendee, organizer, admin" },
+];
+
+const Arrow = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);
+
 export default function Hero() {
-  const [term, setTerm] = useState("");
-  const [open, setOpen] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [wordIdx, setWordIdx] = useState(0);
-  const boxRef = useRef(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    client.get("/api/events/public").then((r) => setEvents(r.data)).catch(() => {});
-  }, []);
-
-  // Rotate the headline word slowly; no rotation for reduced-motion users.
-  useEffect(() => {
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
-    const id = setInterval(() => setWordIdx((i) => (i + 1) % WORDS.length), 2800);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    const onDown = (e) => boxRef.current && !boxRef.current.contains(e.target) && setOpen(false);
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, []);
-
-  const matches = useMemo(() => {
-    const q = term.trim().toLowerCase();
-    if (!q) return [];
-    return events
-      .filter((e) => `${e.title} ${e.category || ""} ${e.location || ""}`.toLowerCase().includes(q))
-      .slice(0, 5);
-  }, [events, term]);
-
-  const stats = useMemo(() => {
-    const cats = new Set(events.map((e) => e.category).filter(Boolean));
-    const places = new Set(
-      events.map((e) => (e.location || "").split(",").pop().trim().toLowerCase()).filter(Boolean)
-    );
-    return { events: events.length, tracks: cats.size, places: places.size };
-  }, [events]);
-
-  const submit = (e) => {
-    e.preventDefault();
-    setOpen(false);
-    const q = term.trim();
-    navigate(q ? `/events?search=${encodeURIComponent(q)}` : "/events");
-  };
+  const { isAuthed } = useAuth();
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 text-white">
-      {/* Slow ambient background */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <img src="/images/edu-hero.jpg" alt="" className="h-full w-full object-cover opacity-20 mix-blend-luminosity" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/90 to-slate-950" />
-        <div className="blob-a absolute -top-24 left-[8%] h-[420px] w-[420px] rounded-full bg-brand-600/25 blur-[120px]" />
-        <div className="blob-b absolute top-1/3 right-[6%] h-[360px] w-[360px] rounded-full bg-sky-500/15 blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-            maskImage: "radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%)",
-            WebkitMaskImage: "radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%)",
-          }}
+    <section className="relative isolate overflow-hidden border-b border-slate-200 dark:border-slate-800">
+      {/* The photo fills the section but stays faint, so the headline reads first. */}
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        <img
+          src="/images/kulan-symposium.jpg"
+          alt=""
+          fetchpriority="high"
+          className="h-full w-full object-cover object-[center_40%] opacity-[0.42] saturate-[0.6] dark:opacity-[0.3]"
         />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-50/90 via-slate-50/55 to-slate-50/10 dark:from-slate-950/90 dark:via-slate-950/60 dark:to-slate-950/20" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-50/80 to-transparent dark:from-slate-950" />
       </div>
 
-      <div className="shell-wrap relative z-10 py-20 sm:py-28 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-300">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-brand-400" />
-          Education · Technology · AI · Islamic Studies
-        </span>
-
-        <h1 className="display mx-auto mt-6 mb-0 max-w-4xl text-4xl font-extrabold leading-[1.08] sm:text-6xl lg:text-7xl">
-          Discover{" "}
-          <span key={wordIdx} className="word-swap bg-gradient-to-r from-brand-300 to-sky-300 bg-clip-text text-transparent">
-            {WORDS[wordIdx]}
-          </span>
-          <br />
-          worth showing up for.
-        </h1>
-
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-          Find lectures, practical workshops, competitions and conferences. Register in a minute,
-          check in with a QR pass, and keep the materials afterwards.
-        </p>
-
-        {/* Live search */}
-        <div ref={boxRef} className="relative mx-auto mt-9 max-w-2xl text-left">
-          <form
-            onSubmit={submit}
-            className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-md transition-colors focus-within:border-brand-400/60 focus-within:bg-white/10"
+      <div className="shell-wrap py-20 sm:py-28 lg:py-32">
+        <div className="min-w-0 max-w-4xl">
+          <h1
+            className="display-serif rise m-0 text-5xl text-slate-950 sm:text-6xl lg:text-7xl dark:text-white"
+            style={{ animationDelay: "80ms" }}
           >
-            <svg className="ml-3 shrink-0 text-slate-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-            </svg>
-            <input
-              type="text"
-              value={term}
-              onChange={(e) => {
-                setTerm(e.target.value);
-                setOpen(true);
-              }}
-              onFocus={() => setOpen(true)}
-              placeholder="Try “AI”, “workshop” or “Hargeisa”"
-              aria-label="Search events"
-              className="min-w-0 flex-1 bg-transparent px-1 py-3 text-base text-white placeholder-slate-400 focus:outline-none"
-            />
-            <button type="submit" className="btn btn-primary shrink-0 !px-6 !py-3">Search</button>
-          </form>
+            Find your next event and register in minutes.
+          </h1>
 
-          {open && term.trim() && (
-            <ul className="absolute left-0 right-0 top-full z-20 mt-2 list-none overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 p-1.5 shadow-2xl backdrop-blur-xl animate-[fadeUp_0.25s_ease-out]">
-              {matches.length === 0 && <li className="px-4 py-3 text-sm text-slate-400">No matching events yet.</li>}
-              {matches.map((e) => (
-                <li key={e._id}>
-                  <Link to={`/events/${e._id}`} className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition-colors hover:bg-white/10">
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold text-white">{e.title}</span>
-                      <span className="block truncate text-xs text-slate-400">{e.category || "General"} · {e.location || "Online"}</span>
-                    </span>
-                    <span className="text-brand-300">→</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          <p
+            className="rise mt-6 max-w-xl text-lg leading-8 text-slate-700 sm:text-xl sm:leading-9 dark:text-slate-300"
+            style={{ animationDelay: "160ms" }}
+          >
+            Workshops, hackathons, conferences and summits in one place. Get a QR pass for the door, and keep the
+            slides and photos afterwards.
+          </p>
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs">
-          {QUICK_TRACKS.map((t) => (
-            <Link
-              key={t.query}
-              to={`/events?category=${encodeURIComponent(t.query)}`}
-              className="rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-slate-300 transition-all hover:-translate-y-0.5 hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white"
-            >
-              {t.label}
+          <div className="rise mt-10 flex flex-wrap items-center gap-3" style={{ animationDelay: "240ms" }}>
+            <Link to={isAuthed ? "/dashboard" : "/events"} className="btn btn-primary link-arrow !px-6 !py-3 text-base">
+              Browse events <Arrow />
             </Link>
-          ))}
-        </div>
+            {isAuthed ? (
+              <Link to="/dashboard" className="btn btn-ghost !px-6 !py-3 text-base">My registrations</Link>
+            ) : (
+              <>
+                <Link to="/register" className="btn btn-ghost !px-6 !py-3 text-base">Create account</Link>
+                <Link to="/login" className="btn btn-ghost !px-6 !py-3 text-base">Log in</Link>
+              </>
+            )}
+          </div>
 
-        <div className="mx-auto mt-14 grid max-w-xl grid-cols-3 gap-4 border-t border-white/10 pt-8">
-          {[
-            { v: stats.events, l: "Live events" },
-            { v: stats.tracks, l: "Learning tracks" },
-            { v: stats.places, l: "Locations" },
-          ].map((s) => (
-            <div key={s.l}>
-              <div className="display text-3xl font-extrabold text-white sm:text-4xl">
-                <CountUp value={s.v} />
+          <dl className="rise m-0 mt-14 grid max-w-2xl grid-cols-3 gap-6" style={{ animationDelay: "320ms" }}>
+            {STATS.map((s) => (
+              <div key={s.label}>
+                <dt className="display text-3xl text-slate-950 sm:text-4xl dark:text-white">
+                  <CountUp value={s.value} suffix={s.suffix} />
+                </dt>
+                <dd className="m-0 mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">{s.label}</dd>
               </div>
-              <div className="mt-1 text-xs text-slate-400">{s.l}</div>
-            </div>
-          ))}
+            ))}
+          </dl>
+        </div>
+      </div>
+
+      <div className="border-t border-slate-900/10 bg-slate-50/50 backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/40">
+        <div className="shell-wrap">
+          <dl className="m-0 grid gap-6 py-8 sm:grid-cols-3 sm:gap-10">
+            {FACTS.map((f, i) => (
+              <Reveal key={f.title} delay={i * 90}>
+                <dt className="text-base font-semibold text-slate-950 dark:text-white">{f.title}</dt>
+                <dd className="m-0 mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.desc}</dd>
+              </Reveal>
+            ))}
+          </dl>
         </div>
       </div>
     </section>

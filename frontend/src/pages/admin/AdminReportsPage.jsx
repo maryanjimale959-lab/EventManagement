@@ -15,11 +15,11 @@ const ICONS = {
 };
 
 const TONE = {
-  user: "text-brand-600 bg-brand-50 dark:text-brand-300 dark:bg-brand-500/15",
-  event: "text-accent-600 bg-accent-50 dark:text-accent-400 dark:bg-accent-500/15",
-  registration: "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/15",
-  media: "text-slate-600 bg-slate-100 dark:text-slate-300 dark:bg-slate-800",
-  message: "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-500/15",
+  user: "text-slate-700 bg-slate-100 dark:text-slate-300 dark:bg-slate-800",
+  event: "text-slate-700 bg-slate-100 dark:text-slate-300 dark:bg-slate-800",
+  registration: "text-slate-700 bg-slate-100 dark:text-slate-300 dark:bg-slate-800",
+  media: "text-slate-700 bg-slate-100 dark:text-slate-300 dark:bg-slate-800",
+  message: "text-slate-700 bg-slate-100 dark:text-slate-300 dark:bg-slate-800",
 };
 
 const categoryOf = (action) => action.split(".")[0];

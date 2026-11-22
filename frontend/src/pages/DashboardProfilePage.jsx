@@ -297,12 +297,12 @@ export default function DashboardProfilePage() {
           <h3 className="mt-0 mb-3 text-lg font-bold">Account</h3>
           <div className="two-col">
             <div className="card-muted">
-              <div className="text-xs uppercase tracking-wide">Email</div>
+              <div className="text-xs">Email</div>
               <strong>{user?.email}</strong>
               <p className="text-sm m-0 mt-1">Email cannot be changed here.</p>
             </div>
             <div className="card-muted">
-              <div className="text-xs uppercase tracking-wide">Member since</div>
+              <div className="text-xs">Member since</div>
               <strong>
                 {user?.createdAt
                   ? new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(user.createdAt))

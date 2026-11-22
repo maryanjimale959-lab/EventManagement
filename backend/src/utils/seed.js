@@ -39,80 +39,116 @@ const dayOffset = (days, hourUtc) => {
 
 const demoEvents = [
   {
-    title: "Horn of Africa AI & Machine Learning Summit 2026",
+    title: "Mogadishu Tech Summit (MTS)",
     description:
-      "A flagship technology conference convening AI researchers, machine learning practitioners, and technology leaders. Deep dives into multilingual LLM training for Somali dialects, autonomous systems, neural computing, and ethical AI deployment in emerging markets.",
-    location: "National Innovation & AI Hub, Mogadishu · In-Person & Streaming",
-    category: "Artificial Intelligence",
-    coverImageUrl: "/images/edu-lecture.jpg",
+      "Somalia's flagship annual technology and innovation summit organized with iRise Hub and ecosystem partners. Brings together software engineers, startup founders, telecom leaders, policymakers, and students for keynotes, product demos, and panels on digital public infrastructure, fintech, and AI in Somalia.",
+    location: "iRise Hub & Decale Conference Center, Mogadishu, Somalia",
+    category: "Technology",
+    coverImageUrl: "/images/kulan-symposium.jpg",
+    capacity: 250,
     isPremium: true,
     currency: "USD",
     plans: [
-      { name: "Academic / Student Pass", price: 15, description: "Full technical sessions, research tracks & lab access." },
-      { name: "Professional & Researcher Pass", price: 60, description: "VIP research symposium, executive networking & AI workshop kit." },
+      { name: "Student Pass", price: 0, description: "Complimentary access for university students with valid student ID." },
+      { name: "General Delegate", price: 20, description: "Full access to all main-stage sessions, startup expo & networking." },
+      { name: "Executive & Investor Pass", price: 75, description: "VIP seating, founder deal-room access & private dinner." },
     ],
-    startDateTime: dayOffset(5, 9),
-    endDateTime: dayOffset(5, 18),
+    startDateTime: dayOffset(6, 9),
+    endDateTime: dayOffset(7, 17),
   },
   {
-    title: "Full-Stack Cloud & Scalable Systems Hackathon",
+    title: "SomNOG Annual Meeting & Network Engineering Workshops",
     description:
-      "A fast-paced 48-hour collaborative engineering hackathon. Engineers, designers, and students team up to build resilient cloud architectures, fintech integrations, and digital public goods. Mentored by senior industry architects.",
-    location: "Puntland State University Computing Center, Garowe",
-    category: "Hackathons",
-    coverImageUrl: "/images/edu-workshop.jpg",
-    isPremium: false,
-    startDateTime: dayOffset(12, 10),
-    endDateTime: dayOffset(14, 18),
-  },
-  {
-    title: "Islamic Intellectual Thought & Contemporary Ethics Forum",
-    description:
-      "An esteemed scholarly gathering exploring Islamic philosophy, digital ethics, jurisprudence (Fiqh al-Mu'amalat) in modern commerce, and moral stewardship. Featuring keynote lectures by international academics and Islamic scholars.",
-    location: "Grand Cultural & Research Auditorium, Hargeisa",
-    category: "Islamic Studies",
-    coverImageUrl: "/images/edu-library.jpg",
-    isPremium: false,
-    startDateTime: dayOffset(18, 14),
-    endDateTime: dayOffset(18, 21),
-  },
-  {
-    title: "Somali Founders & Venture Capital Masterclass",
-    description:
-      "An intensive executive seminar designed for high-growth entrepreneurs, angel syndicates, and diaspora investors. Covering cross-border capital, term sheets, corporate governance, unit economics, and regional expansion.",
-    location: "Mogadishu Serena Executive Conference Center",
-    category: "Business",
-    coverImageUrl: "/images/edu-hero.jpg",
-    isPremium: true,
-    currency: "USD",
-    plans: [
-      { name: "Founder Ticket", price: 30, description: "Full access to investor panels & startup showcases." },
-      { name: "Investor & Executive Circle", price: 95, description: "Private dealmaking dinner, pitch books & VIP networking." },
-    ],
-    startDateTime: dayOffset(25, 9),
-    endDateTime: dayOffset(25, 17),
-  },
-  {
-    title: "Applied Deep Learning with PyTorch & Modern DevOps Workshop",
-    description:
-      "A hands-on, code-first weekend workshop. Participants train custom neural networks, fine-tune open weights, build automated CI/CD container pipelines, and deploy production endpoints on Kubernetes clusters.",
-    location: "Advanced Tech Lab, Mogadishu University Computing Campus",
+      "Hosted by the Somali Network Operators Group (SomNOG) and the Internet Society Somalia Chapter (ISOC-SO). Hands-on technical workshops covering BGP routing, DNSSEC, network security, IXP peering, and cloud infrastructure for Somali ISP engineers, sysadmins, and ICT students.",
+    location: "SIMAD University Main Campus, Mogadishu, Somalia",
     category: "Workshops",
-    coverImageUrl: "/images/edu-lecture.jpg",
+    coverImageUrl: "/images/edu-workshop.jpg",
+    capacity: 120,
     isPremium: false,
-    startDateTime: dayOffset(32, 9),
-    endDateTime: dayOffset(33, 17),
+    startDateTime: dayOffset(11, 9),
+    endDateTime: dayOffset(13, 17),
   },
   {
-    title: "Pan-Somali Academic Fellowship & Youth Leadership Symposium",
+    title: "SIMAD iLab Simathon — Innovation & AI Hackathon",
     description:
-      "Empowering students and recent graduates with academic research grants, international scholarship mentorship, scientific publishing workshops, and career advancement tracks in higher education.",
-    location: "Halane International Convention Center, Mogadishu",
+      "A 48-hour build weekend hosted by SIMAD iLab, Mogadishu's leading university startup incubator. Student developers, designers, and product builders team up to prototype Somali-language AI tools, civic-tech apps, and mobile-money fintech products with live mentorship and demo-day judging.",
+    location: "SIMAD iLab, Mogadishu, Somalia",
+    category: "Hackathons",
+    coverImageUrl: "/images/edu-lecture.jpg",
+    capacity: 90,
+    isPremium: false,
+    startDateTime: dayOffset(16, 9),
+    endDateTime: dayOffset(18, 18),
+  },
+  {
+    title: "Hargeysa International Book Fair (HIBF)",
+    description:
+      "Established by the Redsea Cultural Foundation, HIBF is the largest public literary and cultural festival in the Horn of Africa. Features Somali and international authors, poets, historians, book launches, panel discussions, and visual arts exhibitions celebrating Somali literature and knowledge.",
+    location: "Hargeysa Cultural Centre, Hargeisa, Somaliland",
     category: "Education",
     coverImageUrl: "/images/edu-library.jpg",
+    capacity: 400,
     isPremium: false,
-    startDateTime: dayOffset(40, 9),
-    endDateTime: dayOffset(40, 18),
+    startDateTime: dayOffset(22, 10),
+    endDateTime: dayOffset(25, 19),
+  },
+  {
+    title: "Somalia Rising: Entrepreneurship & Investment Forum",
+    description:
+      "Convening Somali diaspora investors, local founders, commercial banks, and trade chambers to connect capital with high-impact ventures across renewable energy, logistics, agribusiness, and digital services. Includes curated founder pitch sessions and regulatory roundtables.",
+    location: "Mogadishu Airport Conference Facility, Mogadishu, Somalia",
+    category: "Business",
+    coverImageUrl: "/images/kulan-networking.jpg",
+    capacity: 180,
+    isPremium: true,
+    currency: "USD",
+    plans: [
+      { name: "Founder & SME Pass", price: 25, description: "Full forum access, pitch showcase & exhibitor hall." },
+      { name: "Investor & Corporate Pass", price: 90, description: "Private dealmaking roundtables, pitch books & executive lunch." },
+    ],
+    startDateTime: dayOffset(28, 9),
+    endDateTime: dayOffset(29, 17),
+  },
+  {
+    title: "Somaliland Innovation & Startup Week",
+    description:
+      "A multi-day gathering in Hargeisa bringing together HarHub, Shaqodoon, and regional founders for AI & software workshops, startup pitch competitions, youth employability clinics, and digital commerce showcases.",
+    location: "HarHub Innovation Center, Hargeisa, Somaliland",
+    category: "Artificial Intelligence",
+    coverImageUrl: "/images/edu-hero.jpg",
+    capacity: 150,
+    isPremium: true,
+    currency: "USD",
+    plans: [
+      { name: "Community Ticket", price: 0, description: "Open access to keynotes, demo booths & community talks." },
+      { name: "Workshop & Pitch Pass", price: 15, description: "Hands-on AI/cloud labs, mentor office hours & certificate." },
+    ],
+    startDateTime: dayOffset(34, 9),
+    endDateTime: dayOffset(36, 17),
+  },
+  {
+    title: "Garowe Book Fair & Civic Dialogue",
+    description:
+      "Puntland's signature annual literary and intellectual gathering in Garowe. Showcases emerging Somali writers, poets, and researchers through live readings, publishing panels, youth literacy workshops, and heritage discussions.",
+    location: "Puntland State University Hall, Garowe, Somalia",
+    category: "Education",
+    coverImageUrl: "/images/edu-library.jpg",
+    capacity: 300,
+    isPremium: false,
+    startDateTime: dayOffset(40, 10),
+    endDateTime: dayOffset(42, 18),
+  },
+  {
+    title: "Mogadishu Book Fair (MBF)",
+    description:
+      "Somalia's premier capital-city literary gathering convening authors, poets, academics, and publishing houses for book launches, Somali language preservation panels, and public conversations on history, society, and modern scholarship.",
+    location: "Mogadishu University Auditorium, Mogadishu, Somalia",
+    category: "Islamic Studies",
+    coverImageUrl: "/images/edu-lecture.jpg",
+    capacity: 350,
+    isPremium: false,
+    startDateTime: dayOffset(47, 10),
+    endDateTime: dayOffset(49, 18),
   },
 ];
 
@@ -133,6 +169,7 @@ const seedEvents = async (createdBy) => {
         existing.location = event.location;
         existing.coverImageUrl = event.coverImageUrl;
         existing.category = event.category || "Technology";
+        existing.capacity = event.capacity ?? null;
         existing.isPremium = Boolean(event.isPremium);
         if (event.plans) existing.plans = event.plans;
         await existing.save();

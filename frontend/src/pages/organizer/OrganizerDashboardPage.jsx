@@ -90,7 +90,7 @@ export default function OrganizerDashboardPage() {
 
         <Card>
           <p className="eyebrow text-slate-500 m-0">Door Attendance Rate</p>
-          <p className="display text-3xl font-bold mt-2 mb-0 text-emerald-600 dark:text-emerald-400">
+          <p className="display text-3xl font-bold mt-2 mb-0 text-slate-900 dark:text-slate-200">
             {checkinRate}%
           </p>
           <p className="text-xs text-muted mt-1">{stats.totalCheckedIn} checked in at door</p>
@@ -98,7 +98,7 @@ export default function OrganizerDashboardPage() {
 
         <Card>
           <p className="eyebrow text-slate-500 m-0">Total Revenue</p>
-          <p className="display text-3xl font-bold mt-2 mb-0 text-amber-600 dark:text-amber-400">
+          <p className="display text-3xl font-bold mt-2 mb-0 text-slate-900 dark:text-slate-200">
             ${stats.totalRevenue.toLocaleString()} <span className="text-xs font-normal text-muted">USD</span>
           </p>
           <p className="text-xs text-muted mt-1">Confirmed ticket sales</p>
@@ -133,9 +133,9 @@ export default function OrganizerDashboardPage() {
                         {ev.isPremium && <Badge variant="warning">Ticketed</Badge>}
                       </div>
                       <p className="text-xs text-muted mt-1 mb-0 flex items-center gap-2">
-                        <span>📍 {ev.location || "Mogadishu"}</span>
+                        <span>{ev.location || "Mogadishu"}</span>
                         <span>·</span>
-                        <span>📅 {new Date(ev.startDateTime).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
+                        <span>{new Date(ev.startDateTime).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
                       </p>
                     </div>
 
@@ -182,7 +182,7 @@ export default function OrganizerDashboardPage() {
                         {r.attended ? "Checked In" : r.approvalStatus}
                       </Badge>
                       {r.amountDue > 0 && (
-                        <p className="text-xs font-mono font-medium text-amber-600 dark:text-amber-400 m-0 mt-0.5">
+                        <p className="text-xs font-mono font-medium text-slate-900 dark:text-slate-200 m-0 mt-0.5">
                           ${r.amountDue} ({r.paymentStatus})
                         </p>
                       )}

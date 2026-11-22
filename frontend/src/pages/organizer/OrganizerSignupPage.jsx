@@ -6,22 +6,59 @@ import Button from "../../components/ui/Button.jsx";
 import Alert from "../../components/ui/Alert.jsx";
 import ThemeToggle from "../../components/ThemeToggle.jsx";
 import { organizerClient, useOrganizerAuth } from "../../context/OrganizerAuthContext.jsx";
+import Logo from "../../components/Logo.jsx";
+
+const PHONE_PATTERN = /^[+\d][\d\s()-]{6,19}$/;
 
 export default function OrganizerSignupPage() {
   const navigate = useNavigate();
   const { adoptTokens } = useOrganizerAuth();
-  const [form, setForm] = useState({ fullName: "", organization: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    fullName: "",
+    organization: "",
+    phone: "",
+    location: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    setError("");
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (form.fullName.trim().length < 2) {
+      setError("Please enter your full name.");
+      return;
+    }
+    if (form.organization.trim().length < 2) {
+      setError("Please enter your organization or brand name.");
+      return;
+    }
+    if (form.phone.trim() && !PHONE_PATTERN.test(form.phone.trim())) {
+      setError("Please enter a valid contact phone number.");
+      return;
+    }
+    if (form.password.length < 8 || !/[A-Za-z]/.test(form.password) || !/\d/.test(form.password)) {
+      setError("Password must be at least 8 characters and include both letters and numbers.");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await organizerClient.post("/api/auth/organizer/signup", form);
+      const { confirmPassword, ...payload } = form;
+      const res = await organizerClient.post("/api/auth/organizer/signup", payload);
       if (adoptTokens) {
         adoptTokens(res.data.accessToken, res.data.refreshToken, res.data.user);
       }
@@ -41,17 +78,16 @@ export default function OrganizerSignupPage() {
         </Link>
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md">
-        <div className="flex items-center gap-2.5 justify-center mb-6 font-extrabold text-2xl">
-          <span className="text-brand-500">★</span>
-          <span>Kulan Events <span className="text-xs uppercase bg-brand-500/20 text-brand-500 px-2 py-0.5 rounded font-mono">Organizer</span></span>
+      <div className="w-full max-w-md py-10">
+        <div className="flex justify-center mb-6">
+          <Logo size={30} label="Organizer" />
         </div>
         <Card>
-          <h1 className="text-xl font-bold mt-0 mb-1 text-center">Register As Organizer</h1>
+          <h1 className="text-xl font-bold mt-0 mb-1 text-center">Create Organizer Account</h1>
           <p className="text-muted text-center mt-0 mb-5 text-sm">
-            Host Somali conferences, cultural galas, weddings, and private gatherings.
+            Host summits, workshops, hackathons, and conferences with QR door check-in and attendee approval.
           </p>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <Input
               label="Full Name"
               id="fullName"
@@ -63,14 +99,33 @@ export default function OrganizerSignupPage() {
               autoFocus
             />
             <Input
-              label="Organization / Production Brand"
+              label="Organization / Institution"
               id="organization"
               name="organization"
               value={form.organization}
               onChange={handleChange}
-              placeholder="e.g. Kulan Media & Somali Arts"
+              placeholder="e.g. iRise Hub, SIMAD iLab, Redsea Cultural Foundation"
               required
             />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                label="Phone Number"
+                id="phone"
+                name="phone"
+                type="tel"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="+252 61 555 1234"
+              />
+              <Input
+                label="City"
+                id="location"
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="Mogadishu, Hargeisa, Garowe..."
+              />
+            </div>
             <Input
               label="Work Email"
               id="email"
@@ -78,7 +133,7 @@ export default function OrganizerSignupPage() {
               type="email"
               value={form.email}
               onChange={handleChange}
-              placeholder="e.g. jama@kulanproductions.com"
+              placeholder="e.g. events@organization.so"
               required
             />
             <Input
@@ -88,7 +143,18 @@ export default function OrganizerSignupPage() {
               type="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="At least 6 characters"
+              placeholder="8+ characters with letters & numbers"
+              helper="At least 8 characters including both letters and numbers."
+              required
+            />
+            <Input
+              label="Confirm Password"
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              placeholder="Re-enter your password"
               required
             />
             {error && <Alert variant="error">{error}</Alert>}

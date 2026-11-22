@@ -9,10 +9,10 @@ const readStoredTheme = () => {
   return stored === "light" || stored === "dark" ? stored : null;
 };
 
-// Dark is the product's default rather than a mirror of the OS, so the site
+// Light is the product's default rather than a mirror of the OS, so the site
 // looks the same on every machine. A stored choice always wins, and index.html
 // applies the same rule before first paint so there is no flash.
-export const resolveInitialTheme = () => readStoredTheme() || "dark";
+export const resolveInitialTheme = () => readStoredTheme() || "light";
 
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState(resolveInitialTheme);

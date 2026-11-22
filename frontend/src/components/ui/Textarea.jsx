@@ -28,7 +28,7 @@ const Textarea = forwardRef(function Textarea(
           {error && <div className="error-text">{error}</div>}
         </div>
         {showCount && maxLength && (
-          <div className={cx("helper-text shrink-0 tabular-nums", length > maxLength * 0.9 && "text-amber-600")}>
+          <div className={cx("helper-text shrink-0 tabular-nums", length > maxLength * 0.9 && "text-slate-900")}>
             {length}/{maxLength}
           </div>
         )}

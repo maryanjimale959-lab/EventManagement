@@ -6,6 +6,7 @@ import Button from "../components/ui/Button.jsx";
 import Alert from "../components/ui/Alert.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { usePhotographerAuth } from "../context/PhotographerAuthContext.jsx";
+import Logo from "../components/Logo.jsx";
 
 /**
  * Photographers never self-register: an admin creates the account and emails
@@ -35,15 +36,11 @@ export default function PhotographerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 p-5">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-5">
       <div className="absolute top-5 right-5"><ThemeToggle /></div>
       <div className="w-full max-w-sm">
-        <div className="flex items-center gap-2.5 justify-center mb-6 font-extrabold text-xl">
-          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="15" stroke="#4f46e5" strokeWidth="2" />
-            <circle cx="16" cy="16" r="4.5" fill="#4f46e5" />
-          </svg>
-          <span>EventMedia</span>
+        <div className="flex justify-center mb-6">
+          <Logo size={30} />
         </div>
         <Card>
           <h1 className="text-lg font-bold mt-0 mb-1 text-center">Photographer sign-in</h1>

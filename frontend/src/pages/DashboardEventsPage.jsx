@@ -34,7 +34,7 @@ export default function DashboardEventsPage() {
   }, []);
 
   const visible = useMemo(() => {
-    if (filter === "upcoming") return items.filter((i) => !i.hasEnded);
+    if (filter === "upcoming") return items.filter((i) => !i.hasEnded && i.approvalStatus !== "rejected");
     if (filter === "attended") return items.filter((i) => i.attended);
     if (filter === "galleries") return items.filter((i) => i.stage === "gallery-ready");
     return items;
@@ -72,7 +72,7 @@ export default function DashboardEventsPage() {
                   : "Try a different filter to see the rest of your events."
               }
               action={
-                <Link to="/events" className="btn btn-primary mt-4">
+                <Link to="/dashboard" className="btn btn-primary mt-4">
                   Browse events
                 </Link>
               }
@@ -91,8 +91,22 @@ export default function DashboardEventsPage() {
                   </div>
                   <div className="flex gap-2 items-center flex-wrap">
                     {item.hasEnded && <Badge variant="neutral">Ended</Badge>}
-                    <Badge variant={item.attended ? "success" : "warn"}>
-                      {item.attended ? "Checked in" : "Registered"}
+                    <Badge
+                      variant={
+                        item.attended || item.approvalStatus === "approved"
+                          ? "success"
+                          : item.approvalStatus === "rejected"
+                            ? "danger"
+                            : "warn"
+                      }
+                    >
+                      {item.attended
+                        ? "Checked in"
+                        : item.approvalStatus === "approved"
+                          ? "Approved"
+                          : item.approvalStatus === "rejected"
+                            ? "Not approved"
+                            : "Awaiting approval"}
                     </Badge>
                     {item.event.isPremium && (
                       <Badge variant={item.paymentStatus === "paid" ? "success" : item.paymentStatus === "refunded" ? "neutral" : "warn"}>
@@ -108,25 +122,32 @@ export default function DashboardEventsPage() {
                   </p>
                 )}
 
-                <div className="mt-5">
-                  <EventJourney stage={item.stage} />
-                </div>
-
-                <p className="text-muted text-sm mt-4 mb-0">{stageMessage(item)}</p>
-
-                <div className="card-muted mt-4 flex items-center justify-between gap-3 flex-wrap">
-                  <div>
-                    <div className="text-xs uppercase tracking-wide">Registration code</div>
-                    <strong className="text-base tracking-wider">{item.registrationCode}</strong>
+                {item.approvalStatus !== "rejected" && (
+                  <div className="mt-5">
+                    <EventJourney stage={item.stage} />
                   </div>
-                  {item.checkedInAt && (
-                    <div className="text-sm">Checked in {formatDate(item.checkedInAt)}</div>
-                  )}
-                </div>
+                )}
+
+                <p className="text-muted text-sm mt-4 mb-0">
+                  {stageMessage(item)}
+                  {item.approvalStatus === "rejected" && item.decisionNote ? ` “${item.decisionNote}”` : ""}
+                </p>
+
+                {item.approvalStatus === "approved" && item.registrationCode && (
+                  <div className="card-muted mt-4 flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                      <div className="text-xs">Registration code</div>
+                      <strong className="text-base tracking-wider">{item.registrationCode}</strong>
+                    </div>
+                    {item.checkedInAt && (
+                      <div className="text-sm">Checked in {formatDate(item.checkedInAt)}</div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex gap-2 flex-wrap mt-4">
                   <Link to={`/dashboard/events/${item.event.id}/registration`} className="btn btn-ghost">
-                    QR code
+                    {item.approvalStatus === "approved" ? "QR code" : "View status"}
                   </Link>
                   <Link to={`/dashboard/events/${item.event.id}`} className="btn btn-ghost">Event details</Link>
                   {item.stage === "gallery-ready" ? (

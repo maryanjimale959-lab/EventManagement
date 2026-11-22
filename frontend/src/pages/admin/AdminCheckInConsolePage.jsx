@@ -147,7 +147,7 @@ export default function AdminCheckInConsolePage() {
 
           <div className="flex gap-2 flex-wrap mb-4">
             <Button type="button" variant={scanning ? "ghost" : "primary"} onClick={() => setScanning((s) => !s)} disabled={!eventId}>
-              {scanning ? "Stop camera" : "📷 Scan QR code"}
+              {scanning ? "Stop camera" : "Scan QR code"}
             </Button>
             {!eventId && <p className="helper-text self-center">Select an event to begin.</p>}
           </div>
@@ -176,10 +176,9 @@ export default function AdminCheckInConsolePage() {
           {error && <Alert variant="error" className="mt-4">{error}</Alert>}
 
           {alreadyCheckedIn && (
-            <div className="card-muted !bg-amber-50 !border-amber-200 dark:!bg-amber-500/10 dark:!border-amber-500/30 mt-4 flex items-center gap-3">
-              <span className="text-3xl shrink-0" aria-hidden="true">⚠️</span>
+            <div className="card-muted  mt-4 flex items-center gap-3">
               <div className="min-w-0">
-                <div className="text-xs uppercase tracking-wide font-bold text-amber-700 dark:text-amber-400">
+                <div className="text-xs font-bold text-slate-900 dark:text-slate-200">
                   Already checked in
                 </div>
                 <div className="font-bold text-lg truncate">{alreadyCheckedIn.guestName}</div>
@@ -223,10 +222,9 @@ export default function AdminCheckInConsolePage() {
           {feed.length === 0 && <p className="text-muted m-0">Nobody checked in yet this session.</p>}
 
           {feed.length > 0 && (
-            <div className="card-muted !bg-emerald-50 !border-emerald-200 dark:!bg-emerald-500/10 dark:!border-emerald-500/30 mb-3 flex items-center gap-3">
-              <span className="text-3xl shrink-0" aria-hidden="true">✅</span>
+            <div className="card-muted  mb-3 flex items-center gap-3">
               <div className="min-w-0">
-                <div className="text-xs uppercase tracking-wide font-bold text-emerald-700 dark:text-emerald-400">
+                <div className="text-xs font-bold text-slate-900 dark:text-slate-200">
                   Just checked in
                 </div>
                 <div className="font-bold text-lg truncate">{feed[0].guestName}</div>

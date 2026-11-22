@@ -1,8 +1,9 @@
-import Event, { canRegisterFor } from "../models/Event.js";
+﻿import Event, { canRegisterFor, canManageEventMedia, hasEventEnded } from "../models/Event.js";
 import EventRegistration from "../models/EventRegistration.js";
 import Media from "../models/Media.js";
 import User, { missingProfileFields } from "../models/User.js";
 import { logActivity } from "../utils/activityLog.js";
+import { performCheckIn, seatsTaken } from "../services/registrationService.js";
 
 const formatError = (code, message) => ({ error: { code, message } });
 
@@ -53,14 +54,11 @@ export const registerForEvent = async (req, res, next) => {
 
     // Drafts and completed events are not taking registrations.
     if (!canRegisterFor(event)) {
-      return res.status(403).json(
-        formatError(
-          "REGISTRATION_CLOSED",
-          event.status === "completed"
-            ? "This event has finished, so registration is closed."
-            : "Registration is not open for this event yet."
-        )
-      );
+      const message =
+        event.status === "completed" || hasEventEnded(event)
+          ? "This event has finished, so registration is closed."
+          : "Registration is not open for this event yet.";
+      return res.status(403).json(formatError("REGISTRATION_CLOSED", message));
     }
 
     // Organisers need a full profile on file before anyone takes a place, so
@@ -98,10 +96,18 @@ export const registerForEvent = async (req, res, next) => {
         planName: plan.name,
         amountDue: plan.price,
         currency: event.currency || "USD",
-        paymentStatus: "pending",
+        // A free plan owes nothing, so there is no payment for an admin to
+        // confirm; leaving it pending would lock the guest out at the door.
+        paymentStatus: plan.price === 0 ? "paid" : "pending",
         paymentMethod: "manual",
         paymentReference: (paymentReference || "").trim(),
       };
+    }
+
+    // Capacity is checked after the duplicate and plan checks so a repeat
+    // request never reports "full" to someone who already holds a place.
+    if (event.capacity && (await seatsTaken(eventId)) >= event.capacity) {
+      return res.status(409).json(formatError("EVENT_FULL", "This event is full. There are no places left."));
     }
 
     // No codes yet. A registration starts as a request; an admin decides, and
@@ -133,10 +139,119 @@ export const getMyRegistration = async (req, res, next) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.userId;
-    const registration = await EventRegistration.findOne({ eventId, userId }).lean();
+    const [registration, event] = await Promise.all([
+      EventRegistration.findOne({ eventId, userId }).lean(),
+      Event.findById(eventId).select("title location startDateTime endDateTime isPremium currency").lean(),
+    ]);
     if (!registration) {
       return res.status(404).json(formatError("NOT_REGISTERED", "No registration for this event"));
     }
+    return res.json({
+      registration: toMyRegistrationDTO(registration),
+      event: event
+        ? {
+            id: event._id,
+            title: event.title,
+            location: event.location,
+            startDateTime: event.startDateTime,
+            endDateTime: event.endDateTime,
+            isPremium: event.isPremium,
+            currency: event.currency,
+          }
+        : null,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
+ * A guest withdrawing their own registration, which frees the seat. Refused once
+ * they have been checked in (attendance is a fact) or the event is over.
+ */
+export const cancelMyRegistration = async (req, res, next) => {
+  try {
+    const { eventId } = req.params;
+    const registration = await EventRegistration.findOne({ eventId, userId: req.user.userId });
+    if (!registration) {
+      return res.status(404).json(formatError("NOT_REGISTERED", "No registration for this event"));
+    }
+    if (registration.attended) {
+      return res.status(409).json(formatError("ALREADY_CHECKED_IN", "You have already attended this event, so it cannot be cancelled."));
+    }
+    // A rejection is the organiser's final decision for this event; letting a
+    // guest delete it would let them wipe the rejection and re-register.
+    if (registration.approvalStatus === "rejected") {
+      return res.status(409).json(formatError("REJECTED_REGISTRATION", "This registration was not approved and cannot be cancelled."));
+    }
+    const event = await Event.findById(eventId).select("title endDateTime").lean();
+    if (event && hasEventEnded(event)) {
+      return res.status(409).json(formatError("EVENT_ENDED", "This event has finished, so the registration can no longer be cancelled."));
+    }
+    // A paid ticket is money the admin must deal with, so it cannot just vanish.
+    if (registration.paymentStatus === "paid" && registration.amountDue > 0) {
+      return res.status(409).json(formatError("PAID_REGISTRATION", "This registration has been paid. Contact the organizer to cancel and arrange a refund."));
+    }
+
+    await registration.deleteOne();
+    await logActivity({
+      actor: req.user,
+      action: "registration.cancelled",
+      summary: `A guest cancelled their registration for "${event?.title || "an event"}"`,
+      targetType: "registration",
+      targetId: registration._id,
+      targetLabel: event?.title || "",
+    });
+    return res.json({ success: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
+ * Lets a guest submit or update their payment reference (e.g. EVC Plus, Zaad,
+ * Sahal, eDahab, or bank transfer ID) after reserving a seat on a paid event.
+ */
+export const updateMyPaymentReference = async (req, res, next) => {
+  try {
+    const { eventId } = req.params;
+    const ref = String(req.body?.paymentReference || "").trim();
+    if (!ref) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Enter a payment reference or transaction ID."));
+    }
+    if (ref.length > 120) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Payment reference is too long."));
+    }
+
+    const [registration, event] = await Promise.all([
+      EventRegistration.findOne({ eventId, userId: req.user.userId }),
+      Event.findById(eventId).select("title isPremium").lean(),
+    ]);
+    if (!registration) {
+      return res.status(404).json(formatError("NOT_REGISTERED", "No registration for this event"));
+    }
+    if (!event?.isPremium || !(registration.amountDue > 0)) {
+      return res.status(400).json(formatError("NOT_PREMIUM", "This registration does not require payment."));
+    }
+    if (registration.approvalStatus === "rejected") {
+      return res.status(409).json(formatError("REJECTED_REGISTRATION", "This registration was not approved."));
+    }
+    if (registration.paymentStatus === "paid") {
+      return res.status(409).json(formatError("ALREADY_PAID", "Your payment has already been confirmed."));
+    }
+
+    registration.paymentReference = ref;
+    await registration.save();
+
+    await logActivity({
+      actor: req.user,
+      action: "registration.payment_reference_updated",
+      summary: `Submitted payment reference "${ref}" for "${event.title}"`,
+      targetType: "registration",
+      targetId: registration._id,
+      targetLabel: event.title,
+    });
+
     return res.json({ registration: toMyRegistrationDTO(registration) });
   } catch (err) {
     return next(err);
@@ -151,93 +266,17 @@ export const checkIn = async (req, res, next) => {
       return res.status(400).json(formatError("VALIDATION_ERROR", "registrationCode or qrToken is required"));
     }
 
-    // The door has to be explicitly opened by an admin before anyone can be
-    // checked in - enforced here, not just hidden in the console UI, so the
-    // API itself refuses a scan against a closed event.
-    const event = await Event.findById(eventId).select("title checkInOpen isPremium").lean();
+    const event = await Event.findById(eventId).select("title checkInOpen isPremium createdBy photographers").lean();
     if (!event) return res.status(404).json(formatError("NOT_FOUND", "Event not found"));
-    if (!event.checkInOpen) {
-      return res.status(403).json(formatError("CHECKIN_CLOSED", "Check-in is not open for this event yet."));
+
+    // Being an organizer or photographer is not enough: staff can only scan at
+    // events they own or are assigned to, never at someone else's door.
+    if (!canManageEventMedia(event, req.user)) {
+      return res.status(403).json(formatError("FORBIDDEN", "You are not assigned to this event."));
     }
 
-    const query = { eventId };
-    // A blank code must never match the many registrations that legitimately
-    // hold none, so an unapproved guest's "empty" code cannot open the door.
-    if (registrationCode) query.registrationCode = String(registrationCode).trim();
-    if (qrToken) query.qrToken = String(qrToken).trim();
-    if (!query.registrationCode && !query.qrToken) {
-      return res.status(400).json(formatError("VALIDATION_ERROR", "registrationCode or qrToken is required"));
-    }
-
-    const registration = await EventRegistration.findOne(query);
-    if (!registration) {
-      // Covers a forged QR, a code from a different event, and a code that was
-      // revoked when its registration was rejected - all indistinguishable
-      // from the door's point of view, and all refused.
-      return res.status(404).json(
-        formatError("INVALID_CODE", "That code is not valid for this event. Ask the guest to check their approval email.")
-      );
-    }
-
-    // Approval is the actual permission to attend; the code is only how it is
-    // presented. Re-checked here so a code issued and then revoked is refused.
-    if (registration.approvalStatus !== "approved") {
-      const guestName = (await User.findById(registration.userId).select("fullName").lean())?.fullName;
-      return res.status(403).json(
-        formatError(
-          "NOT_APPROVED",
-          registration.approvalStatus === "rejected"
-            ? `${guestName || "This guest"}'s registration was not approved for this event.`
-            : `${guestName || "This guest"}'s registration is still awaiting approval.`
-        )
-      );
-    }
-
-    // A premium guest cannot be let in until an admin has confirmed their
-    // payment - this is the actual enforcement of the participation fee.
-    if (event.isPremium && registration.paymentStatus !== "paid") {
-      return res.status(403).json(
-        formatError("PAYMENT_REQUIRED", "This guest's payment has not been confirmed yet. Confirm payment before checking them in.")
-      );
-    }
-
-    // Fetched once and returned alongside the registration in both branches
-    // below, so the check-in desk can show who it just scanned rather than
-    // only a bare code - kept as a separate `guest` field rather than
-    // populating `registration.userId` so that field's existing shape (a
-    // plain id) never changes for other callers.
-    const guest = await User.findById(registration.userId).select("fullName email").lean();
-    const guestDTO = guest ? { fullName: guest.fullName, email: guest.email } : null;
-
-    // Once used, a registration/QR code is spent - scanning it again is
-    // refused rather than silently re-confirmed, so the desk can never wave
-    // the same guest through twice without noticing.
-    if (registration.attended) {
-      return res.status(409).json({
-        error: {
-          code: "ALREADY_CHECKED_IN",
-          message: `${guest?.fullName || "This guest"} was already checked in for this event.`,
-        },
-        registration,
-        guest: guestDTO,
-      });
-    }
-
-    registration.attended = true;
-    registration.checkedInAt = new Date();
-    registration.checkedInBy = req.user.userId;
-    await registration.save();
-
-    await logActivity({
-      actor: req.user,
-      action: "registration.checked_in",
-      summary: `Checked in ${guest?.fullName || "a guest"} (${guest?.email || "?"}) to "${event?.title || "an event"}"`,
-      targetType: "registration",
-      targetId: registration._id,
-      targetLabel: guest?.fullName || "",
-    });
-
-    return res.json({ registration, guest: guestDTO });
+    const result = await performCheckIn({ event, registrationCode, qrToken, actor: req.user });
+    return res.status(result.status).json(result.body);
   } catch (err) {
     return next(err);
   }
@@ -271,6 +310,8 @@ export const galleryGate = async (req, res, next) => {
 export default {
   registerForEvent,
   getMyRegistration,
+  cancelMyRegistration,
+  updateMyPaymentReference,
   checkIn,
   galleryGate,
 };

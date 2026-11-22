@@ -55,8 +55,8 @@ function MessageCard({ message, onReplied }) {
       <div className="card-muted mt-3 whitespace-pre-wrap">{message.body}</div>
 
       {message.reply && (
-        <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 dark:border-emerald-500/30 p-4">
-          <div className="text-xs uppercase text-emerald-700 dark:text-emerald-300 font-bold mb-1.5">
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-100 dark:bg-slate-800 dark:border-slate-700 p-4">
+          <div className="text-xs text-slate-900 dark:text-slate-200 font-bold mb-1.5">
             Your reply · {formatDate(message.reply.repliedAt)}
           </div>
           <div className="whitespace-pre-wrap text-sm">{message.reply.body}</div>

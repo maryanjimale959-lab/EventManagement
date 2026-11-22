@@ -81,7 +81,7 @@ export default function OrganizerProfilePage() {
                 placeholder="e.g. Mogadishu, Somalia"
               />
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                <label className="block text-xs font-semibold text-slate-500 mb-1">
                   Organizer Bio
                 </label>
                 <textarea

@@ -1,22 +1,25 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import Navbar from "../Navbar.jsx";
+import Logo from "../Logo.jsx";
+import CommandPalette from "../CommandPalette.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
+
+function FooterColumn({ title, children }) {
+  return (
+    <div>
+      <h3 className="m-0 mb-3 font-sans text-sm font-semibold tracking-normal text-slate-900 dark:text-white">{title}</h3>
+      <ul className="m-0 list-none space-y-2 p-0">{children}</ul>
+    </div>
+  );
+}
 
 function FooterLink({ to, children }) {
   return (
     <li>
-      <Link to={to} className="text-slate-400 hover:text-white transition-colors text-xs font-medium">
+      <Link to={to} className="text-sm text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
         {children}
       </Link>
     </li>
-  );
-}
-
-function FooterHeading({ children }) {
-  return (
-    <h3 className="text-white font-bold text-xs uppercase tracking-wider mb-4 pb-2 border-b border-white/10">
-      {children}
-    </h3>
   );
 }
 
@@ -24,90 +27,60 @@ export default function PublicLayout({ children }) {
   const { isAuthed } = useAuth();
 
   return (
-    <div className="app-shell min-h-screen flex flex-col bg-slate-50 dark:bg-[#070c18] transition-colors">
+    <div className="app-shell">
       <Navbar />
+      <CommandPalette />
       <main className="flex-1">{children}</main>
 
-      <footer className="bg-slate-950 text-slate-400 border-t border-slate-900 mt-20">
-        <div className="shell-wrap py-14 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-white/20">
-                K
-              </div>
-              <span className="font-extrabold tracking-tight text-lg text-white">
-                Kulan<span className="text-brand-400">Events</span>
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-sm m-0">
-              The premier platform connecting students, developers, founders, and scholars with academic conferences, hands-on coding workshops, AI hackathons, and Islamic knowledge symposiums.
+      <footer className="mt-20 border-t border-slate-200 dark:border-slate-800">
+        <div className={`shell-wrap grid grid-cols-2 gap-10 py-12 ${isAuthed ? "lg:grid-cols-[1.6fr_1fr_1fr]" : "lg:grid-cols-[1.6fr_1fr_1fr_1fr]"}`}>
+          <div className="col-span-2 lg:col-span-1">
+            <Logo />
+            <p className="m-0 mt-3 max-w-xs text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              Events for students, developers, founders and scholars. Register, check in at the door, keep the materials.
             </p>
-            <div className="mt-5 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] text-slate-400 font-medium">
-                Verified Door Check-in &amp; Private Keynote Archives
-              </span>
-            </div>
           </div>
 
-          <div>
-            <FooterHeading>Disciplines &amp; Tracks</FooterHeading>
-            <ul className="space-y-2.5 list-none p-0 m-0">
-              <FooterLink to="/events?category=Artificial+Intelligence">Artificial Intelligence</FooterLink>
-              <FooterLink to="/events?category=Technology">Technology &amp; Cloud</FooterLink>
-              <FooterLink to="/events?category=Workshops">Technical Workshops</FooterLink>
-              <FooterLink to="/events?category=Hackathons">Hackathons &amp; Demos</FooterLink>
-              <FooterLink to="/events?category=Islamic+Studies">Islamic Studies</FooterLink>
-              <FooterLink to="/events?category=Business">Business &amp; Startups</FooterLink>
-            </ul>
-          </div>
+          <FooterColumn title="Tracks">
+            <FooterLink to="/events?category=Artificial+Intelligence">Artificial Intelligence</FooterLink>
+            <FooterLink to="/events?category=Technology">Technology</FooterLink>
+            <FooterLink to="/events?category=Workshops">Workshops</FooterLink>
+            <FooterLink to="/events?category=Hackathons">Hackathons</FooterLink>
+            <FooterLink to="/events?category=Islamic+Studies">Islamic Studies</FooterLink>
+            <FooterLink to="/events?category=Business">Business</FooterLink>
+          </FooterColumn>
 
-          <div>
-            <FooterHeading>Platform Navigation</FooterHeading>
-            <ul className="space-y-2.5 list-none p-0 m-0">
-              <FooterLink to="/">Home Overview</FooterLink>
-              <FooterLink to="/events">All Programs</FooterLink>
-              <FooterLink to="/how-it-works">How It Works</FooterLink>
-              <FooterLink to="/contact">Support &amp; Inquiries</FooterLink>
-              {isAuthed ? (
-                <>
-                  <FooterLink to="/dashboard">My Registrations</FooterLink>
-                  <FooterLink to="/dashboard/profile">Attendee Profile</FooterLink>
-                </>
-              ) : (
-                <>
-                  <FooterLink to="/register">Student &amp; Pro Signup</FooterLink>
-                  <FooterLink to="/login">Sign In</FooterLink>
-                </>
-              )}
-            </ul>
-          </div>
+          <FooterColumn title="Attend">
+            <FooterLink to={isAuthed ? "/dashboard" : "/events"}>All events</FooterLink>
+            <FooterLink to="/how-it-works">How it works</FooterLink>
+            <FooterLink to="/contact">Contact</FooterLink>
+            {isAuthed ? (
+              <>
+                <FooterLink to="/dashboard">My dashboard</FooterLink>
+                <FooterLink to="/dashboard/events">My registrations</FooterLink>
+                <FooterLink to="/dashboard/profile">Profile</FooterLink>
+              </>
+            ) : (
+              <>
+                <FooterLink to="/register">Sign up</FooterLink>
+                <FooterLink to="/login">Log in</FooterLink>
+              </>
+            )}
+          </FooterColumn>
 
-          <div>
-            <FooterHeading>Host &amp; Administration</FooterHeading>
-            <ul className="space-y-2.5 list-none p-0 m-0">
-              <FooterLink to="/organizer/dashboard">Organizer Portal (Abaabule)</FooterLink>
-              <FooterLink to="/organizer/signup">Register as Event Organizer</FooterLink>
-              <FooterLink to="/organizer/login">Organizer Login</FooterLink>
-              <FooterLink to="/maamul/dashboard">Admin Console (Maamul)</FooterLink>
-              <FooterLink to="/sawirqaade/login">Photographer Portal</FooterLink>
-            </ul>
-          </div>
+          {!isAuthed && (
+            <FooterColumn title="Host">
+              <FooterLink to="/organizer/signup">Become an organizer</FooterLink>
+              <FooterLink to="/organizer/login">Organizer login</FooterLink>
+              <FooterLink to="/maamul/login">Admin login</FooterLink>
+              <FooterLink to="/photographer/login">Photographer portal</FooterLink>
+            </FooterColumn>
+          )}
         </div>
 
-        <div className="border-t border-slate-900 py-6">
-          <div className="shell-wrap flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <span>© {new Date().getFullYear()} Kulan Events. All rights reserved.</span>
-            <div className="flex items-center gap-4">
-              <Link to="/how-it-works" className="hover:text-slate-400 transition-colors">
-                Architecture
-              </Link>
-              <Link to="/contact" className="hover:text-slate-400 transition-colors">
-                Contact
-              </Link>
-              <span className="text-slate-600">·</span>
-              <span className="text-slate-400 font-medium">Knowledge &amp; Innovation</span>
-            </div>
+        <div className="border-t border-slate-200 dark:border-slate-800">
+          <div className="shell-wrap py-5 text-sm text-slate-500 dark:text-slate-400">
+            © {new Date().getFullYear()} Kulan Events
           </div>
         </div>
       </footer>

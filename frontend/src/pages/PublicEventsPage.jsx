@@ -1,191 +1,187 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import client from "../api/client.js";
-import EmptyState from "../components/ui/EmptyState.jsx";
-import Loading from "../components/ui/Loading.jsx";
+﻿import { Link, Navigate } from "react-router-dom";
 import PublicLayout from "../components/layout/PublicLayout.jsx";
 import Hero from "../components/Hero.jsx";
-import EventCard from "../components/EventCard.jsx";
-import { Reveal, usePointerFx } from "../hooks/useMotion.jsx";
-import { EVENT_CATEGORIES, CATEGORY_METADATA, getCategoryMeta } from "../utils/categories.js";
+import AboutSection from "../components/AboutSection.jsx";
+import { Reveal } from "../hooks/useMotion.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
-const PILLARS = [
-  { n: "01", title: "Academics & research", desc: "Symposiums, fellowships and lectures with universities and researchers." },
-  { n: "02", title: "Practical workshops", desc: "Hands-on labs and bootcamps led by working engineers and trainers." },
-  { n: "03", title: "AI & hackathons", desc: "Summits, build weekends and demo days for people making new things." },
-  { n: "04", title: "Islamic studies & ethics", desc: "Lectures and seminars on knowledge, character and leadership." },
+const TRACKS = [
+  { title: "Academics and research", desc: "Symposiums, fellowships and research sessions with universities and researchers.", category: "Education" },
+  { title: "Practical workshops", desc: "Hands-on labs and bootcamps led by working engineers and trainers.", category: "Workshops" },
+  { title: "AI and hackathons", desc: "Summits, build weekends and demo days for people making new things.", category: "Hackathons" },
+  { title: "Islamic studies and ethics", desc: "Seminars and sessions on knowledge, character and leadership.", category: "Islamic Studies" },
+];
+
+const MARQUEE = [
+  "Artificial Intelligence", "Technology", "Workshops", "Hackathons", "Education", "Business",
+  "Islamic Studies", "Professional Development",
 ];
 
 const STEPS = [
-  { n: 1, title: "Find an event", desc: "Search or filter by track, city and price." },
-  { n: 2, title: "Register", desc: "Reserve a place. The organizer approves it and your QR pass is issued." },
-  { n: 3, title: "Check in & learn", desc: "Scan at the door. Slides and photos unlock only for attendees." },
+  { title: "Find an event", desc: "Search or filter by track, city and price." },
+  { title: "Register", desc: "Reserve a place. Once the organizer approves it, your QR pass is issued." },
+  { title: "Check in and learn", desc: "Scan your pass at the door. Slides and photos unlock for attendees only." },
 ];
 
-function Pillar({ p }) {
-  const fx = usePointerFx(2.5);
+function TrackLink({ track, index }) {
   return (
-    <div
-      {...fx}
-      className="interactive-card h-full rounded-2xl border border-slate-200/90 bg-white p-7 shadow-sm hover:border-brand-500/40 dark:border-slate-800 dark:bg-slate-900"
-    >
-      <span className="font-display text-3xl font-extrabold text-brand-600 dark:text-brand-400">{p.n}</span>
-      <h3 className="mt-4 mb-0 text-lg font-bold text-slate-900 dark:text-white">{p.title}</h3>
-      <p className="mt-2 mb-0 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{p.desc}</p>
-    </div>
+    <Reveal delay={index * 80}>
+      <Link
+        to={`/events?category=${encodeURIComponent(track.category)}`}
+        className="group block h-full border-t border-slate-300 py-6 transition-colors hover:border-slate-900 dark:border-slate-700 dark:hover:border-white"
+      >
+        <h3 className="m-0 flex items-center justify-between gap-3 text-lg text-slate-900 dark:text-white">
+          {track.title}
+          <span className="opacity-0 transition-all duration-200 group-hover:translate-x-1 group-hover:opacity-100" aria-hidden="true">→</span>
+        </h3>
+        <p className="m-0 mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{track.desc}</p>
+      </Link>
+    </Reveal>
+  );
+}
+
+/** A real sequence, so it is numbered. The photo fills the band but stays faint. */
+function HowItWorks() {
+  return (
+    <section className="band relative isolate overflow-hidden" id="how-it-works">
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        <img
+          src="/images/kulan-networking.jpg"
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover object-[center_45%] opacity-[0.4] saturate-[0.6] dark:opacity-[0.28]"
+        />
+        <div className="absolute inset-0 bg-slate-50/45 dark:bg-slate-950/60" />
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-slate-50/90 to-transparent dark:from-slate-950/90" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-50/90 to-transparent dark:from-slate-950/90" />
+      </div>
+
+      <div className="band-inner">
+        <Reveal className="flex flex-wrap items-end justify-between gap-4">
+          <h2 className="display m-0 max-w-xl text-4xl text-slate-900 sm:text-5xl dark:text-white">How it works</h2>
+          <Link to="/events" className="btn btn-primary">Browse events</Link>
+        </Reveal>
+
+        <ol className="m-0 mt-10 grid list-none gap-4 p-0 md:grid-cols-3">
+          {STEPS.map((s, i) => (
+            <Reveal as="li" key={s.title} delay={i * 110} className="step-panel">
+              <span className="step-panel-num">{i + 1}</span>
+              <h3 className="m-0 mt-8 text-xl text-slate-900 dark:text-white">{s.title}</h3>
+              <p className="m-0 mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{s.desc}</p>
+            </Reveal>
+          ))}
+        </ol>
+      </div>
+    </section>
   );
 }
 
 export default function PublicEventsPage() {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [category, setCategory] = useState("All");
+  const { isAuthed } = useAuth();
 
-  useEffect(() => {
-    client
-      .get("/api/events/public")
-      .then((res) => setEvents(res.data))
-      .catch((err) => setError(err.response?.data?.error?.message || "Failed to load events"))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const counts = useMemo(() => {
-    const c = { All: events.length };
-    events.forEach((e) => {
-      const k = getCategoryMeta(e.category).label;
-      c[k] = (c[k] || 0) + 1;
-    });
-    return c;
-  }, [events]);
-
-  const filtered = useMemo(
-    () => (category === "All" ? events : events.filter((e) => getCategoryMeta(e.category).label === category)),
-    [events, category]
-  );
-  const shown = filtered.slice(0, 6);
+  // Signed-in attendees live inside their dashboard workspace, not the public landing page.
+  if (isAuthed) return <Navigate to="/dashboard" replace />;
 
   return (
     <PublicLayout>
       <Hero />
 
-      <div className="shell-wrap">
-        {/* Filter + grid */}
-        <section className="section pt-4" id="events">
-          <Reveal>
-            <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200/80 pb-4 dark:border-slate-800">
-              <div>
-                <span className="eyebrow text-brand-600 dark:text-brand-400">Explore</span>
-                <h2 className="display m-0 mt-1 text-2xl font-extrabold text-slate-900 dark:text-white sm:text-3xl">
-                  {category === "All" ? "Upcoming events" : category}
-                </h2>
-              </div>
-              <Link to="/events" className="text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">
-                View full schedule →
-              </Link>
-            </div>
-
-            <div className="no-scrollbar mt-5 flex items-center gap-2 overflow-x-auto pb-2" role="tablist" aria-label="Filter by category">
-              {EVENT_CATEGORIES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  role="tab"
-                  aria-selected={category === c}
-                  onClick={() => setCategory(c)}
-                  className={`category-chip shrink-0 ${category === c ? "is-active" : ""}`}
-                >
-                  {c}
-                  <span className={`rounded-full px-1.5 text-[10px] font-bold ${category === c ? "bg-white/25" : "bg-slate-100 text-slate-500 dark:bg-slate-800"}`}>
-                    {counts[c] || 0}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </Reveal>
-
-          <div className="mt-8">
-            {loading && <Loading label="Loading events..." />}
-            {error && <p className="text-sm font-semibold text-rose-600">{error}</p>}
-            {!loading && !error && shown.length === 0 && (
-              <EmptyState title={`No ${category} events yet`} description="Try another track or check back soon." />
-            )}
-            {shown.length > 0 && (
-              <div key={category} className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {shown.map((e, i) => (
-                  <Reveal key={e._id} delay={i * 70} className="h-full">
-                    <EventCard event={e} />
-                  </Reveal>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Pillars */}
-        <section className="section">
-          <Reveal className="max-w-2xl">
-            <span className="eyebrow text-brand-600 dark:text-brand-400">Our focus</span>
-            <h2 className="display m-0 mt-1 text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
-              Built for people who want to keep learning.
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-base">
-              Every event belongs to a track, so you can find what fits your goals and skip the rest.
-            </p>
-          </Reveal>
-          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {PILLARS.map((p, i) => (
-              <Reveal key={p.n} delay={i * 80} className="h-full">
-                <Pillar p={p} />
-              </Reveal>
+      {/* Categories drift past; hovering pauses them. Not events, just what the platform covers. */}
+      <div className="band py-5" aria-hidden="true">
+        <div className="marquee">
+          <div className="marquee-track">
+            {[...MARQUEE, ...MARQUEE].map((m, i) => (
+              <span
+                key={`${m}-${i}`}
+                className="whitespace-nowrap rounded-full border border-slate-200 px-4 py-1.5 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300"
+              >
+                {m}
+              </span>
             ))}
           </div>
-        </section>
+        </div>
+      </div>
 
-        {/* Steps */}
-        <section className="section">
+      <AboutSection />
+      <HowItWorks />
+
+      {/* Attendees are who the home page is for. Staff/host links stay hidden once signed in as an attendee. */}
+      <section className="band" id="get-started">
+        <div className="band-inner">
           <Reveal>
-            <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-8 dark:border-slate-800 dark:bg-slate-900 sm:p-12">
-              <h2 className="display m-0 text-2xl font-extrabold text-slate-900 dark:text-white sm:text-3xl">How it works</h2>
-              <ol className="relative m-0 mt-8 grid list-none gap-8 p-0 md:grid-cols-3">
-                <span className="absolute left-0 right-0 top-5 hidden h-px bg-gradient-to-r from-transparent via-brand-300 to-transparent dark:via-brand-700 md:block" aria-hidden="true" />
-                {STEPS.map((s) => (
-                  <li key={s.n} className="relative">
-                    <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 font-bold text-white ring-8 ring-white dark:ring-slate-900">
-                      {s.n}
-                    </span>
-                    <h3 className="mt-4 mb-0 text-lg font-bold text-slate-900 dark:text-white">{s.title}</h3>
-                    <p className="mt-1 mb-0 text-sm text-slate-500 dark:text-slate-400">{s.desc}</p>
-                  </li>
-                ))}
-              </ol>
+            <div className="grid items-center gap-8 rounded-3xl border border-slate-200 bg-white p-8 sm:p-12 lg:grid-cols-[1.4fr_1fr] dark:border-slate-800 dark:bg-slate-900">
+              <div>
+                <h2 className="display-serif m-0 text-4xl text-slate-950 sm:text-5xl dark:text-white">
+                  {isAuthed ? "You are signed in." : "Ready to join an event?"}
+                </h2>
+                <p className="mt-3 max-w-lg text-slate-600 dark:text-slate-400">
+                  {isAuthed
+                    ? "Head to your dashboard to browse all upcoming events, track your approvals, and open your QR passes."
+                    : "Create a free account to register, keep your QR pass in one place and open the galleries from events you attended."}
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                {isAuthed ? (
+                  <>
+                    <Link to="/dashboard" className="btn btn-primary justify-center !py-3 text-base">Go to my dashboard</Link>
+                    <Link to="/dashboard/events" className="btn btn-ghost justify-center !py-3 text-base">My registrations</Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/register" className="btn btn-primary justify-center !py-3 text-base">Create account</Link>
+                    <Link to="/login" className="btn btn-ghost justify-center !py-3 text-base">Log in</Link>
+                  </>
+                )}
+              </div>
             </div>
           </Reveal>
-        </section>
+          {!isAuthed && (
+            <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
+              Running events or working at one?{" "}
+              <Link to="/organizer/login" className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 dark:text-white dark:decoration-slate-600 dark:hover:decoration-white">Organizer sign in</Link>
+              {" · "}
+              <Link to="/maamul/login" className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 dark:text-white dark:decoration-slate-600 dark:hover:decoration-white">Admin</Link>
+              {" · "}
+              <Link to="/photographer/login" className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900 dark:text-white dark:decoration-slate-600 dark:hover:decoration-white">Photographer</Link>
+            </p>
+          )}
+        </div>
+      </section>
 
-        {/* Organizer CTA */}
-        <section className="section mb-16">
-          <Reveal>
-            <div className="relative grid overflow-hidden rounded-3xl bg-slate-950 text-white lg:grid-cols-2">
-              <div className="blob-a pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-brand-600/30 blur-[100px]" aria-hidden="true" />
-              <div className="relative z-10 flex flex-col justify-center p-8 sm:p-12">
-                <span className="eyebrow text-brand-300">Organizers · Abaabule</span>
-                <h2 className="display m-0 mt-2 text-3xl font-extrabold text-white sm:text-4xl">
-                  Hosting a workshop, lecture or conference?
-                </h2>
-                <p className="mt-4 text-slate-300">
+      {/* Tracks */}
+      <section className={isAuthed ? "" : "band"}>
+        <div className="band-inner">
+          <Reveal className="max-w-2xl">
+            <h2 className="display-serif m-0 text-4xl text-slate-950 sm:text-5xl dark:text-white">Every event belongs to a track</h2>
+            <p className="mt-3 text-slate-600 dark:text-slate-400">Follow the ones that fit your goals and skip the rest.</p>
+          </Reveal>
+          <div className="mt-8 grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+            {TRACKS.map((t, i) => (
+              <TrackLink key={t.title} track={t} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Organizers — only shown to logged-out visitors */}
+      {!isAuthed && (
+        <section>
+          <div className="band-inner">
+            <Reveal>
+              <div className="rounded-3xl bg-slate-950 px-8 py-12 text-white sm:px-14 sm:py-16 dark:bg-white dark:text-slate-950">
+                <h2 className="display-serif m-0 max-w-2xl text-4xl sm:text-5xl">Hosting a workshop, seminar or conference?</h2>
+                <p className="mt-4 max-w-xl text-lg text-slate-300 dark:text-slate-600">
                   Publish events, approve registrations, scan QR passes at the door and share materials privately.
                 </p>
-                <div className="mt-7 flex flex-wrap items-center gap-4">
-                  <Link to="/organizer/signup" className="btn btn-primary">Create organizer account</Link>
-                  <Link to="/organizer/login" className="text-sm font-semibold text-slate-300 hover:text-white">Sign in →</Link>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Link to="/organizer/signup" className="btn bg-white text-slate-950 hover:bg-slate-200 dark:bg-slate-950 dark:text-white dark:hover:bg-slate-800">Create organizer account</Link>
+                  <Link to="/organizer/login" className="btn border border-slate-600 text-white hover:border-white dark:border-slate-300 dark:text-slate-950 dark:hover:border-slate-950">Organizer login</Link>
                 </div>
               </div>
-              <img src="/images/edu-lecture.jpg" alt="A speaker presenting in a lecture hall" loading="lazy" className="relative h-64 w-full object-cover lg:h-full" />
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
         </section>
-      </div>
+      )}
     </PublicLayout>
   );
 }

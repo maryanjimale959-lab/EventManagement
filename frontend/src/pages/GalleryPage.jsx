@@ -5,6 +5,7 @@ import Card from "../components/ui/Card.jsx";
 import Alert from "../components/ui/Alert.jsx";
 import Loading from "../components/ui/Loading.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
+import Segmented from "../components/ui/Segmented.jsx";
 import SectionLayout, { useEventBase } from "../components/layout/SectionLayout.jsx";
 
 const DownloadIcon = () => (
@@ -134,19 +135,13 @@ export default function GalleryPage() {
       {!state.loading && state.unlocked && state.media.length > 0 && (
         <>
           <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-            <p className="text-muted m-0">{state.media.length} item(s)</p>
-            <div className="flex gap-2">
-              {[{ key: "photos", label: "Photos" }, { key: "videos", label: "Videos" }].map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  onClick={() => setTab(t.key)}
-                  className={`btn ${tab === t.key ? "btn-primary" : "btn-ghost"} !px-3 !py-2 text-xs`}
-                >
-                  {t.label} ({counts[t.key]})
-                </button>
-              ))}
-            </div>
+            <p className="text-muted m-0">{counts[tab]} {tab === "videos" ? (counts.videos === 1 ? "video" : "videos") : (counts.photos === 1 ? "photo" : "photos")}</p>
+            <Segmented
+              label="Media type"
+              value={tab}
+              onChange={setTab}
+              options={[{ value: "photos", label: "Photos", count: counts.photos }, { value: "videos", label: "Videos", count: counts.videos }]}
+            />
           </div>
 
           {visibleMedia.length === 0 && (

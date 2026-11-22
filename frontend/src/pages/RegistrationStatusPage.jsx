@@ -8,6 +8,7 @@ import Loading from "../components/ui/Loading.jsx";
 import SectionLayout, { useEventBase } from "../components/layout/SectionLayout.jsx";
 import QrCode from "../components/QrCode.jsx";
 import EventJourney from "../components/EventJourney.jsx";
+import { monthShort, dayOfMonth, weekdayTime } from "../utils/dates.js";
 
 const formatDate = (value) =>
   new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
@@ -16,6 +17,7 @@ export default function RegistrationStatusPage() {
   const { eventId } = useParams();
   const base = useEventBase();
   const [registration, setRegistration] = useState(null);
+  const [event, setEvent] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -24,6 +26,7 @@ export default function RegistrationStatusPage() {
       try {
         const res = await client.get(`/api/events/${eventId}/registration/me`);
         setRegistration(res.data.registration);
+        setEvent(res.data.event || res.data.registration?.event || null);
       } catch (err) {
         setError(err.response?.data?.error?.message || "Not registered");
       } finally {
@@ -53,6 +56,20 @@ export default function RegistrationStatusPage() {
 
         {registration && (
           <Card style={{ maxWidth: 560 }}>
+            {event?.startDateTime && (
+              <div className="flex items-center gap-4 pb-5 mb-5 border-b border-slate-200 dark:border-slate-800">
+                <div className="date-tile">
+                  <span className="date-tile-month">{monthShort(event.startDateTime)}</span>
+                  <span className="date-tile-day">{dayOfMonth(event.startDateTime)}</span>
+                </div>
+                <div className="min-w-0">
+                  <h2 className="m-0 text-base truncate">{event.title}</h2>
+                  <p className="text-muted text-sm m-0 mt-0.5 truncate">
+                    {weekdayTime(event.startDateTime)}{event.location ? ` · ${event.location}` : ""}
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="min-w-0">
                 <div className="text-muted text-sm">Your status</div>
@@ -121,7 +138,7 @@ export default function RegistrationStatusPage() {
 
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
               <Link to={`${base}/${eventId}`} className="btn btn-ghost">Back to event</Link>
-              {status === "rejected" && <Link to="/events" className="btn btn-primary">Browse other events</Link>}
+              {status === "rejected" && <Link to="/dashboard" className="btn btn-primary">Browse other events</Link>}
               {attended && (
                 <Link to={`${base}/${eventId}/gallery`} className="btn btn-primary">View gallery</Link>
               )}

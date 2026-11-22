@@ -1,29 +1,40 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+﻿import { useEffect, useMemo, useState } from "react";
+import { Navigate, useLocation, useSearchParams } from "react-router-dom";
 import client from "../api/client.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
-import Loading from "../components/ui/Loading.jsx";
 import PublicLayout from "../components/layout/PublicLayout.jsx";
-import EventCard from "../components/EventCard.jsx";
+import EventCard, { EventRow } from "../components/EventCard.jsx";
+import Segmented from "../components/ui/Segmented.jsx";
+import { EventCardSkeleton } from "../components/ui/Skeleton.jsx";
 import PremiumEventCard from "../components/PremiumEventCard.jsx";
 import { EVENT_CATEGORIES, getCategoryMeta } from "../utils/categories.js";
 
 const REGIONS = [
-  { id: "all", label: "All Locations" },
+  { id: "all", label: "All locations" },
   { id: "mogadishu", label: "Mogadishu" },
   { id: "hargeisa", label: "Hargeisa" },
   { id: "garowe", label: "Garowe" },
   { id: "nairobi", label: "Nairobi" },
   { id: "london", label: "London" },
   { id: "minneapolis", label: "Minneapolis" },
-  { id: "online", label: "Online / Hybrid" },
+  { id: "online", label: "Online or hybrid" },
 ];
 
 export default function EventsPage() {
+  const { isAuthed } = useAuth();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [view, setView] = useState(() => {
+    try { return localStorage.getItem("ems_events_view") === "list" ? "list" : "grid"; } catch { return "grid"; }
+  });
+  const changeView = (v) => {
+    setView(v);
+    try { localStorage.setItem("ems_events_view", v); } catch { /* storage unavailable */ }
+  };
 
   const initialSearch = searchParams.get("search") || "";
   const initialCategory = searchParams.get("category") || "All";
@@ -114,207 +125,147 @@ export default function EventsPage() {
     });
   }, [events, search, activeCategory, activeRegion, pricingFilter]);
 
-  const renderCard = (e) =>
-    e.isPremium ? <PremiumEventCard key={e._id} event={e} /> : <EventCard key={e._id} event={e} />;
+  if (isAuthed) {
+    return <Navigate to={`/dashboard${location.search}`} replace />;
+  }
+
+  const renderCard = (e, i) => (
+    <div key={e._id} className="rise h-full" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+      {view === "list" ? <EventRow event={e} /> : e.isPremium ? <PremiumEventCard event={e} /> : <EventCard event={e} />}
+    </div>
+  );
+
+  const hasFilters = search || activeCategory !== "All" || activeRegion !== "all" || pricingFilter !== "all";
+
+  const resetFilters = () => {
+    setSearch("");
+    setActiveCategory("All");
+    setActiveRegion("all");
+    setPricingFilter("all");
+    setSearchParams({});
+  };
 
   return (
     <PublicLayout>
-      {/* Header section */}
-      <section className="bg-slate-900 text-white border-b border-slate-800 py-14 sm:py-20 relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-brand-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="shell-wrap pt-10 sm:pt-14">
+        <h1 className="display m-0 text-4xl text-slate-900 sm:text-5xl dark:text-white">Events</h1>
+        <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
+          Conferences, workshops, AI summits, hackathons and seminars. Filter down to what fits you.
+        </p>
 
-        <div className="shell-wrap relative z-10">
-          <div className="max-w-2xl">
-            <span className="eyebrow text-brand-400">Discover Opportunities</span>
-            <h1 className="display text-4xl sm:text-5xl font-extrabold text-white mt-2">
-              Educational &amp; Tech Programs
-            </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-              Explore upcoming academic conferences, hands-on development workshops, AI summits, competitive hackathons, and Islamic knowledge seminars.
-            </p>
-          </div>
-
-          {/* Search bar inside header */}
-          <div className="mt-8 max-w-xl">
-            <div className="relative">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
+        {/* Filters stay pinned under the navbar while the list scrolls */}
+        <div className="sticky top-16 z-30 -mx-4 mt-6 border-b border-slate-200 bg-slate-50/90 px-4 pb-3 pt-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 dark:border-slate-800 dark:bg-slate-950/90">
+        <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
+          <div className="input-wrapper">
+            <span className="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="7.5" />
+                <path d="m20.5 20.5-4.2-4.2" strokeLinecap="round" />
               </svg>
-              <input
-                type="text"
-                placeholder="Search by topic, speaker, university, or city..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-800/90 border border-slate-700/80 rounded-2xl text-white placeholder-slate-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/20 transition-all"
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs font-semibold px-2 py-1 rounded bg-slate-700/50"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
+            </span>
+            <input
+              type="text"
+              placeholder="Search by topic, speaker or city"
+              aria-label="Search events"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input with-icon"
+            />
           </div>
-        </div>
-      </section>
-
-      <div className="shell-wrap py-10">
-        {/* Interactive Filters Area */}
-        <div className="space-y-5 pb-8 border-b border-slate-200/80 dark:border-slate-800">
-          {/* Category Chips Bar */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Academic &amp; Professional Tracks:
-              </span>
-              {activeCategory !== "All" && (
-                <button
-                  type="button"
-                  onClick={() => handleCategoryChange("All")}
-                  className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
-                >
-                  Reset track
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none no-scrollbar">
-              {EVENT_CATEGORIES.map((cat) => {
-                const isActive = activeCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => handleCategoryChange(cat)}
-                    className={`category-chip shrink-0 ${isActive ? "is-active" : ""}`}
-                  >
-                    {cat !== "All" && (
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          isActive ? "bg-white" : getCategoryMeta(cat).dotClass
-                        }`}
-                      />
-                    )}
-                    <span>{cat}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Secondary Filters: Location & Access Type */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 text-xs">
-            {/* Regions / Cities */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-slate-400 font-semibold mr-1">Location:</span>
-              {REGIONS.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => setActiveRegion(r.id)}
-                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
-                    activeRegion === r.id
-                      ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Access Type (Free vs Ticketed) */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-slate-400 font-semibold mr-1">Access:</span>
-              {[
-                { id: "all", label: "All" },
-                { id: "free", label: "Free Admission" },
-                { id: "ticketed", label: "Certified / VIP" },
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setPricingFilter(p.id)}
-                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
-                    pricingFilter === p.id
-                      ? "bg-brand-600 text-white font-bold"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <select
+            className="select md:w-48"
+            aria-label="Location"
+            value={activeRegion}
+            onChange={(e) => setActiveRegion(e.target.value)}
+          >
+            {REGIONS.map((r) => (
+              <option key={r.id} value={r.id}>{r.label}</option>
+            ))}
+          </select>
+          <select
+            className="select md:w-40"
+            aria-label="Price"
+            value={pricingFilter}
+            onChange={(e) => setPricingFilter(e.target.value)}
+          >
+            <option value="all">Any price</option>
+            <option value="free">Free</option>
+            <option value="ticketed">Paid</option>
+          </select>
         </div>
 
-        {/* Results stats */}
-        <div className="flex items-center justify-between py-6">
-          <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 m-0">
-            Showing <span className="text-slate-900 dark:text-white font-bold">{filtered.length}</span> event{filtered.length === 1 ? "" : "s"}
+        <div className="no-scrollbar chip-scroller -mx-4 mt-4 flex items-center gap-2 overflow-x-auto px-4 pb-1" role="tablist" aria-label="Filter by track">
+          {EVENT_CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => handleCategoryChange(cat)}
+                className={`category-chip shrink-0 ${isActive ? "is-active" : ""}`}
+              >
+                {cat !== "All" && (
+                  <span className={`h-2 w-2 rounded-full ${getCategoryMeta(cat).dotClass}`} aria-hidden="true" />
+                )}
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-4">
+          <p className="m-0 text-sm text-slate-600 dark:text-slate-400">
+            <span className="font-semibold text-slate-900 dark:text-white">{filtered.length}</span> event{filtered.length === 1 ? "" : "s"}
             {activeCategory !== "All" && ` in ${activeCategory}`}
-            {search && ` matching "${search}"`}
+            {search && ` matching “${search}”`}
           </p>
+          <div className="flex items-center gap-3">
+            {hasFilters && (
+              <button type="button" onClick={resetFilters} className="text-sm font-medium text-slate-700 hover:underline dark:text-slate-300">
+                Clear filters
+              </button>
+            )}
+            <Segmented
+              label="Layout"
+              value={view}
+              onChange={changeView}
+              options={[{ value: "grid", label: "Grid" }, { value: "list", label: "List" }]}
+            />
+          </div>
+        </div>
 
-          {(search || activeCategory !== "All" || activeRegion !== "all" || pricingFilter !== "all") && (
-            <button
-              type="button"
-              onClick={() => {
-                setSearch("");
-                setActiveCategory("All");
-                setActiveRegion("all");
-                setPricingFilter("all");
-                setSearchParams({});
-              }}
-              className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline"
-            >
-              Clear all filters
-            </button>
+        <div className="mt-6">
+          {loading && (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+              {[0, 1, 2].map((i) => <EventCardSkeleton key={i} />)}
+            </div>
+          )}
+          {error && <p className="text-sm font-medium text-slate-900 dark:text-white">{error}</p>}
+
+          {!loading && !error && (
+            filtered.length === 0 ? (
+              <EmptyState
+                title="No events match these filters"
+                description="Change the search, pick another track, or clear the filters."
+                action={
+                  <button type="button" onClick={resetFilters} className="btn btn-secondary mt-4">
+                    Clear filters
+                  </button>
+                }
+              />
+            ) : (
+              <div
+                key={`${view}-${filtered.map((e) => e._id).join("")}`}
+                className={view === "list" ? "border-t border-slate-200 dark:border-slate-800" : "grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3"}
+              >
+                {filtered.map(renderCard)}
+              </div>
+            )
           )}
         </div>
-
-        {/* Content list */}
-        {loading && <Loading label="Loading verified events..." />}
-        {error && <p className="text-rose-600 text-sm font-semibold">{error}</p>}
-
-        {!loading && !error && (
-          filtered.length === 0 ? (
-            <EmptyState
-              title="No events match your current filters"
-              description="Try adjusting your search criteria, selecting another discipline track, or clearing filters."
-              action={
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearch("");
-                    setActiveCategory("All");
-                    setActiveRegion("all");
-                    setPricingFilter("all");
-                    setSearchParams({});
-                  }}
-                  className="btn btn-secondary mt-4"
-                >
-                  Reset all filters
-                </button>
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map(renderCard)}
-            </div>
-          )
-        )}
       </div>
     </PublicLayout>
   );

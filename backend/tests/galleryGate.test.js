@@ -822,6 +822,50 @@ describe("event lifecycle", () => {
   });
 });
 
+describe("direct signup", () => {
+  const BODY = {
+    fullName: "Direct User",
+    email: "direct-signup@test.local",
+    password: "abc123",
+    phone: "+252612345678",
+    location: "Mogadishu, Somalia",
+    institution: "Hormuud University",
+    educationLevel: "bachelors",
+    sex: "female",
+  };
+
+  test("creates the account and signs the person in without a code", async () => {
+    const res = await request(app).post("/api/auth/signup").send(BODY).expect(201);
+    assert.ok(res.body.accessToken && res.body.refreshToken);
+    assert.equal(res.body.user.email, BODY.email);
+    assert.equal(res.body.user.profileComplete, true);
+    assert.equal(await User.countDocuments({ email: BODY.email }), 1);
+  });
+
+  test("a bio is not required", async () => {
+    const res = await request(app)
+      .post("/api/auth/signup")
+      .send({ ...BODY, email: "nobio@test.local" })
+      .expect(201);
+    assert.equal(res.body.user.email, "nobio@test.local");
+  });
+
+  test("an email that is already registered is refused", async () => {
+    const res = await request(app).post("/api/auth/signup").send(BODY).expect(409);
+    assert.equal(res.body.error.code, "EMAIL_EXISTS");
+  });
+
+  test("a missing profile field is refused per field and writes nothing", async () => {
+    const { location, ...incomplete } = BODY;
+    const res = await request(app)
+      .post("/api/auth/signup")
+      .send({ ...incomplete, email: "nolocation@test.local" })
+      .expect(400);
+    assert.ok(res.body.error.fields.location);
+    assert.equal(await User.countDocuments({ email: "nolocation@test.local" }), 0);
+  });
+});
+
 describe("signup with an emailed code", () => {
   const EMAIL = "otp-signup@test.local";
 

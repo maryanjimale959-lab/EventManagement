@@ -8,6 +8,7 @@ import Alert from "../components/ui/Alert.jsx";
 import Loading from "../components/ui/Loading.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { useAdminAuth } from "../context/AdminAuthContext.jsx";
+import Logo from "../components/Logo.jsx";
 
 /**
  * Bootstraps the very first admin account. The API refuses this the moment
@@ -50,15 +51,11 @@ export default function MaamulSignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 p-5">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-5">
       <div className="absolute top-5 right-5"><ThemeToggle /></div>
       <div className="w-full max-w-sm">
-        <div className="flex items-center gap-2.5 justify-center mb-6 font-extrabold text-xl">
-          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="15" stroke="#4f46e5" strokeWidth="2" />
-            <circle cx="16" cy="16" r="4.5" fill="#4f46e5" />
-          </svg>
-          <span>EventMedia</span>
+        <div className="flex justify-center mb-6">
+          <Logo size={30} />
         </div>
         <Card>
           {checking && <Loading />}

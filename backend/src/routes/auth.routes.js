@@ -18,6 +18,7 @@ import {
   forgotPasswordVerify,
   requestPasswordOtp,
   requestSignupOtp,
+  signupDirect,
   verifySignupOtp,
 } from "../controllers/otp.controller.js";
 import { authLimiter } from "../middleware/rateLimit.js";
@@ -38,7 +39,11 @@ router.post("/organizer/signup", authLimiter, organizerSignup);
 router.post("/refresh", authLimiter, refresh);
 router.post("/logout", logout);
 
-// Email-verified signup: a User is only created once the code is confirmed.
+// Direct signup: creates the account and signs in at once, no emailed code.
+router.post("/signup", authLimiter, signupDirect);
+
+// Email-verified signup (kept for later): a User is only created once the
+// code is confirmed.
 router.post("/signup/request", authLimiter, requestSignupOtp);
 router.post("/signup/verify", authLimiter, verifySignupOtp);
 router.post("/signup/cancel", cancelSignupOtp);

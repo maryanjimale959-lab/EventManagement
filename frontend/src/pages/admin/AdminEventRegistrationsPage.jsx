@@ -46,7 +46,7 @@ const SEX_LABEL = { female: "Female", male: "Male", "prefer-not-to-say": "Prefer
 /** One labelled value in the review panel. */
 const Detail = ({ label, children }) => (
   <div className="min-w-0">
-    <div className="text-[11px] uppercase font-bold text-muted tracking-wide">{label}</div>
+    <div className="text-[11px] font-bold text-muted">{label}</div>
     <div className="text-sm mt-0.5 break-words">{children || <span className="text-muted">—</span>}</div>
   </div>
 );
@@ -195,11 +195,11 @@ export default function AdminEventRegistrationsPage() {
             </div>
             <div className="stat-card">
               <div className="stat-label">Pending</div>
-              <div className="stat-value text-amber-600 dark:text-amber-400">{counts.pending || 0}</div>
+              <div className="stat-value text-slate-900 dark:text-slate-200">{counts.pending || 0}</div>
             </div>
             <div className="stat-card">
               <div className="stat-label">Approved</div>
-              <div className="stat-value text-emerald-600 dark:text-emerald-400">{counts.approved || 0}</div>
+              <div className="stat-value text-slate-900 dark:text-slate-200">{counts.approved || 0}</div>
             </div>
             <div className="stat-card">
               <div className="stat-label">Checked in</div>

@@ -6,6 +6,7 @@ import Button from "../../components/ui/Button.jsx";
 import Alert from "../../components/ui/Alert.jsx";
 import ThemeToggle from "../../components/ThemeToggle.jsx";
 import { useOrganizerAuth } from "../../context/OrganizerAuthContext.jsx";
+import Logo from "../../components/Logo.jsx";
 
 export default function OrganizerLoginPage() {
   const navigate = useNavigate();
@@ -39,9 +40,8 @@ export default function OrganizerLoginPage() {
         <ThemeToggle />
       </div>
       <div className="w-full max-w-md">
-        <div className="flex items-center gap-2.5 justify-center mb-6 font-extrabold text-2xl">
-          <span className="text-brand-500">★</span>
-          <span>Kulan Events <span className="text-xs uppercase bg-brand-500/20 text-brand-500 px-2 py-0.5 rounded font-mono">Organizer</span></span>
+        <div className="flex justify-center mb-6">
+          <Logo size={30} label="Organizer" />
         </div>
         <Card>
           <h1 className="text-xl font-bold mt-0 mb-1 text-center">Abaabule Sign-in</h1>

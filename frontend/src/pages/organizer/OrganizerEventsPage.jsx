@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import OrganizerConsoleLayout from "../../components/layout/OrganizerConsoleLayout.jsx";
 import Card from "../../components/ui/Card.jsx";
@@ -50,6 +50,7 @@ export default function OrganizerEventsPage() {
     endDateTime: "",
     status: "registration-open",
     visibility: "public",
+    capacity: "",
     isPremium: false,
     currency: "USD",
     plans: [{ name: "Standard Ticket", price: 20, description: "Full event access" }],
@@ -93,6 +94,7 @@ export default function OrganizerEventsPage() {
       endDateTime: toLocalIso(nextWeekEnd),
       status: "registration-open",
       visibility: "public",
+      capacity: "",
       isPremium: false,
       currency: "USD",
       plans: [{ name: "Standard Delegate", price: 20, description: "Full event admission" }],
@@ -104,7 +106,13 @@ export default function OrganizerEventsPage() {
 
   const openEditModal = (ev) => {
     setEditingEvent(ev);
-    const toIso = (d) => (d ? new Date(d).toISOString().slice(0, 16) : "");
+    // datetime-local wants the viewer's local time. toISOString() is UTC, which
+    // shifted every event by the UTC offset each time it was opened and saved.
+    const toIso = (d) => {
+      if (!d) return "";
+      const x = new Date(d);
+      return new Date(x.getTime() - x.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    };
     setForm({
       title: ev.title || "",
       description: ev.description || "",
@@ -113,6 +121,7 @@ export default function OrganizerEventsPage() {
       endDateTime: toIso(ev.endDateTime),
       status: ev.status || "registration-open",
       visibility: ev.visibility || "public",
+      capacity: ev.capacity ? String(ev.capacity) : "",
       isPremium: Boolean(ev.isPremium),
       currency: ev.currency || "USD",
       plans: ev.plans?.length ? ev.plans : [{ name: "General Admission", price: 10, description: "" }],
@@ -132,6 +141,7 @@ export default function OrganizerEventsPage() {
         startDateTime: new Date(form.startDateTime).toISOString(),
         endDateTime: new Date(form.endDateTime).toISOString(),
         plans: form.isPremium ? form.plans : [],
+        capacity: form.capacity === "" ? null : Number(form.capacity),
       };
 
       if (editingEvent) {
@@ -223,7 +233,6 @@ export default function OrganizerEventsPage() {
       ) : filtered.length === 0 ? (
         <Card>
           <div className="text-center py-12">
-            <p className="text-4xl mb-2">🎪</p>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">No Somali events found</h3>
             <p className="text-muted text-sm max-w-sm mx-auto mb-5">
               Create your first Somali event to start taking registrations and scanning door tickets.
@@ -255,15 +264,15 @@ export default function OrganizerEventsPage() {
                       )}
                     </div>
                     <p className="text-xs text-muted m-0 flex flex-wrap items-center gap-3">
-                      <span>📍 {ev.location}</span>
+                      <span>{ev.location}</span>
                       <span>·</span>
-                      <span>📅 {new Date(ev.startDateTime).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
+                      <span>{new Date(ev.startDateTime).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
                     </p>
                     <div className="mt-3 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600 dark:text-slate-300">
-                      <span>👥 <strong>{ev.registrationCount || 0}</strong> Registered</span>
-                      <span>🚪 <strong>{ev.attendedCount || 0}</strong> Checked In</span>
-                      <span>📸 <strong>{ev.mediaCount || 0}</strong> Photos</span>
-                      {ev.revenue > 0 && <span className="text-amber-600 dark:text-amber-400 font-bold">💰 ${ev.revenue} USD</span>}
+                      <span><strong>{ev.registrationCount || 0}</strong> Registered</span>
+                      <span><strong>{ev.attendedCount || 0}</strong> Checked In</span>
+                      <span><strong>{ev.mediaCount || 0}</strong> Photos</span>
+                      {ev.revenue > 0 && <span className="text-slate-900 dark:text-slate-200 font-bold">${ev.revenue} USD</span>}
                     </div>
                   </div>
                 </div>
@@ -316,7 +325,7 @@ export default function OrganizerEventsPage() {
             />
 
             <div>
-              <label className="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 Somali City / Venue
               </label>
               <input
@@ -336,7 +345,7 @@ export default function OrganizerEventsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   Start Date & Time
                 </label>
                 <input
@@ -348,7 +357,7 @@ export default function OrganizerEventsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   End Date & Time
                 </label>
                 <input
@@ -361,9 +370,24 @@ export default function OrganizerEventsPage() {
               </div>
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Capacity (leave empty for unlimited)
+              </label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                placeholder="Unlimited"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm"
+                value={form.capacity ?? ""}
+                onChange={(e) => setForm((p) => ({ ...p, capacity: e.target.value }))}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   Registration Status
                 </label>
                 <select
@@ -378,7 +402,7 @@ export default function OrganizerEventsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   Cover Photo Theme
                 </label>
                 <select
@@ -396,7 +420,7 @@ export default function OrganizerEventsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 Description / Highlights
               </label>
               <textarea

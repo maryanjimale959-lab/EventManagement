@@ -1,15 +1,15 @@
 export default function PageHero({ eyebrow, title, subtitle, image }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-accent-50 border-b border-slate-200/70 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 dark:border-slate-800">
-      <div className="shell-wrap py-14 sm:py-20 grid gap-10 lg:grid-cols-2 items-center">
+    <section className="border-b border-slate-200 dark:border-slate-800">
+      <div className="shell-wrap grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-2">
         <div>
-          {eyebrow && <span className="badge badge-info mb-5">{eyebrow}</span>}
-          <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.08] text-slate-900 dark:text-white">{title}</h1>
-          {subtitle && <p className="mt-5 text-lg text-slate-600 max-w-lg">{subtitle}</p>}
+          {eyebrow && <p className="eyebrow m-0 mb-3 text-brand-700 dark:text-brand-300">{eyebrow}</p>}
+          <h1 className="display m-0 text-4xl text-slate-900 sm:text-5xl dark:text-white">{title}</h1>
+          {subtitle && <p className="mt-4 max-w-lg text-lg text-slate-600 dark:text-slate-400">{subtitle}</p>}
         </div>
         {image && (
-          <div className="rounded-3xl overflow-hidden shadow-xl shadow-slate-900/10 aspect-[4/3]">
-            <img src={image} alt="" className="w-full h-full object-cover" />
+          <div className="photo-surface aspect-[4/3] rounded-3xl">
+            <img src={image} alt="" />
           </div>
         )}
       </div>

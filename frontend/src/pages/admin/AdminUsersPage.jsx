@@ -282,13 +282,13 @@ export default function AdminUsersPage() {
               </Alert>
               {createResult.generatedPassword && (
                 <div className="card-muted mt-3">
-                  <div className="text-xs uppercase">Generated password</div>
+                  <div className="text-xs">Generated password</div>
                   <strong className="text-base tracking-wide">{createResult.generatedPassword}</strong>
                   <p className="text-sm m-0 mt-1">Share this with them if the email was not delivered.</p>
                 </div>
               )}
               <div className="card-muted mt-3">
-                <div className="text-xs uppercase">Sign-in link</div>
+                <div className="text-xs">Sign-in link</div>
                 <a href={createResult.loginUrl} className="font-semibold text-brand-600 dark:text-brand-300 break-all">
                   {createResult.loginUrl}
                 </a>
@@ -361,7 +361,7 @@ function PasswordModal({ user, result, sending, onSubmit, onClose }) {
           </Alert>
           {result.generatedPassword && (
             <div className="card-muted mt-3">
-              <div className="text-xs uppercase">Generated password</div>
+              <div className="text-xs">Generated password</div>
               <strong className="text-base tracking-wide">{result.generatedPassword}</strong>
             </div>
           )}

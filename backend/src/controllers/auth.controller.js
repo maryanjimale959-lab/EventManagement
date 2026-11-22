@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User, { toUserDTO } from "../models/User.js";
 import { signAccessToken, signRefreshToken } from "../utils/token.js";
+import { logActivity } from "../utils/activityLog.js";
 
 const formatError = (code, message) => ({ error: { code, message } });
 
@@ -159,16 +160,30 @@ export const organizerLogin = loginForRoles(["organizer", "admin"]);
 
 export const organizerSignup = async (req, res, next) => {
   try {
-    const { fullName, organization, password } = req.body || {};
+    const fullName = String(req.body?.fullName || "").trim();
+    const organization = String(req.body?.organization || "").trim();
+    const phone = String(req.body?.phone || "").trim();
+    const location = String(req.body?.location || "").trim();
+    const password = String(req.body?.password || "");
     const email = String(req.body?.email || "").toLowerCase().trim();
-    if (!fullName || !email || !password) {
-      return res.status(400).json(formatError("VALIDATION_ERROR", "fullName, email, and password are required"));
+
+    if (!fullName || fullName.length < 2) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Full name is required (at least 2 characters)"));
     }
-    if (!isValidEmail(email)) {
-      return res.status(400).json(formatError("VALIDATION_ERROR", "Invalid email format"));
+    if (!organization || organization.length < 2) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Organization or brand name is required"));
     }
-    if (!isValidPassword(password)) {
-      return res.status(400).json(formatError("VALIDATION_ERROR", "Password must be at least 6 characters"));
+    if (!email || !isValidEmail(email)) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "A valid work email is required"));
+    }
+    if (phone && !/^[+\d][\d\s()-]{6,19}$/.test(phone)) {
+      return res.status(400).json(formatError("VALIDATION_ERROR", "Phone number looks invalid"));
+    }
+    // Organizer accounts manage attendees and door check-in, so enforce a stronger password.
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return res.status(400).json(
+        formatError("VALIDATION_ERROR", "Password must be at least 8 characters and include both letters and numbers")
+      );
     }
     if (await User.findOne({ email })) {
       return res.status(409).json(formatError("EMAIL_EXISTS", "Email is already registered"));
@@ -177,7 +192,9 @@ export const organizerSignup = async (req, res, next) => {
     const user = await User.create({
       fullName,
       email,
-      organization: String(organization || "").trim(),
+      organization,
+      phone,
+      location,
       passwordHash: await bcrypt.hash(password, 10),
       role: "organizer",
       isActive: true,
@@ -189,6 +206,15 @@ export const organizerSignup = async (req, res, next) => {
     user.refreshTokens.push(refreshToken);
     user.lastLoginAt = new Date();
     await user.save();
+
+    await logActivity({
+      actor: { userId: user._id, role: user.role, email: user.email },
+      action: "organizer.registered",
+      summary: `New organizer account created: ${fullName} (${organization})`,
+      targetType: "user",
+      targetId: user._id,
+      targetLabel: fullName,
+    });
 
     return res.status(201).json({ user: toUserDTO(user.toObject()), accessToken, refreshToken });
   } catch (err) {

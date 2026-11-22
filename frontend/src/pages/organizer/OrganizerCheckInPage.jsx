@@ -132,7 +132,7 @@ export default function OrganizerCheckInPage() {
         <div>
           <Card>
             <div className="mb-4">
-              <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+              <label className="block text-xs font-semibold text-slate-500 mb-1">
                 Select Somali Gathering
               </label>
               <select
@@ -213,7 +213,7 @@ export default function OrganizerCheckInPage() {
             {alreadyCheckedIn && (
               <div className="mt-4">
                 <Alert variant="warning">
-                  <div className="font-bold text-base mb-1">⚠️ Already Checked In!</div>
+                  <div className="font-bold text-base mb-1">Already Checked In!</div>
                   <p className="m-0 text-sm">{alreadyCheckedIn.message}</p>
                   {alreadyCheckedIn.guest && (
                     <p className="m-0 mt-1 text-xs">Guest: <strong>{alreadyCheckedIn.guest.fullName}</strong> ({alreadyCheckedIn.guest.email})</p>
@@ -238,7 +238,6 @@ export default function OrganizerCheckInPage() {
           <Card>
             {feed.length === 0 ? (
               <div className="text-center py-10 text-muted">
-                <span className="text-3xl block mb-2">🎟️</span>
                 <p className="m-0 text-sm">Ready to check in guests. Scanned passes will appear here in real-time.</p>
               </div>
             ) : (
@@ -247,7 +246,7 @@ export default function OrganizerCheckInPage() {
                   <div key={idx} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-emerald-500 font-bold">✓</span>
+                        <span className="text-slate-900 font-bold">✓</span>
                         <span className="font-bold text-sm text-slate-900 dark:text-white">
                           {item.guest?.fullName || "Guest"}
                         </span>
